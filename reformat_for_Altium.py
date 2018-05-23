@@ -8,9 +8,9 @@ import sys
 from operator import itemgetter
 
 ### Select print option ###
-bool_print_DCB = True
-bool_print_PT = False
-bool_print_Pathfinder = False
+bool_print_DCB = False
+bool_print_PT = True
+bool_print_Pathfinder = True
 ###########################
 
 
