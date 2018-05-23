@@ -4,8 +4,8 @@ Signal mapping netlist (list of pin-to-pin correspondence) formatted for Altium 
 
 ## Script objectives
 
-reformat_for_Altium.py (written in Python 2.7) that reads input CSV files and prints out reformatted list; 
-Input CSV files are one from PT connectors point-of-view (PT->DCB), and another from DCB connectors p.o.v.
+reformat_for_Altium.py (written in Python 2.7) that reads input .xlsm files and prints out reformatted list; 
+Input .xlsm files include one from PT connectors point-of-view (PT->DCB), and another from DCB connectors p.o.v.
 
 ## Running the script
 
