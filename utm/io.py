@@ -1,9 +1,19 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 03:01 AM -0400
+# Last Change: Thu May 24, 2018 at 02:04 PM -0400
 
 import openpyxl
+import re
+
+from utm.datatype import range, ColNum
+
+
+def parse_cell_range(s):
+    initial, final = s.split(':')
+    initial_col, initial_row = filter(None, re.split(r'(\d+)', initial))
+    final_col, final_row = filter(None, re.split(r'(\d+)', final))
+    return (initial_col.upper(), initial_row, final_col.upper(), final_row)
 
 
 class XLReader(object):
