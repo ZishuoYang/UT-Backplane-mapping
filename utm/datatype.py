@@ -1,9 +1,17 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 04:47 AM -0400
+# Last Change: Thu May 24, 2018 at 05:27 AM -0400
 
+import __builtin__
 from string import ascii_uppercase
+
+
+def range(*args):
+    if isinstance(args[0], ColNum):
+        return [ColNum(to_str(i)) for i in __builtin__.range(*args)]
+    else:
+        return __builtin__.range(*args)
 
 
 def to_num(s):
@@ -37,6 +45,8 @@ def to_str(n):
 
 
 class ColNum(int):
+    # FIXME: There is no representation of 0.
+    # FIXME: The string representation will easily underflow/overflow!
     def __new__(cls, s):
         num = to_num(s)
         self = int.__new__(cls, num)

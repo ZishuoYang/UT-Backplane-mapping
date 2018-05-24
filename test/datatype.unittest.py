@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 04:49 AM -0400
+# Last Change: Thu May 24, 2018 at 05:30 AM -0400
 
 import unittest
 
@@ -9,7 +9,7 @@ import unittest
 import sys
 sys.path.insert(0, '..')
 
-from utm.datatype import ColNum
+from utm.datatype import ColNum, range
 
 
 class DataTypeTester(unittest.TestCase):
@@ -39,6 +39,10 @@ class DataTypeTester(unittest.TestCase):
 
     def test_string_representation(self):
         self.assertEqual(str(ColNum('A'))+str(1), 'A1')
+
+    def test_range_generation(self):
+        self.assertEqual(range(ColNum('A'), ColNum('E')), [1, 2, 3, 4])
+        self.assertEqual(str(range(ColNum('A'), ColNum('E'))[1]), 'B')
 
 
 if __name__ == '__main__':
