@@ -1,19 +1,62 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 03:32 AM -0400
+# Last Change: Thu May 24, 2018 at 04:47 AM -0400
 
 from string import ascii_uppercase
 
 
 def to_num(s):
-    pass
+    num = 0
+    input_str = ''.join(reversed(s))
+
+    for i in range(0, len(input_str)):
+        letter = input_str[i]
+        num += (ascii_uppercase.index(letter)+1) * 26**i
+
+    return num
 
 
-class BaseTSNum(int):
+def to_str(n):
+    str = ''
+    input_num = n
+
+    while True:
+        input_num, remainder = divmod(input_num, 26)
+        if input_num == 0:
+            str += ascii_uppercase[remainder-1]
+            break
+        if input_num <= 26:
+            str += ascii_uppercase[remainder-1]
+            str += ascii_uppercase[input_num-1]
+            break
+        else:
+            str += ascii_uppercase[remainder-1]
+
+    return ''.join(reversed(str))
+
+
+class ColNum(int):
     def __new__(cls, s):
-        self = int.__new__(cls, to_num(s))
+        num = to_num(s)
+        self = int.__new__(cls, num)
+        self.value = num
         self.name = s
+        return self
 
     def __str__(self):
         return self.name
+
+    def __add__(self, other):
+        numerical = self.value + other
+        return(ColNum(to_str(numerical)))
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __sub__(self, other):
+        numerical = self.value - other
+        return(ColNum(to_str(numerical)))
+
+    def __rsub__(self, other):
+        return self.__sub__(other)

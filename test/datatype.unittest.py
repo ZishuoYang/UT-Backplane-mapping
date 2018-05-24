@@ -1,25 +1,44 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 03:33 AM -0400
+# Last Change: Thu May 24, 2018 at 04:49 AM -0400
 
 import unittest
 
-from os.path import join
 
 import sys
-sys.path.insert(0, join('..', 'utm'))
+sys.path.insert(0, '..')
 
-from utm.datatype import BaseTSNum
+from utm.datatype import ColNum
 
 
 class DataTypeTester(unittest.TestCase):
     def test_representation(self):
-        self.assertEqual(BaseTSNum('A'), 1)
+        self.assertEqual(ColNum('A'), ColNum('A'))
+        self.assertEqual(ColNum('A'), 1)
+        self.assertEqual(str(ColNum('A')), 'A')
 
     def test_representation_complex(self):
-        self.assertEqual(BaseTSNum('AA'), 27)
-        self.assertEqual(BaseTSNum('ABC'), 27)
+        self.assertEqual(ColNum('AB'), 28)
+        self.assertEqual(ColNum('ABC'), 731)
+
+    def test_inequalities(self):
+        self.assertLessEqual(ColNum('A'), ColNum('B'))
+        self.assertGreaterEqual(ColNum('ABC'), ColNum('AB'))
+
+    def test_summation(self):
+        self.assertEqual(ColNum('A') + 1, ColNum('B'))
+        self.assertEqual(ColNum('A') + ColNum('B'), ColNum('C'))
+        self.assertEqual(ColNum('A')*26*26 + ColNum('BC'), ColNum('ABC'))
+
+    def test_summation_representation(self):
+        self.assertEqual(str(ColNum('A') + 1), str(ColNum('B')))
+        self.assertEqual(str(ColNum('A') + ColNum('B')), str(ColNum('C')))
+        self.assertEqual(str(ColNum('A')*26*26 + ColNum('BC')),
+                         str(ColNum('ABC')))
+
+    def test_string_representation(self):
+        self.assertEqual(str(ColNum('A'))+str(1), 'A1')
 
 
 if __name__ == '__main__':
