@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 02:04 PM -0400
+# Last Change: Thu May 24, 2018 at 02:52 PM -0400
 
 import unittest
 
@@ -18,20 +18,20 @@ class ParseCellRangeTester(unittest.TestCase):
         initial_col, initial_row, final_col, final_row = parse_cell_range(
             cell_range
         )
-        self.assertEqual(initial_col, 'A')
-        self.assertEqual(initial_row, '12')
-        self.assertEqual(final_col, 'CC')
-        self.assertEqual(final_row, '344')
+        self.assertEqual(str(initial_col), 'A')
+        self.assertEqual(initial_row, 12)
+        self.assertEqual(str(final_col), 'CD')
+        self.assertEqual(final_row, 345)
 
     def test_parsing_make_upper(self):
         cell_range = 'a12:cC344'
         initial_col, initial_row, final_col, final_row = parse_cell_range(
             cell_range
         )
-        self.assertEqual(initial_col, 'A')
-        self.assertEqual(initial_row, '12')
-        self.assertEqual(final_col, 'CC')
-        self.assertEqual(final_row, '344')
+        self.assertEqual(str(initial_col), 'A')
+        self.assertEqual(initial_row, 12)
+        self.assertEqual(str(final_col), 'CD')
+        self.assertEqual(final_row, 345)
 
 
 if __name__ == '__main__':
