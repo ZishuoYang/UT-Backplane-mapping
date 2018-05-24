@@ -1,3 +1,4 @@
 #!/usr/bin/env python
 #
-# Last Change: Wed May 23, 2018 at 09:58 PM -0400
+# License: MIT
+# Last Change: Thu May 24, 2018 at 01:00 AM -0400
