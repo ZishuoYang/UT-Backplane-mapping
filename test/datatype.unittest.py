@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 05:30 AM -0400
+# Last Change: Thu May 24, 2018 at 02:22 PM -0400
 
 import unittest
 
@@ -36,6 +36,12 @@ class DataTypeTester(unittest.TestCase):
         self.assertEqual(str(ColNum('A') + ColNum('B')), str(ColNum('C')))
         self.assertEqual(str(ColNum('A')*26*26 + ColNum('BC')),
                          str(ColNum('ABC')))
+
+    def test_inplace_summation(self):
+        num = ColNum('A')
+        num += 1
+        self.assertEqual(num, 2)
+        self.assertEqual(str(num), 'B')
 
     def test_string_representation(self):
         self.assertEqual(str(ColNum('A'))+str(1), 'A1')
