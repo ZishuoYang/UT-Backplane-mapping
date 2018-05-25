@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 09:37 PM -0400
+# Last Change: Thu May 24, 2018 at 10:59 PM -0400
 
 import openpyxl
 import re
@@ -23,24 +23,20 @@ def parse_cell_range(s, add_one_to_trailing_cell=True):
 
 
 class XLReader(object):
-    def __init__(self, filename, sheets, cell_range,
-                 sortby=None):
-        # Note: we assume the first row is the header line.
+    def __init__(self, filename):
         self.wb = openpyxl.load_workbook(filename, read_only=True)
 
+    def read(self, sheets, cell_range, sortby=None):
+        self.sheets = sheets
         self.initial_col, self.initial_row, self.final_col, self.final_row = \
             parse_cell_range(cell_range)
 
-        self.sheets = sheets
-        self.sortby = sortby
-
-    def read(self):
         result = []
         for s in self.sheets:
-            result.append(self.readsheet(str(s)))
+            result.append(self.readsheet(str(s), sortby=sortby))
         return result
 
-    def readsheet(self, sheet_name):
+    def readsheet(self, sheet_name, sortby):
         sheet = self.wb[sheet_name]
 
         # Read the first row as headers, determine non-empty headers;
@@ -63,8 +59,8 @@ class XLReader(object):
                 pin_spec[non_empty_col[col]] = sheet[anchor].value
             data.append(pin_spec)
 
-        if self.sortby is not None:
-            pass
+        if sortby is not None:
+            return sorted(data, key=sortby)
 
         else:
             return data
