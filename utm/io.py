@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 10:59 PM -0400
+# Last Change: Fri May 25, 2018 at 04:39 PM -0400
 
 import openpyxl
 import re
@@ -26,41 +26,51 @@ class XLReader(object):
     def __init__(self, filename):
         self.wb = openpyxl.load_workbook(filename, read_only=True)
 
-    def read(self, sheets, cell_range, sortby=None):
+    def read(self, sheets, cell_range, sortby=None, headers=None):
         self.sheets = sheets
         self.initial_col, self.initial_row, self.final_col, self.final_row = \
             parse_cell_range(cell_range)
 
         result = []
         for s in self.sheets:
-            result.append(self.readsheet(str(s), sortby=sortby))
+            result.append(self.readsheet(str(s),
+                                         sortby=sortby, headers=headers))
         return result
 
-    def readsheet(self, sheet_name, sortby):
+    def readsheet(self, sheet_name, sortby, headers):
         sheet = self.wb[sheet_name]
 
+        if headers is not None:
+            data = self.get_data_header_supplied(sheet, headers)
+        else:
+            data = self.get_data_header_not_supplied(sheet)
+
+        if sortby is not None:
+            return sorted(data, key=sortby)
+        else:
+            return data
+
+    def get_data_header_not_supplied(self, sheet):
         # Read the first row as headers, determine non-empty headers;
         # for all subsequent rows, skip columns without a header.
-        non_empty_col = dict()
+        headers_non_empty_col = dict()
         for col in range(self.initial_col, self.final_col):
             anchor = str(col) + str(self.initial_row)
             header = sheet[anchor].value
             if header is not None:
                 # Note: some of the title contain '\n'. We replace it with an
                 # space.
-                non_empty_col[str(col)] = header.replace('\n', ' ')
+                headers_non_empty_col[str(col)] = header.replace('\n', ' ')
 
-        # Now read the real data
+        return self.get_data_header_supplied(sheet, headers_non_empty_col,
+                                             initial_row_bump=1)
+
+    def get_data_header_supplied(self, sheet, headers, initial_row_bump=0):
         data = []
-        for row in range(self.initial_row+1, self.final_row):
+        for row in range(self.initial_row+initial_row_bump, self.final_row):
             pin_spec = dict()
-            for col in non_empty_col.keys():
+            for col in headers.keys():
                 anchor = str(col) + str(row)
-                pin_spec[non_empty_col[col]] = sheet[anchor].value
+                pin_spec[headers[col]] = sheet[anchor].value
             data.append(pin_spec)
-
-        if sortby is not None:
-            return sorted(data, key=sortby)
-
-        else:
-            return data
+        return data
