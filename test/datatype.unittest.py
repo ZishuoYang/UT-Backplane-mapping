@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 02:22 PM -0400
+# Last Change: Fri May 25, 2018 at 05:20 PM -0400
 
 import unittest
-
 
 import sys
 sys.path.insert(0, '..')
 
-from utm.datatype import ColNum, range
+from pyUTM.datatype import ColNum, range
 
 
 class DataTypeTester(unittest.TestCase):

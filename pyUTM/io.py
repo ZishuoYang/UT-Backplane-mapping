@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri May 25, 2018 at 04:39 PM -0400
+# Last Change: Fri May 25, 2018 at 05:20 PM -0400
 
 import openpyxl
 import re
 
-from utm.datatype import range, ColNum
+from pyUTM.datatype import range, ColNum
 
 
 def parse_cell_range(s, add_one_to_trailing_cell=True):

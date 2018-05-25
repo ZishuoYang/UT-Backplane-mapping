@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri May 25, 2018 at 05:05 PM -0400
+# Last Change: Fri May 25, 2018 at 05:21 PM -0400
 
 import unittest
 from os.path import join
@@ -9,7 +9,7 @@ from os.path import join
 import sys
 sys.path.insert(0, '..')
 
-from utm.io import parse_cell_range, XLReader
+from pyUTM.io import parse_cell_range, XLReader
 
 pt_filename = join('..', 'templates', 'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
 brkoutbrd_filename = join('..', 'templates',
