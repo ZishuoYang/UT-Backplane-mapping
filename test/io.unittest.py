@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri May 25, 2018 at 04:55 PM -0400
+# Last Change: Fri May 25, 2018 at 04:56 PM -0400
 
 import unittest
 from os.path import join
@@ -41,12 +41,12 @@ class ParseCellRangeTester(unittest.TestCase):
 class XLReaderTester(unittest.TestCase):
     def test_read_single_spec(self):
         reader = XLReader(pt_filename)
-        result = reader.read([0, ], 'B5:H6')
+        result = reader.read([0], 'B5:H6')
         self.assertEqual(result[0][0]['ref'], 199)
 
     def test_read_sort(self):
         reader = XLReader(pt_filename)
-        result = reader.read([0, ], 'B5:H11',
+        result = reader.read([0], 'B5:H11',
                              sortby=lambda item: item['SEAM pin'])
         self.assertEqual(result[0][0]['ref'], 228)
         self.assertEqual(result[0][2]['ref'], 207)
