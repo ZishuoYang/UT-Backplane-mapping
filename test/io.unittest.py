@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri May 25, 2018 at 04:56 PM -0400
+# Last Change: Fri May 25, 2018 at 05:05 PM -0400
 
 import unittest
 from os.path import join
@@ -58,6 +58,16 @@ class XLReaderTester(unittest.TestCase):
         result = reader.read(['PinAssignments'], 'A4:D18', headers=headers)
         self.assertEqual(result[0][0]['Conn'], 'JD11_JPL2_1V5_M')
         self.assertEqual(result[0][-1]['Descr'], 'GND')
+
+    def test_read_sort_with_headers_single_spec(self):
+        reader = XLReader(brkoutbrd_filename)
+        headers = {'A': 'Conn', 'D': 'Descr'}
+        result = reader.read(['PinAssignments'], 'A4:D18', headers=headers,
+                             sortby=lambda item: item['Conn'])
+        self.assertEqual(result[0][0]['Conn'], 'GND')
+        # FIXME: '9' will come after '11'
+        self.assertEqual(result[0][3]['Conn'], 'JD11_10_JPL2_2V5')
+        self.assertEqual(result[0][-1]['Conn'], 'JP11_JPL2_P4_LV_SOURCE')
 
 
 if __name__ == '__main__':
