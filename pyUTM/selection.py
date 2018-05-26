@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: GPLv2
-# Last Change: Fri May 25, 2018 at 04:29 AM -0400
+# Last Change: Fri May 25, 2018 at 11:55 PM -0400
 
 
 ########################
@@ -36,21 +36,28 @@ class Rule(object):
             return data
 
 
-###############################
-# Selection rules for PigTail #
-###############################
+###################################
+# Selection rules for PigTail/DCB #
+###################################
 
 
-class SelectorPT(Selector):
+class SelectorPD(Selector):
     def do(self):
         processed_dataset = []
 
-        for pt_connector_idx in range(0, len(self.full_dataset)):
-            for entry in self.full_dataset[pt_connector_idx]:
+        for connector_idx in range(0, len(self.full_dataset)):
+            for entry in self.full_dataset[connector_idx]:
                 for rule in self.rules:
-                    result = rule.filter((entry, pt_connector_idx))
+                    result = rule.filter((entry, connector_idx))
                     if result is not None:
                         processed_dataset.append(result)
                         break
 
         return processed_dataset
+
+
+class RulePD(Rule):
+    def filter(self, databundle):
+        data, connector_idx = databundle
+        if self.match(data, connector_idx):
+            self.data_gen(data, connector_idx)
