@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sat May 26, 2018 at 11:01 PM -0400
+# Last Change: Sun May 27, 2018 at 01:09 AM -0400
 
 from os.path import join
 
@@ -62,27 +62,27 @@ pt_descr = XLReader.read(range(0, 12), 'B5:K405',
 ########################################
 # Define rules for PigTail Altium list #
 ########################################
-# each of Zishuo's list entry is defined as:
+# Each of Zishuo's list entry is defined as:
 #   ['DCB slot #', 'DCB connector letter pin', 'DCB connector numerical pin',
 #    'PT slot #',  'PT connector letter pin',  'PT connector numerical pin',
 #    'Signal ID']
 
 
 class RulePTDefault(RulePD):
-    def match(data, connector_idx):
+    def match(self, data, connector_idx):
         # This needs to be placed at the end of the rules list.
         # It always returns 'True' to handle entries NOT matched by any other
         # rules.
         return True
 
-    def process(data, connector_idx):
-        print('WARNING: The following entry is not matched by any other rules:')
-        print('Connector index: %s. Pigtail Pin: %s' % (connector_idx,
-                                                        data['Pigtail pin']))
+    def process(self, data, connector_idx):
+        print('WARNING: The following entry is not matched by any other rules!')
+        print('Connector index: %s. Pigtail Pin: %s.' % (connector_idx,
+                                                         data['Pigtail pin']))
 
 
 class RulePTPathFinder(RulePD):
-    def match(data, connector_idx):
+    def match(self, data, connector_idx):
         # For slot 0 or 1, we need to process the non-BOB nets so skip this
         # rule.
         if connector_idx in [0, 1]:
@@ -90,8 +90,12 @@ class RulePTPathFinder(RulePD):
 
         # For path finder, skip non-BOB nets when not in slot 0 or 1
         keywords = ['LV_SOURCE', 'LV_RETURN', 'LV_SENSE']
-        # for kw in keywords:
-            # if kw in data[]
+        result = [False if kw in data['Signal ID'] else True for kw in keywords]
+        return self.AND(result)
+
+    def process(self, data, connector_idx):
+        print('The following pin will be skipped: %s %s'
+              % (connector_idx, data['PigTail pin']))
 
 
 ####################################
