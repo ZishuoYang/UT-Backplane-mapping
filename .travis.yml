@@ -1,0 +1,30 @@
+language: python
+
+python:
+    - "2.7"
+
+cache: pip
+
+install:
+    - pip install openpyxl
+
+branches:
+    only:
+        - master
+
+script:
+    - cd ./test
+    - python ./datatype.unittest.py
+    - python ./io.unittest.py
+    - python ./selection.unittest.py
+    - cd ../
+    - python ./AltiumNetlistGen.py > ./WARNINGS.log
+
+deploy:
+    provider: releases
+	api_key: tmhwFlzj0IKSFCLB1yQGCw
+    file: "./gen/AltiumNetlist_PT.csv"
+    file: "./WARNINGS.log"
+    skip_cleanup: true
+    on:
+        tags: true
