@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 02:02 PM -0400
+# Last Change: Sun May 27, 2018 at 05:29 PM -0400
 
 import re
 
@@ -65,7 +65,7 @@ class RulePD(Rule):
     def filter(self, databundle):
         data, connector_idx = databundle
         if self.match(data, connector_idx):
-            self.process(data, connector_idx)
+            return self.process(data, connector_idx)
 
     @staticmethod
     def AND(l):
@@ -83,8 +83,12 @@ class RulePD(Rule):
 
     @staticmethod
     def PADDING(s):
+        # FIXME: There should be no None fed to this function.
+        if s is None:
+            print('WARNING: None fed.')
+            return ''
         # FIXME: Still unclear on how to deal with multiple pins.
-        if '|' in s or '/' in s:
+        elif '|' in s or '/' in s:
             # For now, return multiple pins spec as it-is.
             return s
         else:
