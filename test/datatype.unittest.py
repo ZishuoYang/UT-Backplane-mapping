@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 05:54 AM -0400
+# Last Change: Sun May 27, 2018 at 06:44 AM -0400
 
 import unittest
 
@@ -34,18 +34,24 @@ class DataTypeTester(unittest.TestCase):
         self.assertLessEqual(ColNum('A'), ColNum('B'))
         self.assertGreaterEqual(ColNum('ABC'), ColNum('AB'))
 
-    def test_summation(self):
+    def test_addition(self):
         self.assertEqual(ColNum('A') + 1, ColNum('B'))
         self.assertEqual(ColNum('A') + ColNum('B'), ColNum('C'))
         self.assertEqual(ColNum('A')*26*26 + ColNum('BC'), ColNum('ABC'))
 
-    def test_summation_representation(self):
+    def test_addition_representation(self):
         self.assertEqual(str(ColNum('A') + 1), str(ColNum('B')))
         self.assertEqual(str(ColNum('A') + ColNum('B')), str(ColNum('C')))
         self.assertEqual(str(ColNum('A')*26*26 + ColNum('BC')),
                          str(ColNum('ABC')))
 
-    def test_inplace_summation(self):
+    def test_subtraction(self):
+        self.assertEqual(ColNum('B') - ColNum('A'), 1)
+        self.assertEqual(str(ColNum('B') - ColNum('A')), 'A')
+        self.assertEqual(ColNum('A') - ColNum('B'), 1)
+        self.assertEqual(str(ColNum('A') - ColNum('B')), 'A')
+
+    def test_inplace_additon(self):
         num = ColNum('A')
         num += 1
         self.assertEqual(num, 2)
