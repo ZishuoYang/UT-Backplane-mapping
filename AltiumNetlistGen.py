@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 06:10 PM -0400
+# Last Change: Sun May 27, 2018 at 06:20 PM -0400
 
 from os.path import join
 
@@ -105,7 +105,7 @@ class RulePTPathFinder(RulePD):
 
     def process(self, data, pt_idx):
         # Note: here the matching data will NOT be written to netlist file.
-        print('WARNING: The following pin does not have a connection!: %s %s'
+        print('WARNING: The following pin is not a LV_* connection!: %s %s'
               % (pt_idx, data['Pigtail pin']))
 
 
