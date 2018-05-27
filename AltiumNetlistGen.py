@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 05:30 PM -0400
+# Last Change: Sun May 27, 2018 at 06:06 PM -0400
 
 from os.path import join
 
@@ -109,18 +109,6 @@ class RulePTPathFinder(RulePD):
               % (pt_idx, data['Pigtail pin']))
 
 
-class RulePTDCBAnormal(RulePD):
-    def match(self, data, pt_idx):
-        if data['DCB slot'] is not None and data['SEAM pin'] is None:
-            return True
-        else:
-            return False
-
-    def process(self, data, pt_idx):
-        print('WARNING: The following pin does NOT make sense!: %s %s'
-              % (pt_idx, data['Pigtail pin']))
-
-
 class RulePTDCB(RulePD):
     def match(self, data, pt_idx):
         if data['DCB slot'] is not None:
@@ -189,7 +177,6 @@ class RulePTPTThermistor(RulePTPTLvSource):
 
 
 pt_rules = [RulePTPathFinder(),
-            RulePTDCBAnormal(),
             RulePTDCB(),
             RulePTPTLvSource(brkoutbrd_pin_assignments),
             RulePTPTLvReturn(brkoutbrd_pin_assignments),
