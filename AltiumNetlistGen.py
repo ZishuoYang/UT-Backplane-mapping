@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 06:06 PM -0400
+# Last Change: Sun May 27, 2018 at 06:10 PM -0400
 
 from os.path import join
 
@@ -204,6 +204,7 @@ for pt_id in range(0, len(pt_descr)):
 
 # Now apply all rules defined in the previous section
 PtSelector = SelectorPD(pt_descr, pt_rules)
+print('====WARNINGS for PigTAIL====')
 pt_result = PtSelector.do()
 
 # Finally, write to csv file
