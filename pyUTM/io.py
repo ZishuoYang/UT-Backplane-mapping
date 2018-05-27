@@ -1,12 +1,30 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 06:45 AM -0400
+# Last Change: Sun May 27, 2018 at 03:02 PM -0400
 
 import openpyxl
 import re
 
 from pyUTM.datatype import range, ColNum
+
+
+def write_to_csv(filename, data):
+    with open(filename, 'w') as f:
+        for entry in data:
+            f.write(generate_csv_line(entry) + '\n')
+
+
+def generate_csv_line(entry, ignore_empty=True):
+    s = ''
+    for cell in entry:
+        if cell is not None:
+            s += str(cell)
+        elif not ignore_empty:
+            s += 'None'
+        s += ','
+    # Remove the trailing ','
+    return s[:-1]
 
 
 def parse_cell_range(s, add_one_to_trailing_cell=True):

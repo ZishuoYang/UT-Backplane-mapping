@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri May 25, 2018 at 05:21 PM -0400
+# Last Change: Sun May 27, 2018 at 02:59 PM -0400
 
 import unittest
 from os.path import join
@@ -9,11 +9,27 @@ from os.path import join
 import sys
 sys.path.insert(0, '..')
 
+from pyUTM.io import generate_csv_line
 from pyUTM.io import parse_cell_range, XLReader
 
 pt_filename = join('..', 'templates', 'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
 brkoutbrd_filename = join('..', 'templates',
                           'BrkOutBrd_Pin_Assignments_Mar27_2018_PM1.xlsx')
+
+
+class GenerateCsvLineTester(unittest.TestCase):
+    def test_normal_entry(self):
+        entry = (1, 2, 3, 4, 5)
+        self.assertEqual(generate_csv_line(entry), '1,2,3,4,5')
+
+    def test_entry_with_none(self):
+        entry = (1, 2, 3, 4, None)
+        self.assertEqual(generate_csv_line(entry), '1,2,3,4,')
+
+    def test_entry_with_none_alt(self):
+        entry = (1, 2, 3, 4, None)
+        self.assertEqual(generate_csv_line(entry, ignore_empty=False),
+                         '1,2,3,4,None')
 
 
 class ParseCellRangeTester(unittest.TestCase):
