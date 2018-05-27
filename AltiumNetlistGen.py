@@ -66,7 +66,6 @@ pt_descr = PTReader.read(range(0, 12), 'B5:K405',
 #    'PT slot #',  'PT connector letter pin',  'PT connector numerical pin',
 #    'Signal ID']
 
-
 # This needs to be placed at the end of the rules list.  It always returns
 # 'True' to handle entries NOT matched by any other rules.
 class RulePTDefault(RulePD):
