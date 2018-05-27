@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 05:55 AM -0400
+# Last Change: Sun May 27, 2018 at 05:56 AM -0400
 
 import __builtin__
 from string import ascii_uppercase
@@ -51,8 +51,6 @@ def to_str(n):
 
 
 class ColNum(int):
-    # FIXME: The string representation will easily underflow/overflow, because
-    # there is no representation for negative numbers.
     def __new__(cls, s):
         num = to_num(s)
         self = int.__new__(cls, num)
@@ -65,6 +63,7 @@ class ColNum(int):
 
     def __add__(self, other):
         numerical = self.value + other
+        numerical = 0 if numerical < 0 else numerical
         return(ColNum(to_str(numerical)))
 
     def __radd__(self, other):
@@ -72,6 +71,7 @@ class ColNum(int):
 
     def __sub__(self, other):
         numerical = self.value - other
+        numerical = 0 if numerical < 0 else numerical
         return(ColNum(to_str(numerical)))
 
     def __rsub__(self, other):
