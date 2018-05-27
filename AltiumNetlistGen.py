@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 07:08 AM -0400
+# Last Change: Sun May 27, 2018 at 07:12 AM -0400
 
 from os.path import join
 
@@ -67,11 +67,10 @@ pt_descr = PTReader.read(range(0, 12), 'B5:K405',
 #    'Signal ID']
 
 
+# This needs to be placed at the end of the rules list.  It always returns
+# 'True' to handle entries NOT matched by any other rules.
 class RulePTDefault(RulePD):
     def match(self, data, pt_idx):
-        # This needs to be placed at the end of the rules list.
-        # It always returns 'True' to handle entries NOT matched by any other
-        # rules.
         return True
 
     def process(self, data, pt_idx):
