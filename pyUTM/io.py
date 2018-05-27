@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri May 25, 2018 at 05:20 PM -0400
+# Last Change: Sun May 27, 2018 at 06:45 AM -0400
 
 import openpyxl
 import re
@@ -28,6 +28,7 @@ class XLReader(object):
 
     def read(self, sheets, cell_range, sortby=None, headers=None):
         self.sheets = sheets
+        self.cell_range = cell_range
         self.initial_col, self.initial_row, self.final_col, self.final_row = \
             parse_cell_range(cell_range)
 
@@ -38,7 +39,15 @@ class XLReader(object):
         return result
 
     def readsheet(self, sheet_name, sortby, headers):
-        sheet = self.wb[sheet_name]
+        # We read the full rectangular region to build up a cache. Otherwise if
+        # we read one cell at a time, all cells prior to that cell must be read,
+        # rendering that method VERY inefficient.
+        sheet_region = self.wb[sheet_name][self.cell_range]
+        sheet = dict()
+        for row in range(self.initial_row, self.final_row):
+            for col in range(self.initial_col, self.final_col):
+                sheet[str(col)+str(row)] = \
+                    sheet_region[row-self.initial_row][col-self.initial_col]
 
         if headers is not None:
             data = self.get_data_header_supplied(sheet, headers)
