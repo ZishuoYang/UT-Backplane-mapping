@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 06:20 PM -0400
+# Last Change: Sun May 27, 2018 at 07:45 PM -0400
 
 from os.path import join
 
@@ -15,6 +15,7 @@ pt_filename = join('templates',
 dcb_filename = join('templates',
                     'backplaneMapping_SEAMPins_trueType_v4.1.xlsm')
 pt_result_output_filename = join('gen', 'AltiumNetlist_PT.csv')
+dcp_result_output_filename = join('gen', 'AltiumNetlist_DCB.csv')
 
 
 ############################################
