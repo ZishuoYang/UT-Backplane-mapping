@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
-# License: GPLv2
-# Last Change: Sat May 26, 2018 at 09:48 PM -0400
+# License: MIT
+# Last Change: Sat May 26, 2018 at 11:01 PM -0400
 
 from os.path import join
 
@@ -62,13 +62,13 @@ pt_descr = XLReader.read(range(0, 12), 'B5:K405',
 ########################################
 # Define rules for PigTail Altium list #
 ########################################
-# Zishuo's list entry is defined as:
+# each of Zishuo's list entry is defined as:
 #   ['DCB slot #', 'DCB connector letter pin', 'DCB connector numerical pin',
 #    'PT slot #',  'PT connector letter pin',  'PT connector numerical pin',
 #    'Signal ID']
 
 
-class RulePDDefault(RulePD):
+class RulePTDefault(RulePD):
     def match(data, connector_idx):
         # This needs to be placed at the end of the rules list.
         # It always returns 'True' to handle entries NOT matched by any other
@@ -77,13 +77,23 @@ class RulePDDefault(RulePD):
 
     def process(data, connector_idx):
         print('WARNING: The following entry is not matched by any other rules:')
-        print('Connector index: %s. Details: %s' % (connector_idx, data))
+        print('Connector index: %s. Pigtail Pin: %s' % (connector_idx,
+                                                        data['Pigtail pin']))
+
+
+class RulePTPathFinder(RulePD):
+    def match(data, connector_idx):
+        # For slot 0 or 1, we need to process the non-BOB nets so skip this
+        # rule.
+        if connector_idx in [0, 1]:
+            return False
+
+        # For path finder, skip non-BOB nets when not in slot 0 or 1
+        keywords = ['LV_SOURCE', 'LV_RETURN', 'LV_SENSE']
+        # for kw in keywords:
+            # if kw in data[]
 
 
 ####################################
 # Generate Altium list for PigTail #
 ####################################
-
-# 'DCB slot', 'Connector letter pin', 'Connector numerical pin',
-# 'PT slot number', ^same as above
-# 'Signal ID'

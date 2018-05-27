@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
-# License: GPLv2
-# Last Change: Sat May 26, 2018 at 09:48 PM -0400
+# License: MIT
+# Last Change: Sat May 26, 2018 at 11:01 PM -0400
 
 
 ########################
