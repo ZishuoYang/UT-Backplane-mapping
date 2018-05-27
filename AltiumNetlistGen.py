@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 02:23 PM -0400
+# Last Change: Sun May 27, 2018 at 05:30 PM -0400
 
 from os.path import join
 
-from pyUTM.io import XLReader
+from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
 
 brkoutbrd_filename = join('templates',
@@ -14,6 +14,7 @@ pt_filename = join('templates',
                    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
 dcb_filename = join('templates',
                     'backplaneMapping_SEAMPins_trueType_v4.1.xlsm')
+pt_result_output_filename = join('gen', 'AltiumNetlist_PT.csv')
 
 
 ############################################
@@ -105,7 +106,19 @@ class RulePTPathFinder(RulePD):
     def process(self, data, pt_idx):
         # Note: here the matching data will NOT be written to netlist file.
         print('WARNING: The following pin does not have a connection!: %s %s'
-              % (pt_idx, data['PigTail pin']))
+              % (pt_idx, data['Pigtail pin']))
+
+
+class RulePTDCBAnormal(RulePD):
+    def match(self, data, pt_idx):
+        if data['DCB slot'] is not None and data['SEAM pin'] is None:
+            return True
+        else:
+            return False
+
+    def process(self, data, pt_idx):
+        print('WARNING: The following pin does NOT make sense!: %s %s'
+              % (pt_idx, data['Pigtail pin']))
 
 
 class RulePTDCB(RulePD):
@@ -176,6 +189,7 @@ class RulePTPTThermistor(RulePTPTLvSource):
 
 
 pt_rules = [RulePTPathFinder(),
+            RulePTDCBAnormal(),
             RulePTDCB(),
             RulePTPTLvSource(brkoutbrd_pin_assignments),
             RulePTPTLvReturn(brkoutbrd_pin_assignments),
@@ -198,3 +212,12 @@ for pt_id in range(0, len(pt_descr)):
                         and \
                         pt_entry['Pigtail pin'] == dcb_entry['Pigtail pin']:
                     pt_entry['Signal ID'] = dcb_entry['Signal ID']
+                    break
+
+
+# Now apply all rules defined in the previous section
+PtSelector = SelectorPD(pt_descr, pt_rules)
+pt_result = PtSelector.do()
+
+# Finally, write to csv file
+write_to_csv(pt_result_output_filename, pt_result)
