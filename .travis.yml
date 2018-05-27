@@ -18,7 +18,7 @@ script:
 
 deploy:
     provider: releases
-    api_key: "tmhwFlzj0IKSFCLB1yQGCw"
+    api_key: "25fa381d4da9a686c6014c8bc0286ab98528341c"
     file:
         - "./WARNINGS.log"
         - "./gen/AltiumNetlist_PT.csv"
