@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 05:05 AM -0400
+# Last Change: Sun May 27, 2018 at 05:26 AM -0400
 
 import unittest
 
@@ -22,7 +22,9 @@ class DataTypeTester(unittest.TestCase):
         self.assertEqual(ColNum('ABC'), 731)
 
     def test_backward_representation(self):
+        lst = [0, 1, 2, 3]
         self.assertEqual(int(ColNum('A')), 1)
+        self.assertEqual(lst[ColNum('C')], 3)
 
     def test_inequalities(self):
         self.assertLessEqual(ColNum('A'), ColNum('B'))
