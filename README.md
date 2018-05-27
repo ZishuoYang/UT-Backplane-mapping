@@ -8,7 +8,7 @@ another from DCB;
 the third one includes break-out boards pin assignments.
 
 
-## Prereuisite
+## Prerequisite
 ```
 Python: python 2.7.x
 openpyxl: >= 2.5.3
