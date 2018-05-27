@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 07:12 AM -0400
+# Last Change: Sun May 27, 2018 at 07:17 AM -0400
 
 from os.path import join
 
@@ -45,9 +45,8 @@ brkoutbrd_pin_assignments = list()
 for d in brkoutbrd_pin_assignments_with_dict:
     for key in d.keys():
         if d[key] != 'GND' and d[key] is not None:
-            brkoutbrd_pin_assignments.append(d['left'])
-brkoutbrd_pin_assignments = tuple(brkoutbrd_pin_assignments)
-print(brkoutbrd_pin_assignments)
+            brkoutbrd_pin_assignments.append(d[key])
+
 
 ##########################
 # Read info from PigTail #
@@ -173,6 +172,7 @@ pt_rules = [RulePTPathFinder(),
             RulePTPTLvSense(brkoutbrd_pin_assignments),
             RulePTPTThermistor(brkoutbrd_pin_assignments),
             RulePTDefault()]
+
 
 ####################################
 # Generate Altium list for PigTail #
