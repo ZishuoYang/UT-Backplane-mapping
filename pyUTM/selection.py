@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sat May 26, 2018 at 11:01 PM -0400
+# Last Change: Sat May 26, 2018 at 11:03 PM -0400
 
 
 ########################
@@ -64,3 +64,17 @@ class RulePD(Rule):
         data, connector_idx = databundle
         if self.match(data, connector_idx):
             self.process(data, connector_idx)
+
+    @staticmethod
+    def AND(l):
+        if False in l:
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def OR(l):
+        if True in l:
+            return True
+        else:
+            return False
