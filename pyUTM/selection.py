@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 02:53 AM -0400
+# Last Change: Sun May 27, 2018 at 03:33 AM -0400
 
 import re
 
@@ -59,8 +59,8 @@ class SelectorPD(Selector):
 
 
 class RulePD(Rule):
-    pt_prefix = 'JP'
-    dcb_prefix = 'JD'
+    PT_PREFIX = 'JP'
+    DCB_PREFIX = 'JD'
 
     def filter(self, databundle):
         data, connector_idx = databundle
