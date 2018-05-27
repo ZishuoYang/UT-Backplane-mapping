@@ -22,9 +22,10 @@ script:
 
 deploy:
     provider: releases
-	api_key: tmhwFlzj0IKSFCLB1yQGCw
-    file: "./gen/AltiumNetlist_PT.csv"
-    file: "./WARNINGS.log"
+    api_key: "tmhwFlzj0IKSFCLB1yQGCw"
+    file:
+        - "./WARNINGS.log"
+        - "./gen/AltiumNetlist_PT.csv"
     skip_cleanup: true
     on:
         tags: true
