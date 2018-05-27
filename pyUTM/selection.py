@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 01:16 AM -0400
+# Last Change: Sun May 27, 2018 at 02:53 AM -0400
 
 import re
 
@@ -86,3 +86,8 @@ class RulePD(Rule):
         letter, num = filter(None, re.split(r'(\d+)', s))
         num = '0'+num if len(num) == 1 else num
         return letter+num
+
+    @staticmethod
+    def DCBID(s):
+        dcb_idx, _, _ = s.split()
+        return str(int(dcb_idx))
