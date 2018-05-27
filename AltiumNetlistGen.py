@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 07:17 AM -0400
+# Last Change: Sun May 27, 2018 at 02:23 PM -0400
 
 from os.path import join
 
@@ -12,6 +12,8 @@ brkoutbrd_filename = join('templates',
                           'BrkOutBrd_Pin_Assignments_Mar27_2018_PM1.xlsx')
 pt_filename = join('templates',
                    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
+dcb_filename = join('templates',
+                    'backplaneMapping_SEAMPins_trueType_v4.1.xlsm')
 
 
 ############################################
@@ -52,9 +54,17 @@ for d in brkoutbrd_pin_assignments_with_dict:
 # Read info from PigTail #
 ##########################
 
-PTReader = XLReader(pt_filename)
-pt_descr = PTReader.read(range(0, 12), 'B5:K405',
+PtReader = XLReader(pt_filename)
+pt_descr = PtReader.read(range(0, 12), 'B5:K405',
                          sortby=lambda d: d['Pigtail pin'])
+
+######################
+# Read info from DCB #
+######################
+
+DcbReader = XLReader(dcb_filename)
+dcb_descr = DcbReader.read(range(0, 12), 'B5:J405',
+                           sortby=lambda d: d['SEAM pin'])
 
 
 ########################################
@@ -100,7 +110,7 @@ class RulePTPathFinder(RulePD):
 
 class RulePTDCB(RulePD):
     def match(self, data, pt_idx):
-        if data['SEAM pin'] is not None:
+        if data['DCB slot'] is not None:
             # Which means that this PT pin is connected to a DCB pin.
             return True
         else:
@@ -177,3 +187,14 @@ pt_rules = [RulePTPathFinder(),
 ####################################
 # Generate Altium list for PigTail #
 ####################################
+
+# First, replace 'Signal ID' to DCB side definitions.
+for pt_id in range(0, len(pt_descr)):
+    for pt_entry in pt_descr[pt_id]:
+        if pt_entry['DCB slot'] is not None:
+            dcb_id = RulePD.DCBID(pt_entry['DCB slot'])
+            for dcb_entry in dcb_descr[int(dcb_id)]:
+                if pt_entry['SEAM pin'] == dcb_entry['SEAM pin'] \
+                        and \
+                        pt_entry['Pigtail pin'] == dcb_entry['Pigtail pin']:
+                    pt_entry['Signal ID'] = dcb_entry['Signal ID']
