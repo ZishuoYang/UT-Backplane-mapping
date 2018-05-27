@@ -8,10 +8,6 @@ cache: pip
 install:
     - pip install openpyxl
 
-branches:
-    only:
-        - master
-
 script:
     - cd ./test
     - python ./datatype.unittest.py
