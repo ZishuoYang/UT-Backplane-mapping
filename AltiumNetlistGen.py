@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 04:22 AM -0400
+# Last Change: Sun May 27, 2018 at 07:08 AM -0400
 
 from os.path import join
 
 from pyUTM.io import XLReader
 from pyUTM.selection import SelectorPD, RulePD
 
-filename_brkoutbrd = join('templates',
+brkoutbrd_filename = join('templates',
                           'BrkOutBrd_Pin_Assignments_Mar27_2018_PM1.xlsx')
-filename_pt = join('templates',
+pt_filename = join('templates',
                    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
 
 
@@ -18,43 +18,43 @@ filename_pt = join('templates',
 # Read pin assignments from breakout board #
 ############################################
 
-BrkReader = XLReader(filename_brkoutbrd)
+BrkReader = XLReader(brkoutbrd_filename)
 cell_range_headers = {
-    'A4:D18':    {'A': 'Src', 'D': 'Dest'},
-    'F4:I18':    {'F': 'Src', 'I': 'Dest'},
-    'A55:D69':   {'A': 'Src', 'D': 'Dest'},
-    'F55:I69':   {'F': 'Src', 'I': 'Dest'},
-    'A106:D120': {'A': 'Src', 'D': 'Dest'},
-    'F106:I120': {'F': 'Src', 'I': 'Dest'},
-    'K4:N53':    {'K': 'Src', 'N': 'Dest'},
-    'K55:N104':  {'K': 'Src', 'N': 'Dest'},
-    'K106:N155': {'K': 'Src', 'N': 'Dest'}
+    'A4:D18':    {'A': 'left', 'D': 'right'},
+    'F4:I18':    {'F': 'left', 'I': 'right'},
+    'A55:D69':   {'A': 'left', 'D': 'right'},
+    'F55:I69':   {'F': 'left', 'I': 'right'},
+    'A106:D120': {'A': 'left', 'D': 'right'},
+    'F106:I120': {'F': 'left', 'I': 'right'},
+    'K4:N53':    {'K': 'left', 'N': 'right'},
+    'K55:N104':  {'K': 'left', 'N': 'right'},
+    'K106:N155': {'K': 'left', 'N': 'right'}
 }
 
-brkoutbrd_pin_assignments = list()
+brkoutbrd_pin_assignments_with_dict = list()
 for cell_range in cell_range_headers.keys():
     # Note: 'extend' is used so we won't get a nested list.
-    brkoutbrd_pin_assignments.extend(filter(
-        # This filter is to remove entries without a source connector
-        lambda d: d['Src'] is not None,
+    brkoutbrd_pin_assignments_with_dict.extend(
         BrkReader.read(['PinAssignments'], cell_range,
                        headers=cell_range_headers[cell_range])[0]
-    ))
+    )
 
-# We see that there's a couple of entries with both source and destination being
-# 'GND'. We should remove these duplicated entries.
-brkoutbrd_pin_assignments = filter(
-    lambda d: d['Src'] != 'GND' or d['Dest'] != 'GND',
-    brkoutbrd_pin_assignments
-)
-
+# Now we get a behemoth list, each entry is a two-key dictionary. We want to
+# extract all values that is not 'GND' nor None.
+brkoutbrd_pin_assignments = list()
+for d in brkoutbrd_pin_assignments_with_dict:
+    for key in d.keys():
+        if d[key] != 'GND' and d[key] is not None:
+            brkoutbrd_pin_assignments.append(d['left'])
+brkoutbrd_pin_assignments = tuple(brkoutbrd_pin_assignments)
+print(brkoutbrd_pin_assignments)
 
 ##########################
 # Read info from PigTail #
 ##########################
 
-PTReader = XLReader(filename_pt)
-pt_descr = XLReader.read(range(0, 12), 'B5:K405',
+PTReader = XLReader(pt_filename)
+pt_descr = PTReader.read(range(0, 12), 'B5:K405',
                          sortby=lambda d: d['Pigtail pin'])
 
 
@@ -121,6 +121,9 @@ class RulePTDCB(RulePD):
 
 
 class RulePTPTLvSource(RulePD):
+    def __init__(self, brkoutbrd_rules):
+        self.rules = brkoutbrd_rules
+
     def match(self, data, pt_idx):
         if 'LV_SOURCE' in data['Signal ID']:
             return True
@@ -131,11 +134,46 @@ class RulePTPTLvSource(RulePD):
         connection = self.PT_PREFIX + \
             str(pt_idx) + self.PADDING(data['Pigtail pin']) + \
             '_ForRefOnly_' + data['Signal ID']
+        for i in range(0, len(self.rules)):
+            if self.PT_PREFIX+str(pt_idx) in self.rules[i] and \
+                    data['Signal ID'] in self.rules[i]:
+                connection = self.rules[i]
+                break
+        return (connection,
+                pt_idx, self.PADDING(data['Pigtail pin']),
+                None, None)
+
+
+class RulePTPTLvReturn(RulePTPTLvSource):
+    def match(self, data, pt_idx):
+        if 'LV_RETURN' in data['Signal ID']:
+            return True
+        else:
+            return False
+
+
+class RulePTPTLvSense(RulePTPTLvSource):
+    def match(self, data, pt_idx):
+        if 'LV_SENSE' in data['Signal ID']:
+            return True
+        else:
+            return False
+
+
+class RulePTPTThermistor(RulePTPTLvSource):
+    def match(self, data, pt_idx):
+        if 'THERMISTOR' in data['Signal ID']:
+            return True
+        else:
+            return False
 
 
 pt_rules = [RulePTPathFinder(),
             RulePTDCB(),
-            RulePTPTLvSource(),
+            RulePTPTLvSource(brkoutbrd_pin_assignments),
+            RulePTPTLvReturn(brkoutbrd_pin_assignments),
+            RulePTPTLvSense(brkoutbrd_pin_assignments),
+            RulePTPTThermistor(brkoutbrd_pin_assignments),
             RulePTDefault()]
 
 ####################################
