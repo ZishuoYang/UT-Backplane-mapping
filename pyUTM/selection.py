@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: GPLv2
-# Last Change: Fri May 25, 2018 at 11:55 PM -0400
+# Last Change: Sat May 26, 2018 at 09:48 PM -0400
 
 
 ########################
@@ -57,7 +57,10 @@ class SelectorPD(Selector):
 
 
 class RulePD(Rule):
+    pt_prefix = 'JP'
+    dcb_prefix = 'JD'
+
     def filter(self, databundle):
         data, connector_idx = databundle
         if self.match(data, connector_idx):
-            self.data_gen(data, connector_idx)
+            self.process(data, connector_idx)
