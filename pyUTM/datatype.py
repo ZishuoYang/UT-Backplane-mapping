@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 24, 2018 at 05:27 AM -0400
+# Last Change: Sun May 27, 2018 at 05:55 AM -0400
 
 import __builtin__
 from string import ascii_uppercase
@@ -15,38 +15,44 @@ def range(*args):
 
 
 def to_num(s):
-    num = 0
-    input_str = ''.join(reversed(s))
+    if s == '0':
+        return 0
+    else:
+        num = 0
+        input_str = ''.join(reversed(s))
 
-    for i in range(0, len(input_str)):
-        letter = input_str[i]
-        num += (ascii_uppercase.index(letter)+1) * 26**i
+        for i in range(0, len(input_str)):
+            letter = input_str[i]
+            num += (ascii_uppercase.index(letter)+1) * 26**i
 
-    return num
+        return num
 
 
 def to_str(n):
-    str = ''
-    input_num = n
+    if n == 0:
+        return '0'
+    else:
+        str = ''
+        input_num = n
 
-    while True:
-        input_num, remainder = divmod(input_num, 26)
-        if input_num == 0:
-            str += ascii_uppercase[remainder-1]
-            break
-        if input_num <= 26:
-            str += ascii_uppercase[remainder-1]
-            str += ascii_uppercase[input_num-1]
-            break
-        else:
-            str += ascii_uppercase[remainder-1]
+        while True:
+            input_num, remainder = divmod(input_num, 26)
+            if input_num == 0:
+                str += ascii_uppercase[remainder-1]
+                break
+            if input_num <= 26:
+                str += ascii_uppercase[remainder-1]
+                str += ascii_uppercase[input_num-1]
+                break
+            else:
+                str += ascii_uppercase[remainder-1]
 
-    return ''.join(reversed(str))
+        return ''.join(reversed(str))
 
 
 class ColNum(int):
-    # FIXME: There is no representation of 0.
-    # FIXME: The string representation will easily underflow/overflow!
+    # FIXME: The string representation will easily underflow/overflow, because
+    # there is no representation for negative numbers.
     def __new__(cls, s):
         num = to_num(s)
         self = int.__new__(cls, num)

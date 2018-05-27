@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 05:26 AM -0400
+# Last Change: Sun May 27, 2018 at 05:54 AM -0400
 
 import unittest
 
@@ -20,6 +20,10 @@ class DataTypeTester(unittest.TestCase):
     def test_representation_complex(self):
         self.assertEqual(ColNum('AB'), 28)
         self.assertEqual(ColNum('ABC'), 731)
+
+    def test_representation_of_zero(self):
+        self.assertEqual(ColNum('0'), 0)
+        self.assertEqual(ColNum('AB') - ColNum('AB'), 0)
 
     def test_backward_representation(self):
         lst = [0, 1, 2, 3]
