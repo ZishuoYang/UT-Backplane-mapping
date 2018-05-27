@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sat May 26, 2018 at 11:03 PM -0400
+# Last Change: Sun May 27, 2018 at 01:16 AM -0400
+
+import re
 
 
 ########################
@@ -78,3 +80,9 @@ class RulePD(Rule):
             return True
         else:
             return False
+
+    @staticmethod
+    def PADDING(s):
+        letter, num = filter(None, re.split(r'(\d+)', s))
+        num = '0'+num if len(num) == 1 else num
+        return letter+num
