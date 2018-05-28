@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 07:45 PM -0400
+# Last Change: Sun May 27, 2018 at 08:39 PM -0400
 
 from os.path import join
 
@@ -120,7 +120,8 @@ class RulePTDCB(RulePD):
 
     def process(self, data, pt_idx):
         connection = self.DCB_PREFIX + \
-            self.DCBID(data['DCB slot']) + self.PADDING(data['SEAM pin']) + \
+            self.DCBID(data['DCB slot']) + \
+            self.PADDING(data['SEAM pin'], data, pt_idx) + \
             '_' + self.PT_PREFIX + \
             str(pt_idx) + self.PADDING(data['Pigtail pin']) + \
             '_' + data['Signal ID']
