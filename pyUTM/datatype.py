@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 06:42 AM -0400
+# Last Change: Mon May 28, 2018 at 05:13 AM -0400
 
 import __builtin__
 from string import ascii_uppercase
@@ -74,3 +74,13 @@ class ColNum(int):
 
     def __rsub__(self, other):
         return self.__sub__(other)
+
+
+class BrkStr(str):
+    def __new__(cls, s):
+        self = super(BrkStr, cls).__new__(cls, s)
+        self.value = s
+        return self
+
+    def __contains__(self, key):
+        pass

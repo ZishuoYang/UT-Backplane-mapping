@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 06:44 AM -0400
+# Last Change: Mon May 28, 2018 at 05:11 AM -0400
 
 import unittest
 
@@ -9,6 +9,7 @@ import sys
 sys.path.insert(0, '..')
 
 from pyUTM.datatype import ColNum, range
+from pyUTM.datatype import BrkStr
 
 
 class DataTypeTester(unittest.TestCase):
@@ -63,6 +64,23 @@ class DataTypeTester(unittest.TestCase):
     def test_range_generation(self):
         self.assertEqual(range(ColNum('A'), ColNum('E')), [1, 2, 3, 4])
         self.assertEqual(str(range(ColNum('A'), ColNum('E'))[1]), 'B')
+
+
+class BrkStrTester(unittest.TestCase):
+    def test_str_basic_function(self):
+        name = BrkStr('name')
+        self.assertEqual(name, 'name')
+        self.assertEqual(name + '_something', 'name_something')
+
+    def test_iteration(self):
+        name = BrkStr('name')
+        self.assertEqual(list(name), ['n', 'a', 'm', 'e'])
+
+    def test_lack_of_representation(self):
+        name = BrkStr('name')
+        name_processed = list(name)
+        self.assertEqual(isinstance(name_processed[0], str), True)
+        self.assertEqual(isinstance(name_processed[0], BrkStr), False)
 
 
 if __name__ == '__main__':
