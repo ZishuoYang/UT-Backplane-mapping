@@ -1,27 +1,22 @@
 language: python
-
 python:
-    - "2.7"
-
+- '2.7'
 cache: pip
-
 install:
-    - pip install openpyxl
-
+- pip install openpyxl
 script:
-    - cd ./test
-    - python ./datatype.unittest.py
-    - python ./io.unittest.py
-    - python ./selection.unittest.py
-    - cd ../
-    - python ./AltiumNetlistGen.py > ./WARNINGS.log
-
+- cd ./test
+- python ./datatype.unittest.py
+- python ./io.unittest.py
+- python ./selection.unittest.py
+- cd ../
+- python ./AltiumNetlistGen.py > ./WARNINGS.log
 deploy:
-    provider: releases
-    api_key: "25fa381d4da9a686c6014c8bc0286ab98528341c"
-    file:
-        - "./WARNINGS.log"
-        - "./gen/AltiumNetlist_PT.csv"
-    skip_cleanup: true
-    on:
-        tags: true
+  provider: releases
+  api_key:
+    secure: L1rj1FLeoYDtn4W+z7XEiWa0trB4704oTWJ490A4QCujaSLwySxlDdheKzOVNXZc/o8llH97Nue4zhtK0g13W9r2E2mRUubqZT3fyMZQtCRxG/h2gwto+xg6wfUYUT5OBsa70d0BIqidg6tLQj1ab+pigcbencHyh9Z93oGsC/Mmy5ApeaN0Vikw7nZfN/7N/6hP7xE1S7yExGu8ndHqUsmPMSFFtWOjj9YmFjky0cXA6x+7XS0+VZVZS3XrOh7WJP3/sLutnLNHoAhsELJUjyvrbZSsgb9Rm51Bk1ZT/TtN6uYNvLao370etUA4at+lN6ZZ6wBDupcC1xqk7irRhIxn2WXSHv6Bhbu0FoKsOAZ7go/AKW16yCTE9boFwtKWzKMwH0HhoF/8/I6R6Y1Nf9r4OUIjAmgo2RpL5mmcUYIi73ZcuyBBfpec2JfchliTBqO11RZ1PnGm4k/LEcaPQ+2jD5QSHq83Ju0xBM8Dv9KyCypz/dsGVu28J+OsKo0hPYF65bz29mHNfMqozKLlhZq/UNJ6nUG5ekH8DKrAAfNJlFYNUfpw9iPnuPK2c+SfkqI6KmtA0ttASyyKwkC3kOmT8El2n/9ZkJ4OKrRHC1v36ehxdaCt5AyPRlkiQtf12AZWRGkG4/yCLTyRh18+vAb1+ml6AIIdDc+Wry8f67M=
+  file:
+    - "./WARNINGS.log"
+    - "./gen/AltiumNetlist_PT.csv"
+  on:
+    repo: ypsun-umd/UT-Backplane-mapping
