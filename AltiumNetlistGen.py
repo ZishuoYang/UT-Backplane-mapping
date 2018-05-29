@@ -105,9 +105,10 @@ class RulePTPathFinder(RulePD):
         return self.AND(result)
 
     def process(self, data, pt_idx):
-        # Note: here the matching data will NOT be written to netlist file.
-        print('WARNING: The following pin is not a LV_* connection!: %s %s'
-              % (pt_idx, data['Pigtail pin']))
+        # Note: here the matching data's will have placeholder in netlist file.
+        return (None,
+                pt_idx, self.PADDING(data['Pigtail pin']),
+                None, None)
 
 
 class RulePTDCB(RulePD):
