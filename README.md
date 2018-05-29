@@ -1,17 +1,29 @@
-# UT-Backplane-mapping
+# UT-Backplane-mapping [![Build status](https://travis-ci.com/ypsun-umd/UT-Backplane-mapping.svg?master)](https://travis-ci.com/ypsun-umd)
+Signal mapping netlist (list of pin-to-pin correspondence) formatted for Altium to design the LHCb UT backplane.
 
-Signal mapping netlist (list of pin-to-pin correspondence) formatted for Altium to design the LHCb UT backplane
+This script takes 3 MS Excel files and write the reformatted list to `gen/`.
+All MS Excel files are located under `templates/`;
+one of them describes connections from PT connectors point-of-view (`PT->DCB`);
+another from DCB;
+the third one includes break-out boards pin assignments.
 
-## Script objectives
 
-reformat_for_Altium.py (written in Python 2.7) that reads input .xlsm files and prints out reformatted list; 
-Input .xlsm files include one from PT connectors point-of-view (PT->DCB), and another from DCB connectors p.o.v.
+## Prerequisite
+```
+Python: 2.7.x
+openpyxl: >= 2.5.3
+```
 
-## Running the script
 
-python reformat_for_Altium.py > test_AltiumNetlist_PT.CSV
+## Usage
+```
+python ./AltiumNetlistGen.py
+```
+All generated `.csv` files are located under `gen/`.
+This script prints out warnings to `stdout`, and can be redirected as needed.
+
 
 ## Reference
+The backplane-mapping effort is documented on TWiki page: [1]
 
-The backplane-mapping effort is documented on TWiki page: https://twiki.cern.ch/twiki/bin/view/LHCb/BackplaneMapping
-
+[1]: https://twiki.cern.ch/twiki/bin/view/LHCb/BackplaneMapping

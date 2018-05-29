@@ -1,0 +1,28 @@
+language: python
+
+python:
+    - '2.7'
+
+cache: pip
+
+install:
+    - pip install openpyxl
+
+script:
+    - cd ./test
+    - python ./datatype.unittest.py
+    - python ./io.unittest.py
+    - python ./selection.unittest.py
+    - cd ../
+    - python ./AltiumNetlistGen.py > ./WARNINGS.log
+
+deploy:
+    provider: releases
+    api_key:
+        secure: EiiyFgMVllBNobJa4+d2BE/rtDFtu4jwCsFQG25EGkQVEddsX509pOfNMLRsxZyJUwv8nTQQwpEbc2bUbjPx3ZZMm07IeEGgGobd88eaOky0IvgpBUfHQN6gMPeX2r74ONSgnqVbuxc2G2TT03gXulIsZxLtcD2GR//lpb2Jv7uJvsLwgatdyRXQ3cGRbiIMqBWY1djpxSt96qBoa69hQdZ4RMSIPCyDr7ITfiG1OJvwhgHaWF7g9WYxqGcdoiY/RqMM0oN/Q8C8SYUKZAYlsA6xGJqvQ4Sces6uQ4TPpDQQJ3t+y8haQ6w9zymvBXo1ExVoaCSvSTrkDIhDlij+cC4ERgTK++ySDi3EGc8YMjyWVav+ucoyd3mOtFLtxo0U/ExwrjCCWksl6axj55mhFMNgkiDPVnnzFADQ0JTkW3cLMN4f75ejE8TjbgFLPlmd2sxOdBDWklX4Xqrf8qEtBnlfD4TUnf8INU3Dl+gZia0J53C7iGbV+m2pVZoJY5BaDKbcImJpo73I99vBnxQxQ6SWFgKKuunkovRWpTZbDIxu1FOqkaDPxVjD7TX01oqHZg8mykiPDFb2lPQkWeWu/vAuL0NJZW/HwCXAIOYaeEYCHms7PkVAwJ4tiZifsEPp0ZWksrfAg7rVUUwwb11g69zuF4ccN3FuRZ0QpSovJyo=
+    file:
+        - "./WARNINGS.log"
+        - "./gen/AltiumNetlist_PT.csv"
+    skip_cleanup: true
+    on:
+        tags: true
