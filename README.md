@@ -1,4 +1,4 @@
-# UT-Backplane-mapping [![Build status](https://travis-ci.com/ypsun-umd/UT-Backplane-mapping.svg?master)](https://travis-ci.com/ypsun-umd)
+# UT-Backplane-mapping [![Build status](https://travis-ci.com/ZishuoYang/UT-Backplane-mapping.svg?master)](https://travis-ci.com/ZishuoYang)
 Signal mapping netlist (list of pin-to-pin correspondence) formatted for Altium to design the LHCb UT backplane.
 
 This script takes 3 MS Excel files and write the reformatted list to `gen/`.
