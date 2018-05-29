@@ -66,7 +66,7 @@ pt_descr = PtReader.read(range(0, 12), 'B5:K405',
 ######################
 
 DcbReader = XLReader(dcb_filename)
-dcb_descr = DcbReader.read(range(0, 12), 'B5:J405',
+dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
                            sortby=lambda d: d['SEAM pin'])
 
 
@@ -200,6 +200,8 @@ for pt_id in range(0, len(pt_descr)):
             dcb_id = RulePD.DCBID(pt_entry['DCB slot'])
             for dcb_entry in dcb_descr[int(dcb_id)]:
                 if pt_entry['SEAM pin'] == dcb_entry['SEAM pin'] \
+                        and \
+                        pt_id == dcb_entry['Pigtail slot'] \
                         and \
                         pt_entry['Pigtail pin'] == dcb_entry['Pigtail pin']:
                     pt_entry['Signal ID'] = dcb_entry['Signal ID']
