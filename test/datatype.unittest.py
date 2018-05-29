@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon May 28, 2018 at 05:11 AM -0400
+# Last Change: Tue May 29, 2018 at 04:01 PM -0400
 
 import unittest
 
@@ -81,6 +81,29 @@ class BrkStrTester(unittest.TestCase):
         name_processed = list(name)
         self.assertEqual(isinstance(name_processed[0], str), True)
         self.assertEqual(isinstance(name_processed[0], BrkStr), False)
+
+    def test_split_signal_id(self):
+        self.assertEqual(
+            BrkStr.split_signal_id_into_three('JP0_JT11_SOMETHING'),
+            ['JP0', 'JT11', 'SOMETHING']
+        )
+        self.assertEqual(
+            BrkStr.split_signal_id_into_three('JP0_JT11_SOMETHING_ELSE'),
+            ['JP0', 'JT11', 'SOMETHING_ELSE']
+        )
+        self.assertEqual(
+            BrkStr.split_signal_id_into_three('JP0_JT11_SOMETHING_ELSE_IF'),
+            ['JP0', 'JT11', 'SOMETHING_ELSE_IF']
+        )
+
+    def test_overloaded_contain(self):
+        name1 = BrkStr('JP1_JD12_SOME_SOME_ELSE')
+        name2 = BrkStr('JP11_JD12_SOME_SOME_ELSE')
+        self.assertEqual('JP1' in name1, True)
+        self.assertEqual('JP1' in name2, False)
+        self.assertEqual('JP11' in name2, True)
+        self.assertEqual('SOME_SOME_ELSE' in name1, True)
+        self.assertEqual('SOME_SOME_ELSE' in name2, True)
 
 
 if __name__ == '__main__':
