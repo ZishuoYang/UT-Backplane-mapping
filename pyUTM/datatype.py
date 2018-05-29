@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 03:58 PM -0400
+# Last Change: Tue May 29, 2018 at 04:31 PM -0400
 
-import __builtin__
+import builtins
 from string import ascii_uppercase
 
 
 def range(*args):
     if isinstance(args[0], ColNum):
-        return [ColNum(to_str(i)) for i in __builtin__.range(*args)]
+        return [ColNum(to_str(i)) for i in builtins.range(*args)]
     else:
-        return __builtin__.range(*args)
+        return builtins.range(*args)
 
 
 def to_num(s):
