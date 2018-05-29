@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 05:04 PM -0400
+# Last Change: Tue May 29, 2018 at 05:05 PM -0400
 
 from os.path import join
 
@@ -107,7 +107,7 @@ class RulePTPathFinder(RulePD):
 
     def process(self, data, pt_idx):
         # Note: here the matching data's will have placeholder in netlist file.
-        return ('_PathFinder_',
+        return ('_PlaceHolder_',
                 pt_idx, self.PADDING(data['Pigtail pin']),
                 None, None)
 
