@@ -65,7 +65,7 @@ pt_descr = PtReader.read(range(0, 12), 'B5:K405',
 ######################
 
 DcbReader = XLReader(dcb_filename)
-dcb_descr = DcbReader.read(range(0, 12), 'B5:J405',
+dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
                            sortby=lambda d: d['SEAM pin'])
 
 
