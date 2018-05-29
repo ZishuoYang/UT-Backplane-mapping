@@ -200,6 +200,8 @@ for pt_id in range(0, len(pt_descr)):
             for dcb_entry in dcb_descr[int(dcb_id)]:
                 if pt_entry['SEAM pin'] == dcb_entry['SEAM pin'] \
                         and \
+                        pt_id == dcb_entry['Pigtail slot'] \
+                        and \
                         pt_entry['Pigtail pin'] == dcb_entry['Pigtail pin']:
                     pt_entry['Signal ID'] = dcb_entry['Signal ID']
                     break
