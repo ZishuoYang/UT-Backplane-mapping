@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 04:16 PM -0400
+# Last Change: Tue May 29, 2018 at 04:59 PM -0400
 
 from os.path import join
 
@@ -149,7 +149,7 @@ class RulePTPTLvSource(RulePD):
         for rule in self.rules:
             if self.PT_PREFIX+str(pt_idx) in rule and \
                     data['Signal ID'] in rule:
-                connection = self.rule
+                connection = rule
                 break
         return (connection,
                 pt_idx, self.PADDING(data['Pigtail pin']),
