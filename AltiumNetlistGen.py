@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 03:43 PM -0400
+# Last Change: Tue May 29, 2018 at 03:44 PM -0400
 
 from os.path import join
 
@@ -179,7 +179,7 @@ class RulePTPTThermistor(RulePTPTLvSource):
             return False
 
 
-pt_rules = [RulePTPathFinder(),
+pt_rules = [#RulePTPathFinder(),
             RulePTDCB(),
             RulePTPTLvSource(brkoutbrd_pin_assignments),
             RulePTPTLvReturn(brkoutbrd_pin_assignments),
