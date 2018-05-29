@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 04:59 PM -0400
+# Last Change: Tue May 29, 2018 at 05:04 PM -0400
 
 from os.path import join
 
@@ -107,7 +107,7 @@ class RulePTPathFinder(RulePD):
 
     def process(self, data, pt_idx):
         # Note: here the matching data's will have placeholder in netlist file.
-        return (None,
+        return ('_PathFinder_',
                 pt_idx, self.PADDING(data['Pigtail pin']),
                 None, None)
 
@@ -180,7 +180,7 @@ class RulePTPTThermistor(RulePTPTLvSource):
             return False
 
 
-pt_rules = [#RulePTPathFinder(),
+pt_rules = [RulePTPathFinder(),
             RulePTDCB(),
             RulePTPTLvSource(brkoutbrd_pin_assignments),
             RulePTPTLvReturn(brkoutbrd_pin_assignments),
