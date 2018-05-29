@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 03:02 PM -0400
+# Last Change: Tue May 29, 2018 at 04:56 PM -0400
 
 import openpyxl
 import re
@@ -42,7 +42,7 @@ def parse_cell_range(s, add_one_to_trailing_cell=True):
 
 class XLReader(object):
     def __init__(self, filename):
-        self.wb = openpyxl.load_workbook(filename, read_only=True)
+        self.filename = filename
 
     def read(self, sheets, cell_range, sortby=None, headers=None):
         self.sheets = sheets
@@ -51,16 +51,20 @@ class XLReader(object):
             parse_cell_range(cell_range)
 
         result = []
+        # FIXME: currently openpyxl throws out a warning about unclosed files.
+        # This is due to a bug #673 of the openpyxl.
+        wb = openpyxl.load_workbook(self.filename, read_only=True)
         for s in self.sheets:
-            result.append(self.readsheet(str(s),
-                                         sortby=sortby, headers=headers))
+            ws = wb[str(s)]
+            result.append(self.readsheet(ws, sortby=sortby, headers=headers))
+        wb.close()
         return result
 
-    def readsheet(self, sheet_name, sortby, headers):
+    def readsheet(self, ws, sortby, headers):
         # We read the full rectangular region to build up a cache. Otherwise if
         # we read one cell at a time, all cells prior to that cell must be read,
         # rendering that method VERY inefficient.
-        sheet_region = self.wb[sheet_name][self.cell_range]
+        sheet_region = ws[self.cell_range]
         sheet = dict()
         for row in range(self.initial_row, self.final_row):
             for col in range(self.initial_col, self.final_col):
