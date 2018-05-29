@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 05:23 PM -0400
+# Last Change: Tue May 29, 2018 at 05:19 PM -0400
 
 import unittest
 
@@ -37,7 +37,7 @@ class RulePDTester(unittest.TestCase):
 
     def test_pt_id(self):
         self.assertEqual(RulePD.PTID('01 / X-0-S'), '1')
-        self.assertEqual(RulePD.PTID('00|01'), '0')
+        self.assertEqual(RulePD.PTID('00|01'), '00|01')
 
 
 class SelectorPDTester(unittest.TestCase):

@@ -1,7 +1,7 @@
 language: python
 
 python:
-    - '2.7'
+    - '3.6'
 
 cache: pip
 
@@ -15,6 +15,7 @@ script:
     - python ./selection.unittest.py
     - cd ../
     - python ./AltiumNetlistGen.py > ./WARNINGS.log
+    - cat ./WARNINGS.log
 
 deploy:
     provider: releases

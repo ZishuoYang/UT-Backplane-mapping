@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 10:19 AM -0400
+# Last Change: Tue May 29, 2018 at 05:16 PM -0400
 
 from os.path import join
 
 from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
+from pyUTM.datatype import BrkStr
 
 brkoutbrd_filename = join('templates',
                           'BrkOutBrd_Pin_Assignments_Mar27_2018_PM1.xlsx')
@@ -49,7 +50,7 @@ brkoutbrd_pin_assignments = list()
 for d in brkoutbrd_pin_assignments_with_dict:
     for key in d.keys():
         if d[key] != 'GND' and d[key] is not None:
-            brkoutbrd_pin_assignments.append(d[key])
+            brkoutbrd_pin_assignments.append(BrkStr(d[key]))
 
 
 ##########################
@@ -106,14 +107,14 @@ class RulePTPathFinder(RulePD):
 
     def process(self, data, pt_idx):
         # Note: here the matching data's will have placeholder in netlist file.
-        return (None,
+        return ('_PlaceHolder_',
                 pt_idx, self.PADDING(data['Pigtail pin']),
                 None, None)
 
 
 class RulePTDCB(RulePD):
     def match(self, data, pt_idx):
-        if data['DCB slot'] is not None:
+        if data['SEAM pin'] is not None:
             # Which means that this PT pin is connected to a DCB pin.
             return True
         else:
@@ -145,10 +146,10 @@ class RulePTPTLvSource(RulePD):
         connection = self.PT_PREFIX + \
             str(pt_idx) + self.PADDING(data['Pigtail pin']) + \
             '_ForRefOnly_' + data['Signal ID']
-        for i in range(0, len(self.rules)):
-            if self.PT_PREFIX+str(pt_idx) in self.rules[i] and \
-                    data['Signal ID'] in self.rules[i]:
-                connection = self.rules[i]
+        for rule in self.rules:
+            if self.PT_PREFIX+str(pt_idx) in rule and \
+                    data['Signal ID'] in rule:
+                connection = rule
                 break
         return (connection,
                 pt_idx, self.PADDING(data['Pigtail pin']),
@@ -200,7 +201,7 @@ for pt_id in range(0, len(pt_descr)):
             for dcb_entry in dcb_descr[int(dcb_id)]:
                 if pt_entry['SEAM pin'] == dcb_entry['SEAM pin'] \
                         and \
-                        pt_id == dcb_entry['Pigtail slot'] \
+                        str(pt_id) == RulePD.PTID(dcb_entry['Pigtail slot']) \
                         and \
                         pt_entry['Pigtail pin'] == dcb_entry['Pigtail pin']:
                     pt_entry['Signal ID'] = dcb_entry['Signal ID']

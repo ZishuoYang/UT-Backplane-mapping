@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon May 28, 2018 at 05:13 AM -0400
+# Last Change: Tue May 29, 2018 at 04:31 PM -0400
 
-import __builtin__
+import builtins
 from string import ascii_uppercase
 
 
 def range(*args):
     if isinstance(args[0], ColNum):
-        return [ColNum(to_str(i)) for i in __builtin__.range(*args)]
+        return [ColNum(to_str(i)) for i in builtins.range(*args)]
     else:
-        return __builtin__.range(*args)
+        return builtins.range(*args)
 
 
 def to_num(s):
@@ -83,4 +83,28 @@ class BrkStr(str):
         return self
 
     def __contains__(self, key):
-        pass
+        if key in self.split_signal_id_into_three(self.value):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def split_signal_id_into_three(id):
+        # FIXME: can be written more compactly with regexp
+        splitted = list()
+        encountered_underscored = 0
+        name = ''
+
+        for char in id:
+            if char is '_':
+                if encountered_underscored < 2:
+                    splitted.append(name)
+                    name = ''
+                else:
+                    name += char
+                encountered_underscored += 1
+            else:
+                name += char
+
+        splitted.append(name)
+        return splitted
