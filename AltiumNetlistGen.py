@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon May 28, 2018 at 04:58 AM -0400
+# Last Change: Tue May 29, 2018 at 10:19 AM -0400
 
 from os.path import join
 
@@ -100,7 +100,7 @@ class RulePTPathFinder(RulePD):
             return False
 
         # For path finder, skip non-BOB nets when not in slot 0 or 1
-        keywords = ['LV_SOURCE', 'LV_RETURN', 'LV_SENSE']
+        keywords = ['LV_SOURCE', 'LV_RETURN', 'LV_SENSE', 'THERMISTOR']
         result = [False if kw in data['Signal ID'] else True for kw in keywords]
         return self.AND(result)
 
