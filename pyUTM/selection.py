@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 08:36 PM -0400
+# Last Change: Tue May 29, 2018 at 05:14 PM -0400
 
 import re
 
@@ -108,7 +108,7 @@ class RulePD(Rule):
     @staticmethod
     def PTID(s):
         if '|' in s:
-            pt_idx, _ = s.split('|')
+            return s
         else:
             pt_idx, _, _ = s.split()
         return str(int(pt_idx))

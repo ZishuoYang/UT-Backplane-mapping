@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 05:05 PM -0400
+# Last Change: Tue May 29, 2018 at 05:16 PM -0400
 
 from os.path import join
 
@@ -201,7 +201,7 @@ for pt_id in range(0, len(pt_descr)):
             for dcb_entry in dcb_descr[int(dcb_id)]:
                 if pt_entry['SEAM pin'] == dcb_entry['SEAM pin'] \
                         and \
-                        pt_id == dcb_entry['Pigtail slot'] \
+                        str(pt_id) == RulePD.PTID(dcb_entry['Pigtail slot']) \
                         and \
                         pt_entry['Pigtail pin'] == dcb_entry['Pigtail pin']:
                     pt_entry['Signal ID'] = dcb_entry['Signal ID']
