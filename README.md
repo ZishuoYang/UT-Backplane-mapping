@@ -10,7 +10,7 @@ the third one includes break-out boards pin assignments.
 
 ## Prerequisite
 ```
-Python: 2.7.x
+Python: >= 3.6.x
 openpyxl: >= 2.5.3
 ```
 
