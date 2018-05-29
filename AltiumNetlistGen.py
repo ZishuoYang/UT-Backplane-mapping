@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 10:19 AM -0400
+# Last Change: Tue May 29, 2018 at 03:43 PM -0400
 
 from os.path import join
 
@@ -113,7 +113,7 @@ class RulePTPathFinder(RulePD):
 
 class RulePTDCB(RulePD):
     def match(self, data, pt_idx):
-        if data['DCB slot'] is not None:
+        if data['SEAM pin'] is not None:
             # Which means that this PT pin is connected to a DCB pin.
             return True
         else:
