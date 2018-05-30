@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 05:16 PM -0400
+# Last Change: Wed May 30, 2018 at 03:19 AM -0400
 
 from os.path import join
 
@@ -121,11 +121,11 @@ class RulePTDCB(RulePD):
             return False
 
     def process(self, data, pt_idx):
-        connection = self.DCB_PREFIX + \
-            self.DCBID(data['DCB slot']) + \
-            self.PADDING(data['SEAM pin'], data, pt_idx) + \
-            '_' + self.PT_PREFIX + \
-            str(pt_idx) + self.PADDING(data['Pigtail pin']) + \
+        connection = \
+            self.DCB_PREFIX + self.DCBID(data['DCB slot']) + \
+            self.PADDING(data['SEAM pin']) + \
+            '_' + \
+            self.PT_PREFIX + str(pt_idx) + self.PADDING(data['Pigtail pin']) + \
             '_' + data['Signal ID']
         return (connection,
                 pt_idx, self.PADDING(data['Pigtail pin']),

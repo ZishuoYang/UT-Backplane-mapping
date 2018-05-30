@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 05:14 PM -0400
+# Last Change: Wed May 30, 2018 at 03:17 AM -0400
 
 import re
 
@@ -82,17 +82,9 @@ class RulePD(Rule):
             return False
 
     @staticmethod
-    def PADDING(s, data=None, connector_idx=None):
-        # FIXME: There should be no None fed to this function.
-        if s is None:
-            if data is not None and connector_idx is not None:
-                print('WARNING: None fed on: %s %s' % (connector_idx,
-                                                       data['Pigtail pin']))
-            else:
-                print('WARNING: None fed.')
-            return ''
+    def PADDING(s):
         # FIXME: Still unclear on how to deal with multiple pins.
-        elif '|' in s or '/' in s:
+        if '|' in s or '/' in s:
             # For now, return multiple pins spec as it-is.
             return s
         else:
