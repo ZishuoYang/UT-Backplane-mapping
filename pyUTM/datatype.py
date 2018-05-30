@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed May 30, 2018 at 03:15 AM -0400
+# Last Change: Wed May 30, 2018 at 03:28 AM -0400
 
 import builtins
 from string import ascii_uppercase
@@ -91,11 +91,9 @@ class BrkStr(str):
     @staticmethod
     def split_signal_id_into_three(id):
         splitted = id.split('_')
+
         src_pin = splitted[0]
         dest_pin = splitted[1]
-
-        signal_id = splitted[2:]
-        if isinstance(signal_id, list):
-            signal_id = '_'.join(signal_id)
+        signal_id = '_'.join(splitted[2:])
 
         return [src_pin, dest_pin, signal_id]
