@@ -12,6 +12,7 @@ the third one includes break-out boards pin assignments.
 ```
 Python: >= 3.6
 openpyxl: >= 2.5.3
+pyparsing
 ```
 
 
