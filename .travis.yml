@@ -16,7 +16,7 @@ script:
     - python ./datatype.unittest.py
     - python ./io.unittest.py
     - python ./selection.unittest.py
-    - cd ../
+    - cd ../ && mkdir output
     - python ./AltiumNetlistGen.py > ./WARNINGS.log
     - cat ./WARNINGS.log
 
