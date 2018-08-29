@@ -1,47 +1,53 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed May 30, 2018 at 03:17 AM -0400
+# Last Change: Wed Aug 29, 2018 at 04:20 PM -0400
 
 import re
+import abc
 
 
 ########################
 # Abstract definitions #
 ########################
-# Treat these as pseudo code.
 
-
-class Selector(object):
+class Selector(metaclass=abc.ABCMeta):
     def __init__(self, full_dataset, rules):
         self.full_dataset = full_dataset
         # Note: the ORDER of the rules matters!
         self.rules = rules
 
+    @abc.abstractmethod
     def do(self):
-        processed_dataset = []
-
-        for i in self.full_dataset:
-            for rule in self.rules:
-                result = rule.filter(i)
-                if result is not None:
-                    processed_dataset.append(result)
-                    break
-
-        return processed_dataset
+        '''
+        Loop through self.full_dataset by rules. Break out of the loop if a rule
+        is matched.
+        '''
 
 
-class Rule(object):
-    def filter(self, databundle):
-        data = databundle
-        if self.match(data):
-            return data
+class Rule(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def filter(self, *args):
+        '''
+        General wrapper to call self.match and pass-thru related arguments.
+        '''
+
+    @abc.abstractmethod
+    def match(self, *args):
+        '''
+        Test if data matches this rule. Must return a Boolean.
+        '''
+
+    @abc.abstractmethod
+    def process(self, *args):
+        '''
+        Manipulate data in a certain way if it matches the rule.
+        '''
 
 
 ###################################
 # Selection rules for PigTail/DCB #
 ###################################
-
 
 class SelectorPD(Selector):
     def do(self):
