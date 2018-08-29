@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun May 27, 2018 at 02:59 PM -0400
+# Last Change: Wed Aug 29, 2018 at 04:44 PM -0400
 
 import unittest
-from os.path import join
+from pathlib import Path
 
 import sys
 sys.path.insert(0, '..')
@@ -12,9 +12,11 @@ sys.path.insert(0, '..')
 from pyUTM.io import generate_csv_line
 from pyUTM.io import parse_cell_range, XLReader
 
-pt_filename = join('..', 'templates', 'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
-brkoutbrd_filename = join('..', 'templates',
-                          'BrkOutBrd_Pin_Assignments_Mar27_2018_PM1.xlsx')
+input_dir = Path('..') / Path('input')
+pt_filename = input_dir / Path(
+    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
+brkoutbrd_filename = input_dir / Path(
+    'BrkOutBrd_Pin_Assignments_Mar27_2018_PM1.xlsx')
 
 
 class GenerateCsvLineTester(unittest.TestCase):
