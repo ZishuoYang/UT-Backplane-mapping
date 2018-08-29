@@ -1,22 +1,26 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed May 30, 2018 at 03:19 AM -0400
+# Last Change: Wed Aug 29, 2018 at 04:36 PM -0400
 
-from os.path import join
+from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import BrkStr
 
-brkoutbrd_filename = join('templates',
-                          'BrkOutBrd_Pin_Assignments_Mar27_2018_PM1.xlsx')
-pt_filename = join('templates',
-                   'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
-dcb_filename = join('templates',
-                    'backplaneMapping_SEAMPins_trueType_v4.1.xlsm')
-pt_result_output_filename = join('gen', 'AltiumNetlist_PT.csv')
-dcp_result_output_filename = join('gen', 'AltiumNetlist_DCB.csv')
+input_dir = Path('input')
+output_dir = Path('output')
+
+brkoutbrd_filename = input_dir / Path(
+    'BrkOutBrd_Pin_Assignments_Mar27_2018_PM1.xlsx')
+pt_filename = input_dir / Path(
+    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
+dcb_filename = input_dir / Path(
+    'backplaneMapping_SEAMPins_trueType_v4.1.xlsm')
+
+pt_result_output_filename = output_dir / Path('AltiumNetlist_PT.csv')
+dcp_result_output_filename = output_dir / Path('AltiumNetlist_DCB.csv')
 
 
 ############################################
