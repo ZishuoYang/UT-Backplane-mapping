@@ -5,9 +5,13 @@
 
 import openpyxl
 import re
+import pyparsing
 
 from pyUTM.datatype import range, ColNum
 
+#############################
+# For Excel documents       #
+#############################
 
 def write_to_csv(filename, data):
     with open(filename, 'w') as f:
@@ -105,3 +109,39 @@ class XLReader(object):
                 pin_spec[headers[col]] = sheet[anchor].value
             data.append(pin_spec)
         return data
+
+####################
+# For Pcad netlist #
+####################
+
+
+class PcadReader():
+    def __init__(self, filename):
+        self.filename = filename
+
+    def read(self):
+        nested_list = pyparsing.nestedExpr().parseFile(self.filename).asList()[0]
+        all_nets_dict = {}
+        for item in nested_list:
+            # Get the nets from nestedList
+            if type(item) == list and item[0] == 'net':
+                net_dict = {}
+                net = []
+                net_attr = []
+                net_name = item[1].strip('\"')
+                for sublist in item:
+                    if type(sublist) == list:
+                        if sublist[0] == 'node':
+                            # Add node to the net
+                            net.append([sublist[1].strip('\"'),
+                                        sublist[2].strip('\"')])
+                        elif sublist[0] == 'attr':
+                            net_attr.append(sublist[1].strip('\"'))
+                        else:
+                            continue
+                # Sort nodes according to pin
+                net = sorted(net, key=lambda x:x[1])
+                net_dict['net'] = net
+                net_dict['attr'] = net_attr
+                all_nets_dict[net_name] = net_dict
+        return all_nets_dict
