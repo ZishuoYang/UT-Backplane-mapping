@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Aug 30, 2018 at 05:04 PM -0400
+# Last Change: Thu Aug 30, 2018 at 05:14 PM -0400
 
 import openpyxl
 import re
@@ -15,13 +15,6 @@ from pyUTM.selection import RulePD
 ##################
 # For CSV output #
 ##################
-
-def write_to_csv(filename, data):
-    with open(filename, 'w') as f:
-        for node in data.keys():
-            attr = data[node]
-            f.write(generate_csv_line(node, attr) + '\n')
-
 
 def generate_csv_line(node, attr):
     s = ''
@@ -42,6 +35,13 @@ def generate_csv_line(node, attr):
 
     # Remove the trailing ','
     return s[:-1]
+
+
+def write_to_csv(filename, data, formatter=generate_csv_line):
+    with open(filename, 'w') as f:
+        for node in data.keys():
+            attr = data[node]
+            f.write(formatter(node, attr) + '\n')
 
 
 #######################
