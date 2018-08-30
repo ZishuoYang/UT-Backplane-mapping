@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Aug 30, 2018 at 12:39 AM -0400
+# Last Change: Thu Aug 30, 2018 at 09:08 AM -0400
 
 import builtins
 from string import ascii_uppercase
@@ -109,4 +109,4 @@ class BrkStr(str):
 ##############################################################
 
 # NOTE: Again, this is an immutable data type.
-NetNode = namedtuple('NetNode', ['NetName', 'DCB', 'DCB_PIN', 'PT', 'PT_PIN'])
+NetNode = namedtuple('NetNode', ['NET_NAME', 'DCB', 'DCB_PIN', 'PT', 'PT_PIN'])
