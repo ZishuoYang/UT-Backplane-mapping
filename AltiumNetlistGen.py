@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Aug 29, 2018 at 04:36 PM -0400
+# Last Change: Thu Aug 30, 2018 at 03:49 PM -0400
 
 from pathlib import Path
 
@@ -65,6 +65,7 @@ PtReader = XLReader(pt_filename)
 pt_descr = PtReader.read(range(0, 12), 'B5:K405',
                          sortby=lambda d: d['Pigtail pin'])
 
+
 ######################
 # Read info from DCB #
 ######################
@@ -89,12 +90,17 @@ class RulePTDefault(RulePD):
         return True
 
     def process(self, data, pt_idx):
-        connection = self.PT_PREFIX + \
-            str(pt_idx) + self.PADDING(data['Pigtail pin']) + \
-            '_ForRefOnly_' + data['Signal ID']
-        return (connection,
-                pt_idx, self.PADDING(data['Pigtail pin']),
-                None, None)
+        net_name = self.PT_PREFIX + str(pt_idx) + '_' + data['Signal ID']
+        return (
+            {
+                'NET_NAME': net_name,
+                'DCB': None,
+                'DCB_PIN': None,
+                'PT': self.PT_PREFIX + str(pt_idx),
+                'PT_PIN': data['Pigtail pin']
+            },
+            '_ForRefOnly_'
+        )
 
 
 class RulePTPathFinder(RulePD):
@@ -110,10 +116,17 @@ class RulePTPathFinder(RulePD):
         return self.AND(result)
 
     def process(self, data, pt_idx):
-        # Note: here the matching data's will have placeholder in netlist file.
-        return ('_PlaceHolder_',
-                pt_idx, self.PADDING(data['Pigtail pin']),
-                None, None)
+        # Note: here the matching nodes will have placeholder in netlist file.
+        return (
+            {
+                'NET_NAME': None,
+                'DCB': None,
+                'DCB_PIN': None,
+                'PT': self.PT_PREFIX + str(pt_idx),
+                'PT_PIN': data['Pigtail pin']
+            },
+            '_PlaceHolder_'
+        )
 
 
 class RulePTDCB(RulePD):
@@ -125,15 +138,20 @@ class RulePTDCB(RulePD):
             return False
 
     def process(self, data, pt_idx):
-        connection = \
-            self.DCB_PREFIX + self.DCBID(data['DCB slot']) + \
-            self.PADDING(data['SEAM pin']) + \
-            '_' + \
-            self.PT_PREFIX + str(pt_idx) + self.PADDING(data['Pigtail pin']) + \
-            '_' + data['Signal ID']
-        return (connection,
-                pt_idx, self.PADDING(data['Pigtail pin']),
-                None, None)
+        net_name = \
+            self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
+            self.PT_PREFIX + str(pt_idx) + '_' + \
+            data['Signal ID']
+        return (
+            {
+                'NET_NAME': net_name,
+                'DCB': self.DCB_PREFIX + self.DCBID(data['DCB slot']),
+                'DCB_PIN': data['SEAM pin'],
+                'PT': self.PT_PREFIX + str(pt_idx),
+                'PT_PIN': data['Pigtail pin']
+            },
+            None
+        )
 
 
 class RulePTPTLvSource(RulePD):
@@ -147,17 +165,26 @@ class RulePTPTLvSource(RulePD):
             return False
 
     def process(self, data, pt_idx):
-        connection = self.PT_PREFIX + \
-            str(pt_idx) + self.PADDING(data['Pigtail pin']) + \
-            '_ForRefOnly_' + data['Signal ID']
+        net_name = \
+            self.PT_PREFIX + str(pt_idx) + '_' + data['Signal ID']
+        attr = '_ForRefOnly_'
+
         for rule in self.rules:
             if self.PT_PREFIX+str(pt_idx) in rule and \
                     data['Signal ID'] in rule:
-                connection = rule
+                net_name = rule
+                attr = None
                 break
-        return (connection,
-                pt_idx, self.PADDING(data['Pigtail pin']),
-                None, None)
+        return (
+            {
+                'NET_NAME': net_name,
+                'DCB': None,
+                'DCB_PIN': None,
+                'PT': self.PT_PREFIX + str(pt_idx),
+                'PT_PIN': data['Pigtail pin']
+            },
+            attr
+        )
 
 
 class RulePTPTLvReturn(RulePTPTLvSource):
@@ -217,4 +244,4 @@ print('====WARNINGS for PigTail====')
 pt_result = PtSelector.do()
 
 # Finally, write to csv file
-write_to_csv(pt_result_output_filename, pt_result)
+# write_to_csv(pt_result_output_filename, pt_result)
