@@ -16,7 +16,7 @@ script:
     - python ./datatype.unittest.py
     - python ./io.unittest.py
     - python ./selection.unittest.py
-    - cd ../
+    - cd ../ && mkdir output
     - python ./AltiumNetlistGen.py > ./WARNINGS.log
     - cat ./WARNINGS.log
 
@@ -26,7 +26,7 @@ deploy:
         secure: "SsjEeAy91OjJrqHt+VqT0yc4ZktDxgcqE2G29E9rgp55U4VFQu9m8XG8Xf2lzjVGBVII/8F5s1X+6gZswYzP2lqqUnwuFKBs4Cxwml22bE+/sWHR2bx7334p04JJpKHGIou9Mwf6xeDvB+qNV5pOwEGzLB9jp39Y6KIEGV2AOtkUiL3T8HG6JSmvAcm7+M4XvxIwhl+RA+oounKCNLJ2NyGeAjj9irZ/RVS1BTBm+A+fIYmWd1KUBbtDP5ok8i9hwo5EQWiODsVdIwIoJekoOWLmZ4QkkXDpK8IqDK3iCurEWcUhE8KfcPbuthAar7tHrdBNmJUbNPfprijSWKcqx9IH6xcXaNKMmYRcns66rmnKSbizkxFdDz39pi4xNNG9xPuN6YiU5XMOOgo4r+wvajb8KlrEtzdLTHrGhJLSpAKn+iuZ5tMfYL/gfdE1ULDOcOEM9LaDOzG1YANmr14VDOcnvncemiYIzEOd8peupmaoWBvR8o/IpcbuO7vd9qyO4fuK2zeGe4dLcL5NQbS7GJ0Nb+Dv6w4Q1cwTO8j03a0QBUZD79Ub6epesgGC/n0ymR22N4xO8j0l9RHoTKBTafD1FJy68SD/QLtk35q0eWcgZcjICuLPpE+gYV5CvsVfH1QJFED1VJe2WN/UInUrF534KeYl/lYSPp3trPoG6VM="
     file:
         - "./WARNINGS.log"
-        - "./gen/AltiumNetlist_PT.csv"
+        - "./output/AltiumNetlist_PT.csv"
     skip_cleanup: true
     on:
         tags: true
