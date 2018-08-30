@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed May 30, 2018 at 03:28 AM -0400
+# Last Change: Thu Aug 30, 2018 at 12:39 AM -0400
 
 import builtins
 from string import ascii_uppercase
+from collections import namedtuple
 
+
+###############################
+# Make Excel row-col iterable #
+###############################
 
 def range(*args):
     if isinstance(args[0], ColNum):
@@ -97,3 +102,11 @@ class BrkStr(str):
         signal_id = '_'.join(splitted[2:])
 
         return [src_pin, dest_pin, signal_id]
+
+
+##############################################################
+# Define an immutable data type to store single netlist node #
+##############################################################
+
+# NOTE: Again, this is an immutable data type.
+NetNode = namedtuple('NetNode', ['NetName', 'DCB', 'DCB_PIN', 'PT', 'PT_PIN'])
