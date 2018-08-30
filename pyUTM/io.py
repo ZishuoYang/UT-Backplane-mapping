@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 04:56 PM -0400
+# Last Change: Wed Aug 29, 2018 at 10:52 PM -0400
 
 import openpyxl
 import re
-import pyparsing
+
+from pyparsing import nestedExpr
 
 from pyUTM.datatype import range, ColNum
 
-#############################
-# For Excel documents       #
-#############################
+
+##################
+# For CSV output #
+##################
 
 def write_to_csv(filename, data):
     with open(filename, 'w') as f:
@@ -30,6 +32,10 @@ def generate_csv_line(entry, ignore_empty=True):
     # Remove the trailing ','
     return s[:-1]
 
+
+#######################
+# For Excel documents #
+#######################
 
 def parse_cell_range(s, add_one_to_trailing_cell=True):
     initial, final = s.split(':')
@@ -110,17 +116,23 @@ class XLReader(object):
             data.append(pin_spec)
         return data
 
+
 ####################
 # For Pcad netlist #
 ####################
 
-
-class PcadReader():
+class NestedListReader(object):
     def __init__(self, filename):
         self.filename = filename
 
     def read(self):
-        nested_list = pyparsing.nestedExpr().parseFile(self.filename).asList()[0]
+        return nestedExpr().parseFile(self.filename).asList()[0]
+
+
+class PcadReader(NestedListReader):
+    def read(self):
+        nested_list = super().read()
+
         all_nets_dict = {}
         for item in nested_list:
             # Get the nets from nestedList
@@ -140,7 +152,7 @@ class PcadReader():
                         else:
                             continue
                 # Sort nodes according to pin
-                net = sorted(net, key=lambda x:x[1])
+                net = sorted(net, key=lambda x: x[1])
                 net_dict['net'] = net
                 net_dict['attr'] = net_attr
                 all_nets_dict[net_name] = net_dict
