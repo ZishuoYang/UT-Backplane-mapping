@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Aug 29, 2018 at 10:52 PM -0400
+# Last Change: Thu Aug 30, 2018 at 05:04 PM -0400
 
 import openpyxl
 import re
@@ -9,6 +9,7 @@ import re
 from pyparsing import nestedExpr
 
 from pyUTM.datatype import range, ColNum
+from pyUTM.selection import RulePD
 
 
 ##################
@@ -17,18 +18,28 @@ from pyUTM.datatype import range, ColNum
 
 def write_to_csv(filename, data):
     with open(filename, 'w') as f:
-        for entry in data:
-            f.write(generate_csv_line(entry) + '\n')
+        for node in data.keys():
+            attr = data[node]
+            f.write(generate_csv_line(node, attr) + '\n')
 
 
-def generate_csv_line(entry, ignore_empty=True):
+def generate_csv_line(node, attr):
     s = ''
-    for cell in entry:
-        if cell is not None:
-            s += str(cell)
-        elif not ignore_empty:
-            s += 'None'
+
+    if node.NET_NAME is None:
+        s += attr
+    elif attr is not None:
+        net_head, net_tail = node.NET_NAME.split('_', 1)
+        s += (net_head + attr + net_tail)
+    else:
+        s += node.NET_NAME
+    s += ','
+
+    for item in node[1:]:
+        if item is not None:
+            s += item
         s += ','
+
     # Remove the trailing ','
     return s[:-1]
 

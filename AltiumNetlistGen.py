@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Aug 30, 2018 at 03:49 PM -0400
+# Last Change: Thu Aug 30, 2018 at 05:02 PM -0400
 
 from pathlib import Path
 
@@ -244,4 +244,4 @@ print('====WARNINGS for PigTail====')
 pt_result = PtSelector.do()
 
 # Finally, write to csv file
-# write_to_csv(pt_result_output_filename, pt_result)
+write_to_csv(pt_result_output_filename, pt_result)
