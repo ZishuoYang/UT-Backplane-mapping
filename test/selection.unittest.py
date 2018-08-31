@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 05:19 PM -0400
+# Last Change: Fri Aug 31, 2018 at 09:48 AM -0400
 
 import unittest
 
@@ -9,6 +9,7 @@ import sys
 sys.path.insert(0, '..')
 
 from pyUTM.selection import RulePD, SelectorPD
+from pyUTM.datatype import NetNode
 
 
 class RuleDummy(RulePD):
@@ -24,7 +25,15 @@ class RuleDummy(RulePD):
             False
 
     def process(self, data, idx):
-        return str(data)
+        return (
+            {'NET_NAME': data,
+             'DCB': data,
+             'DCB_PIN': data,
+             'PT': data,
+             'PT_PIN': data
+             },
+            None
+        )
 
 
 class RulePDTester(unittest.TestCase):
@@ -54,7 +63,11 @@ class SelectorPDTester(unittest.TestCase):
         rule = RuleDummy()
         selector = SelectorPD(dataset, [rule])
         result = selector.do()
-        self.assertEqual(result, ['A', 'B', 'C'])
+        self.assertEqual(result, {
+            NetNode('A', 'A', 'A', 'A', 'A'): None,
+            NetNode('B', 'B', 'B', 'B', 'B'): None,
+            NetNode('C', 'C', 'C', 'C', 'C'): None,
+        })
 
 
 if __name__ == '__main__':
