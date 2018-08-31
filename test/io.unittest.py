@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 09:28 AM -0400
+# Last Change: Fri Aug 31, 2018 at 02:54 PM -0400
 
 import unittest
 from pathlib import Path
@@ -21,17 +21,20 @@ brkoutbrd_filename = input_dir / Path(
 
 
 class GenerateCsvLineTester(unittest.TestCase):
+    dummy_prop = {'NETNAME': 'NET', 'ATTR': None}
+
     def test_normal_entry(self):
-        entry = NetNode(*[str(i) for i in range(1, 6)])
-        self.assertEqual(csv_line(entry, None), '1,2,3,4,5')
+        entry = NetNode(*[str(i) for i in range(1, 5)])
+        self.assertEqual(csv_line(entry, self.dummy_prop), 'NET,1,2,3,4')
 
     def test_entry_with_none(self):
-        entry = NetNode(*[str(i) for i in range(1, 5)], None)
-        self.assertEqual(csv_line(entry, None), '1,2,3,4,')
+        entry = NetNode(*[str(i) for i in range(1, 4)], None)
+        self.assertEqual(csv_line(entry, self.dummy_prop), 'NET,1,2,3,')
 
     def test_entry_with_attr(self):
-        entry = NetNode('A_B', '2', '3', '4', '5')
-        self.assertEqual(csv_line(entry, '_C_'), 'A_C_B,2,3,4,5')
+        entry = NetNode('2', '3', '4', '5')
+        self.assertEqual(csv_line(entry, {'NETNAME': 'A_B', 'ATTR': '_C_'}),
+                         'A_C_B,2,3,4,5')
 
 
 class ParseCellRangeTester(unittest.TestCase):
