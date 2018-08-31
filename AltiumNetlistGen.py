@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 12:07 AM -0400
+# Last Change: Fri Aug 31, 2018 at 12:27 PM -0400
 
 from pathlib import Path
 
@@ -98,7 +98,7 @@ class RulePTDefault(RulePD):
                 'DCB': None,
                 'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
-                'PT_PIN': data['Pigtail pin']
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
             '_ForRefOnly_'
         )
@@ -124,7 +124,7 @@ class RulePTPathFinder(RulePD):
                 'DCB': None,
                 'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
-                'PT_PIN': data['Pigtail pin']
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
             '_PlaceHolder_'
         )
@@ -149,7 +149,7 @@ class RulePTDCB(RulePD):
                 'DCB': self.DCB_PREFIX + self.DCBID(data['DCB slot']),
                 'DCB_PIN': data['SEAM pin'],
                 'PT': self.PT_PREFIX + str(pt_idx),
-                'PT_PIN': data['Pigtail pin']
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
             None
         )
@@ -182,7 +182,7 @@ class RulePTPTLvSource(RulePD):
                 'DCB': None,
                 'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
-                'PT_PIN': data['Pigtail pin']
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
             attr
         )
