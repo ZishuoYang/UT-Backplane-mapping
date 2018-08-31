@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Aug 30, 2018 at 05:14 PM -0400
+# Last Change: Fri Aug 31, 2018 at 12:12 AM -0400
 
 import openpyxl
 import re
@@ -16,7 +16,7 @@ from pyUTM.selection import RulePD
 # For CSV output #
 ##################
 
-def generate_csv_line(node, attr):
+def csv_line(node, attr):
     s = ''
 
     if node.NET_NAME is None:
@@ -37,7 +37,57 @@ def generate_csv_line(node, attr):
     return s[:-1]
 
 
-def write_to_csv(filename, data, formatter=generate_csv_line):
+# NOTE: Backward-compatibility: For v0.3 or older.
+def legacy_csv_line_pt(node, attr):
+    s = ''
+
+    if node.NET_NAME is None:
+        s += attr
+
+    elif attr is not None:
+        try:
+            net_head, net_body, net_tail = node.NET_NAME.split('_', 2)
+
+            if node.DCB is not None:
+                if node.DCB in net_head:
+                    net_head += RulePD.PADDING(node.DCB_PIN)
+
+                if node.DCB in net_body:
+                    net_body += RulePD.PADDING(node.DCB_PIN)
+
+            if node.PT is not None:
+                if node.PT in net_head:
+                    net_head += RulePD.PADDING(node.PT_PIN)
+
+                if node.PT in net_body:
+                    net_body += RulePD.PADDING(node.PT_PIN)
+
+            s += (net_head + attr + net_body + net_tail)
+
+        except Exception:
+            net_head, net_tail = node.NET_NAME.split('_', 1)
+
+            # Take advantage of lazy Boolean evaluation in Python.
+            if node.DCB is not None and node.DCB in net_head:
+                net_head += RulePD.PADDING(node.DCB_PIN)
+
+            if node.PT is not None and node.PT in net_head:
+                net_head += RulePD.PADDING(node.PT_PIN)
+
+            s += (net_head + attr + net_tail)
+    s += ','
+
+    s += node.PT[2:] if node.PT is not None else ''
+    s += ','
+
+    s += RulePD.PADDING(node.PT_PIN) if node.PT_PIN is not None else ''
+    s += ','
+    s += ','
+
+    return s
+
+
+def write_to_csv(filename, data, formatter=csv_line):
     with open(filename, 'w') as f:
         for node in data.keys():
             attr = data[node]
