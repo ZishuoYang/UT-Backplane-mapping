@@ -218,13 +218,13 @@ class PcadReader(NestedListReader):
                         for node2 in net:
                             if 'JD' in node2[0]:
                                 # NetNode format: form PT-DCB pair
-                                net_node = NetNode(net_name,
-                                                    node2[0],
-                                                    node2[1],
-                                                    node1[0],
-                                                    node1[1])
+                                net_node = NetNode(node2[0],
+                                                   node2[1],
+                                                   node1[0],
+                                                   node1[1])
                                 # Add NetNode to net_nodes_dict
-                                net_nodes_dict[net_node] = None
+                                net_nodes_dict[net_node] = {'NETNAME': net_name,
+                                                            'ATTR': None}
 
         return net_nodes_dict
 

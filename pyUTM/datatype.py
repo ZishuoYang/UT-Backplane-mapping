@@ -109,4 +109,4 @@ class BrkStr(str):
 ##############################################################
 
 # NOTE: Again, this is an immutable data type.
-NetNode = namedtuple('NetNode', ['NET_NAME', 'DCB', 'DCB_PIN', 'PT', 'PT_PIN'])
+NetNode = namedtuple('NetNode', ['DCB', 'DCB_PIN', 'PT', 'PT_PIN'])
