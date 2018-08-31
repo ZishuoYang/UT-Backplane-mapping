@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 02:49 PM -0400
+# Last Change: Fri Aug 31, 2018 at 04:18 PM -0400
 
 import openpyxl
 import re
@@ -240,7 +240,7 @@ class PcadReader(NestedListReader):
                                                    node1[1])
                                 net_nodes_dict[net_node] = {'NETNAME': net_name,
                                                             'ATTR': None}
-                                
+
                     if 'JD' in node1[0]:
                         # Start with JD, to pair with non-JP
                         for node2 in net:
