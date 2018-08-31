@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 12:20 PM -0400
+# Last Change: Fri Aug 31, 2018 at 02:58 PM -0400
 
 import unittest
 
@@ -26,13 +26,12 @@ class RuleDummy(RulePD):
 
     def process(self, data, idx):
         return (
-            {'NET_NAME': data,
-             'DCB': data,
+            {'DCB': data,
              'DCB_PIN': data,
              'PT': data,
              'PT_PIN': data
              },
-            None
+            {'NETNAME': data, 'ATTR': None}
         )
 
 
@@ -69,9 +68,9 @@ class SelectorPDTester(unittest.TestCase):
         selector = SelectorPD(dataset, [rule])
         result = selector.do()
         self.assertEqual(result, {
-            NetNode('A', 'A', 'A', 'A', 'A'): None,
-            NetNode('B', 'B', 'B', 'B', 'B'): None,
-            NetNode('C', 'C', 'C', 'C', 'C'): None,
+            NetNode('A', 'A', 'A', 'A'): {'NETNAME': 'A', 'ATTR': None},
+            NetNode('B', 'B', 'B', 'B'): {'NETNAME': 'B', 'ATTR': None},
+            NetNode('C', 'C', 'C', 'C'): {'NETNAME': 'C', 'ATTR': None},
         })
 
 
