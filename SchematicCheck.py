@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 04:32 PM -0400
+# Last Change: Fri Aug 31, 2018 at 04:53 PM -0400
 
 from pathlib import Path
 
@@ -62,7 +62,7 @@ for node in pt_result.keys():
             if pt_result[node]['NETNAME'] in net_descr[node]['NETNAME']:
                 pass
             else:
-                print("netlist name inconsistent: Zishuo {}; Tom {}; node: {}".format(
+                print("netlist name inconsistent: Zishuo: {}; Tom: {}; node: {}".format(
                     pt_result[node]['NETNAME'], net_descr[node]['NETNAME'],
                     node_to_str(node)
                 ))
