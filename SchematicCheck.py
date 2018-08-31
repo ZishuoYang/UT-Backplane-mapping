@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 12:03 PM -0400
+# Last Change: Fri Aug 31, 2018 at 04:32 PM -0400
 
 from pathlib import Path
 
@@ -29,7 +29,7 @@ def nbdir(obj):
     return [attr for attr in candidate if attr not in ['count', 'index']]
 
 
-def print_net_node(node):
+def node_to_str(node):
     attrs = nbdir(node)
 
     s = ''
@@ -41,15 +41,32 @@ def print_net_node(node):
             s += 'None'
         s += ', '
 
-    print(s[:-2])
+    return s[:-2]
 
 
 print('')
 print('====ERRORS for Backplane connections====')
 
 for node in pt_result.keys():
-    if node in net_result:
-        pass
-    else:
-        print("The following node is not present in Tom's net:")
-        print_net_node(node)
+    if node.PT is not None and node.DCB is not None:
+        if node in net_result:
+            pass
+        else:
+            print("node in NET {} not present in Tom's net: {}".format(
+                pt_result[node]['NETNAME'], node_to_str(node)
+            ))
+
+    elif pt_result[node]['NETNAME'] is not None:
+        if node in net_result:
+            # Also check if the net list name is consistent
+            if pt_result[node]['NETNAME'] in net_descr[node]['NETNAME']:
+                pass
+            else:
+                print("netlist name inconsistent: Zishuo {}; Tom {}; node: {}".format(
+                    pt_result[node]['NETNAME'], net_descr[node]['NETNAME'],
+                    node_to_str(node)
+                ))
+        else:
+            print("non PT-DCB node in NET {} not present in Tom's net: {}".format(
+                pt_result[node]['NETNAME'], node_to_str(node)
+            ))
