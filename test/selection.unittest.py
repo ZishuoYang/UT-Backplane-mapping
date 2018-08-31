@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 09:48 AM -0400
+# Last Change: Fri Aug 31, 2018 at 02:58 PM -0400
 
 import unittest
 
@@ -26,13 +26,12 @@ class RuleDummy(RulePD):
 
     def process(self, data, idx):
         return (
-            {'NET_NAME': data,
-             'DCB': data,
+            {'DCB': data,
              'DCB_PIN': data,
              'PT': data,
              'PT_PIN': data
              },
-            None
+            {'NETNAME': data, 'ATTR': None}
         )
 
 
@@ -40,6 +39,11 @@ class RulePDTester(unittest.TestCase):
     def test_padding(self):
         self.assertEqual(RulePD.PADDING('A1'), 'A01')
         self.assertEqual(RulePD.PADDING('A11'), 'A11')
+
+    def test_depadding(self):
+        self.assertEqual(RulePD.DEPADDING('A1'), 'A1')
+        self.assertEqual(RulePD.DEPADDING('A01'), 'A1')
+        self.assertEqual(RulePD.DEPADDING('A11'), 'A11')
 
     def test_dcb_id(self):
         self.assertEqual(RulePD.DCBID('00 / X-0'), '0')
@@ -64,9 +68,9 @@ class SelectorPDTester(unittest.TestCase):
         selector = SelectorPD(dataset, [rule])
         result = selector.do()
         self.assertEqual(result, {
-            NetNode('A', 'A', 'A', 'A', 'A'): None,
-            NetNode('B', 'B', 'B', 'B', 'B'): None,
-            NetNode('C', 'C', 'C', 'C', 'C'): None,
+            NetNode('A', 'A', 'A', 'A'): {'NETNAME': 'A', 'ATTR': None},
+            NetNode('B', 'B', 'B', 'B'): {'NETNAME': 'B', 'ATTR': None},
+            NetNode('C', 'C', 'C', 'C'): {'NETNAME': 'C', 'ATTR': None},
         })
 
 
