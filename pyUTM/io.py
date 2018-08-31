@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 12:12 AM -0400
+# Last Change: Fri Aug 31, 2018 at 12:18 AM -0400
 
 import openpyxl
 import re
@@ -44,7 +44,12 @@ def legacy_csv_line_pt(node, attr):
     if node.NET_NAME is None:
         s += attr
 
-    elif attr is not None:
+    elif attr is None and 'JD' not in node.NET_NAME:
+        s += node.NET_NAME
+
+    else:
+        attr = '_' if attr is None else attr
+
         try:
             net_head, net_body, net_tail = node.NET_NAME.split('_', 2)
 
@@ -62,7 +67,7 @@ def legacy_csv_line_pt(node, attr):
                 if node.PT in net_body:
                     net_body += RulePD.PADDING(node.PT_PIN)
 
-            s += (net_head + attr + net_body + net_tail)
+            s += (net_head + attr + net_body + '_' + net_tail)
 
         except Exception:
             net_head, net_tail = node.NET_NAME.split('_', 1)
