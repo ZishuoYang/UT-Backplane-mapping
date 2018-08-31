@@ -229,6 +229,35 @@ class PcadReader(NestedListReader):
                                 # Add NetNode to net_nodes_dict
                                 net_nodes_dict[net_node] = {'NETNAME': net_name,
                                                             'ATTR': None}
+                            elif 'JP' in node2[0] and 'JPL' not in node2[0]:
+                                # Skip JP-JP nodes
+                                continue
+                            else:
+                                # Add NetNode with only JP and NETNAME
+                                net_node = NetNode(None,
+                                                   None,
+                                                   node1[0],
+                                                   node1[1])
+                                net_nodes_dict[net_node] = {'NETNAME': net_name,
+                                                            'ATTR': None}
+                                
+                    if 'JD' in node1[0]:
+                        # Start with JD, to pair with non-JP
+                        for node2 in net:
+                            if 'JP' not in node2[0]:
+                                net_node = NetNode(node1[0],
+                                                   node1[1],
+                                                   None,
+                                                   None)
+                                net_nodes_dict[net_node] = {'NETNAME': net_name,
+                                                            'ATTR': None}
+                            elif 'JPL' in node2[0]:
+                                net_node = NetNode(node1[0],
+                                                   node1[1],
+                                                   None,
+                                                   None)
+                                net_nodes_dict[net_node] = {'NETNAME': net_name,
+                                                            'ATTR': None}
 
         return net_nodes_dict
 
