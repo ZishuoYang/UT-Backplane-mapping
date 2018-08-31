@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 02:34 PM -0400
+# Last Change: Fri Aug 31, 2018 at 02:49 PM -0400
 
 import openpyxl
 import re
@@ -16,19 +16,21 @@ from pyUTM.selection import RulePD
 # For CSV output #
 ##################
 
-def csv_line(node, attr):
+def csv_line(node, prop):
     s = ''
+    netname = prop['NETNAME']
+    attr = prop['ATTR']
 
-    if node.NET_NAME is None:
+    if netname is None:
         s += attr
     elif attr is not None:
-        net_head, net_tail = node.NET_NAME.split('_', 1)
+        net_head, net_tail = netname.split('_', 1)
         s += (net_head + attr + net_tail)
     else:
-        s += node.NET_NAME
+        s += netname
     s += ','
 
-    for item in node[1:]:
+    for item in node:
         if item is not None:
             s += item
         s += ','
@@ -38,20 +40,22 @@ def csv_line(node, attr):
 
 
 # NOTE: Backward-compatibility: For v0.3 or older.
-def legacy_csv_line_pt(node, attr):
+def legacy_csv_line_pt(node, prop):
     s = ''
+    netname = prop['NETNAME']
+    attr = prop['ATTR']
 
-    if node.NET_NAME is None:
+    if netname is None:
         s += attr
 
-    elif attr is None and 'JD' not in node.NET_NAME:
-        s += node.NET_NAME
+    elif attr is None and 'JD' not in netname:
+        s += netname
 
     else:
         attr = '_' if attr is None else attr
 
         try:
-            net_head, net_body, net_tail = node.NET_NAME.split('_', 2)
+            net_head, net_body, net_tail = netname.split('_', 2)
 
             if node.DCB is not None:
                 if node.DCB in net_head:
@@ -70,7 +74,7 @@ def legacy_csv_line_pt(node, attr):
             s += (net_head + attr + net_body + '_' + net_tail)
 
         except Exception:
-            net_head, net_tail = node.NET_NAME.split('_', 1)
+            net_head, net_tail = netname.split('_', 1)
 
             # Take advantage of lazy Boolean evaluation in Python.
             if node.DCB is not None and node.DCB in net_head:

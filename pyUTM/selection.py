@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 12:19 PM -0400
+# Last Change: Fri Aug 31, 2018 at 02:43 PM -0400
 
 import re
 import abc
@@ -60,9 +60,9 @@ class SelectorPD(Selector):
                 for rule in self.rules:
                     result = rule.filter((entry, connector_idx))
                     if result is not None:
-                        args, attr = result
-                        key = NetNode(**args)
-                        processed_dataset[key] = attr
+                        node_args, prop = result
+                        key = NetNode(**node_args)
+                        processed_dataset[key] = prop
                         break
 
         return processed_dataset

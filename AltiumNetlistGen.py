@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 12:27 PM -0400
+# Last Change: Fri Aug 31, 2018 at 02:42 PM -0400
 
 from pathlib import Path
 
@@ -94,13 +94,12 @@ class RulePTDefault(RulePD):
         net_name = self.PT_PREFIX + str(pt_idx) + '_' + data['Signal ID']
         return (
             {
-                'NET_NAME': net_name,
                 'DCB': None,
                 'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
-            '_ForRefOnly_'
+            {'NETNAME': net_name, 'ATTR': '_ForRefOnly_'}
         )
 
 
@@ -120,13 +119,12 @@ class RulePTPathFinder(RulePD):
         # Note: here the matching nodes will have placeholder in netlist file.
         return (
             {
-                'NET_NAME': None,
                 'DCB': None,
                 'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
-            '_PlaceHolder_'
+            {'NETNAME': None, 'ATTR': '_PlaceHolder_'}
         )
 
 
@@ -145,13 +143,12 @@ class RulePTDCB(RulePD):
             data['Signal ID']
         return (
             {
-                'NET_NAME': net_name,
                 'DCB': self.DCB_PREFIX + self.DCBID(data['DCB slot']),
                 'DCB_PIN': data['SEAM pin'],
                 'PT': self.PT_PREFIX + str(pt_idx),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
-            None
+            {'NETNAME': net_name, 'ATTR': None}
         )
 
 
@@ -178,13 +175,12 @@ class RulePTPTLvSource(RulePD):
                 break
         return (
             {
-                'NET_NAME': net_name,
                 'DCB': None,
                 'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
-            attr
+            {'NETNAME': net_name, 'ATTR': attr}
         )
 
 
