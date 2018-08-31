@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 09:54 AM -0400
+# Last Change: Fri Aug 31, 2018 at 11:19 AM -0400
 
 import openpyxl
 import re
@@ -219,10 +219,10 @@ class PcadReader(NestedListReader):
                             if 'JD' in node2[0]:
                                 # NetNode format: form PT-DCB pair
                                 net_node = NetNode(net_name,
-                                                    node2[0],
-                                                    node2[1],
-                                                    node1[0],
-                                                    node1[1])
+                                                   node2[0],
+                                                   node2[1],
+                                                   node1[0],
+                                                   node1[1])
                                 # Add NetNode to net_nodes_dict
                                 net_nodes_dict[net_node] = None
 
