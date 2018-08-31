@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 12:18 AM -0400
+# Last Change: Fri Aug 31, 2018 at 09:54 AM -0400
 
 import openpyxl
 import re
@@ -127,8 +127,8 @@ class XLReader(object):
             parse_cell_range(cell_range)
 
         result = []
-        # FIXME: currently openpyxl throws out a warning about unclosed files.
-        # This is due to a bug #673 of the openpyxl.
+        # NOTE: The ResourcesWarning is probably due to a lack of encoding in
+        # the OS. Ignore it for now.
         wb = openpyxl.load_workbook(self.filename, read_only=True)
         for s in self.sheets:
             ws = wb[str(s)]
