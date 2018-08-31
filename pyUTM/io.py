@@ -8,7 +8,7 @@ import re
 
 from pyparsing import nestedExpr
 
-from pyUTM.datatype import range, ColNum
+from pyUTM.datatype import range, ColNum, NetNode
 from pyUTM.selection import RulePD
 
 
@@ -197,6 +197,38 @@ class NestedListReader(object):
 
 class PcadReader(NestedListReader):
     def read(self):
+        nested_list = super().read()
+
+        net_nodes_dict = {}
+        for item in nested_list:
+            # Get the nets from nestedList
+            if type(item) == list and item[0] == 'net':
+                net = []
+                net_name = item[1].strip('\"')
+                for sublist in item:
+                    if type(sublist) == list:
+                        if sublist[0] == 'node':
+                            # Add all nodes to a list
+                            net.append([sublist[1].strip('\"'),
+                                        sublist[2].strip('\"')])
+                # Loop over the list to find PT(JP#) and DCB(JD#)
+                for node1 in net:
+                    if 'JP' in node1[0] and 'JPL' not in node1[0]:
+                        # Start with a JP node, to pair with JD
+                        for node2 in net:
+                            if 'JD' in node2[0]:
+                                # NetNode format: form PT-DCB pair
+                                net_node = NetNode(net_name,
+                                                    node2[0],
+                                                    node2[1],
+                                                    node1[0],
+                                                    node1[1])
+                                # Add NetNode to net_nodes_dict
+                                net_nodes_dict[net_node] = None
+
+        return net_nodes_dict
+
+    def readByNet(self):
         nested_list = super().read()
 
         all_nets_dict = {}
