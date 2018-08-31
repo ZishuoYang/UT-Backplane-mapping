@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 11:55 AM -0400
+# Last Change: Fri Aug 31, 2018 at 11:59 AM -0400
 
 from pathlib import Path
 
@@ -43,6 +43,9 @@ def print_net_node(node):
 
     print(s[:-2])
 
+
+print('')
+print('====ERRORS for Backplane connections====')
 
 for node in pt_result.keys():
     if node in net_result:
