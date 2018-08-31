@@ -21,7 +21,7 @@ pyparsing
 python ./AltiumNetlistGen.py > WARNINGS.log
 python ./SchematicCheck.py > ERRORS.log
 ```
-All generated `.csv` files are located under `gen/`.
+All generated `.csv` files are located under `output/`.
 This script prints out warnings to `stdout`, and can be redirected as needed.
 
 
