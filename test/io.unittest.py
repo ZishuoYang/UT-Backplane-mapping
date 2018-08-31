@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Aug 29, 2018 at 04:44 PM -0400
+# Last Change: Fri Aug 31, 2018 at 09:28 AM -0400
 
 import unittest
 from pathlib import Path
@@ -9,8 +9,9 @@ from pathlib import Path
 import sys
 sys.path.insert(0, '..')
 
-from pyUTM.io import generate_csv_line
+from pyUTM.io import csv_line
 from pyUTM.io import parse_cell_range, XLReader
+from pyUTM.datatype import NetNode
 
 input_dir = Path('..') / Path('input')
 pt_filename = input_dir / Path(
@@ -21,17 +22,16 @@ brkoutbrd_filename = input_dir / Path(
 
 class GenerateCsvLineTester(unittest.TestCase):
     def test_normal_entry(self):
-        entry = (1, 2, 3, 4, 5)
-        self.assertEqual(generate_csv_line(entry), '1,2,3,4,5')
+        entry = NetNode(*[str(i) for i in range(1, 6)])
+        self.assertEqual(csv_line(entry, None), '1,2,3,4,5')
 
     def test_entry_with_none(self):
-        entry = (1, 2, 3, 4, None)
-        self.assertEqual(generate_csv_line(entry), '1,2,3,4,')
+        entry = NetNode(*[str(i) for i in range(1, 5)], None)
+        self.assertEqual(csv_line(entry, None), '1,2,3,4,')
 
-    def test_entry_with_none_alt(self):
-        entry = (1, 2, 3, 4, None)
-        self.assertEqual(generate_csv_line(entry, ignore_empty=False),
-                         '1,2,3,4,None')
+    def test_entry_with_attr(self):
+        entry = NetNode('A_B', '2', '3', '4', '5')
+        self.assertEqual(csv_line(entry, '_C_'), 'A_C_B,2,3,4,5')
 
 
 class ParseCellRangeTester(unittest.TestCase):
