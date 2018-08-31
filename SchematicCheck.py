@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 11:59 AM -0400
+# Last Change: Fri Aug 31, 2018 at 12:03 PM -0400
 
 from pathlib import Path
 
@@ -17,7 +17,7 @@ netlist = input_dir / Path("backplane_netlists") / Path('Aug21_2018.net')
 
 NetReader = PcadReader(netlist)
 net_descr = NetReader.read()
-net_result = net_descr.keys()
+net_result = list(net_descr.keys())
 
 
 ################################################
