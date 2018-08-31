@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Aug 30, 2018 at 03:13 PM -0400
+# Last Change: Fri Aug 31, 2018 at 12:19 PM -0400
 
 import re
 import abc
@@ -101,6 +101,14 @@ class RulePD(Rule):
             letter, num = filter(None, re.split(r'(\d+)', s))
             num = '0'+num if len(num) == 1 else num
             return letter+num
+
+    @staticmethod
+    def DEPADDING(s):
+        if '|' in s or '/' in s:
+            return s
+        else:
+            letter, num = filter(None, re.split(r'(\d+)', s))
+            return letter + str(int(num))
 
     @staticmethod
     def DCBID(s):
