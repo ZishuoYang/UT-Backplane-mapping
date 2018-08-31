@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Aug 29, 2018 at 04:20 PM -0400
+# Last Change: Thu Aug 30, 2018 at 03:13 PM -0400
 
 import re
 import abc
+
+from pyUTM.datatype import NetNode
 
 
 ########################
@@ -51,14 +53,16 @@ class Rule(metaclass=abc.ABCMeta):
 
 class SelectorPD(Selector):
     def do(self):
-        processed_dataset = []
+        processed_dataset = {}
 
         for connector_idx in range(0, len(self.full_dataset)):
             for entry in self.full_dataset[connector_idx]:
                 for rule in self.rules:
                     result = rule.filter((entry, connector_idx))
                     if result is not None:
-                        processed_dataset.append(result)
+                        args, attr = result
+                        key = NetNode(**args)
+                        processed_dataset[key] = attr
                         break
 
         return processed_dataset

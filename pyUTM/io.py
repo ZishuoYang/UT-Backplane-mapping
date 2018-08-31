@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Aug 29, 2018 at 10:52 PM -0400
+# Last Change: Fri Aug 31, 2018 at 12:18 AM -0400
 
 import openpyxl
 import re
@@ -9,28 +9,94 @@ import re
 from pyparsing import nestedExpr
 
 from pyUTM.datatype import range, ColNum
+from pyUTM.selection import RulePD
 
 
 ##################
 # For CSV output #
 ##################
 
-def write_to_csv(filename, data):
-    with open(filename, 'w') as f:
-        for entry in data:
-            f.write(generate_csv_line(entry) + '\n')
-
-
-def generate_csv_line(entry, ignore_empty=True):
+def csv_line(node, attr):
     s = ''
-    for cell in entry:
-        if cell is not None:
-            s += str(cell)
-        elif not ignore_empty:
-            s += 'None'
+
+    if node.NET_NAME is None:
+        s += attr
+    elif attr is not None:
+        net_head, net_tail = node.NET_NAME.split('_', 1)
+        s += (net_head + attr + net_tail)
+    else:
+        s += node.NET_NAME
+    s += ','
+
+    for item in node[1:]:
+        if item is not None:
+            s += item
         s += ','
+
     # Remove the trailing ','
     return s[:-1]
+
+
+# NOTE: Backward-compatibility: For v0.3 or older.
+def legacy_csv_line_pt(node, attr):
+    s = ''
+
+    if node.NET_NAME is None:
+        s += attr
+
+    elif attr is None and 'JD' not in node.NET_NAME:
+        s += node.NET_NAME
+
+    else:
+        attr = '_' if attr is None else attr
+
+        try:
+            net_head, net_body, net_tail = node.NET_NAME.split('_', 2)
+
+            if node.DCB is not None:
+                if node.DCB in net_head:
+                    net_head += RulePD.PADDING(node.DCB_PIN)
+
+                if node.DCB in net_body:
+                    net_body += RulePD.PADDING(node.DCB_PIN)
+
+            if node.PT is not None:
+                if node.PT in net_head:
+                    net_head += RulePD.PADDING(node.PT_PIN)
+
+                if node.PT in net_body:
+                    net_body += RulePD.PADDING(node.PT_PIN)
+
+            s += (net_head + attr + net_body + '_' + net_tail)
+
+        except Exception:
+            net_head, net_tail = node.NET_NAME.split('_', 1)
+
+            # Take advantage of lazy Boolean evaluation in Python.
+            if node.DCB is not None and node.DCB in net_head:
+                net_head += RulePD.PADDING(node.DCB_PIN)
+
+            if node.PT is not None and node.PT in net_head:
+                net_head += RulePD.PADDING(node.PT_PIN)
+
+            s += (net_head + attr + net_tail)
+    s += ','
+
+    s += node.PT[2:] if node.PT is not None else ''
+    s += ','
+
+    s += RulePD.PADDING(node.PT_PIN) if node.PT_PIN is not None else ''
+    s += ','
+    s += ','
+
+    return s
+
+
+def write_to_csv(filename, data, formatter=csv_line):
+    with open(filename, 'w') as f:
+        for node in data.keys():
+            attr = data[node]
+            f.write(formatter(node, attr) + '\n')
 
 
 #######################
