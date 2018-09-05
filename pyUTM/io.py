@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 04:18 PM -0400
+# Last Change: Wed Sep 05, 2018 at 04:22 PM -0400
 
 import openpyxl
 import re
@@ -261,30 +261,25 @@ class PcadReader(NestedListReader):
 
         return net_nodes_dict
 
-    def readByNet(self):
+    # Zishuo's original implementation, with some omissions.
+    def read_net_to_dict(self):
         nested_list = super().read()
-
         all_nets_dict = {}
-        for item in nested_list:
-            # Get the nets from nestedList
-            if type(item) == list and item[0] == 'net':
-                net_dict = {}
-                net = []
-                net_attr = []
-                net_name = item[1].strip('\"')
-                for sublist in item:
-                    if type(sublist) == list:
-                        if sublist[0] == 'node':
-                            # Add node to the net
-                            net.append([sublist[1].strip('\"'),
-                                        sublist[2].strip('\"')])
-                        elif sublist[0] == 'attr':
-                            net_attr.append(sublist[1].strip('\"'))
-                        else:
-                            continue
-                # Sort nodes according to pin
-                net = sorted(net, key=lambda x: x[1])
-                net_dict['net'] = net
-                net_dict['attr'] = net_attr
-                all_nets_dict[net_name] = net_dict
+
+        # First, keep only items that are netlists
+        nets = filter(lambda i: isinstance(i, list) and i[0] == 'net',
+                      nested_list)
+        for net in nets:
+            net_name = net[1].strip('\"')
+            # NOTE: unlike Zishuo's original implementation, this list will not
+            # be sorted
+            all_nets_dict[net_name] = []
+
+            for node in \
+                    filter(lambda i: isinstance(i, list) and i[0] == 'node',
+                           net):
+                all_nets_dict[net_name].append(
+                    list(map(lambda i: i.strip('\"'), node[1:3]))
+                )
+
         return all_nets_dict
