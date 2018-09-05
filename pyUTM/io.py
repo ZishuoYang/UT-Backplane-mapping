@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 05, 2018 at 04:22 PM -0400
+# Last Change: Wed Sep 05, 2018 at 05:11 PM -0400
 
 import openpyxl
 import re
@@ -263,12 +263,11 @@ class PcadReader(NestedListReader):
 
     # Zishuo's original implementation, with some omissions.
     def read_net_to_dict(self):
-        nested_list = super().read()
         all_nets_dict = {}
 
         # First, keep only items that are netlists
         nets = filter(lambda i: isinstance(i, list) and i[0] == 'net',
-                      nested_list)
+                      super().read())
         for net in nets:
             net_name = net[1].strip('\"')
             # NOTE: unlike Zishuo's original implementation, this list will not
@@ -283,3 +282,17 @@ class PcadReader(NestedListReader):
                 )
 
         return all_nets_dict
+
+    @staticmethod
+    def net_node_gen(dcb_spec, pt_spec):
+        try:
+            dcb, dcb_pin = dcb_spec
+        except Exception:
+            dcb = dcb_pin = None
+
+        try:
+            pt, pt_pin = pt_spec
+        except Exception:
+            pt = pt_pin = None
+
+        return NetNode(dcb, dcb_pin, pt, pt_pin)
