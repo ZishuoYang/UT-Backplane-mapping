@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 13, 2018 at 03:27 PM -0400
+# Last Change: Thu Sep 13, 2018 at 04:35 PM -0400
 
 import openpyxl
 import re
@@ -212,63 +212,43 @@ class NestedListReader(object):
 
 class PcadReader(NestedListReader):
     def read(self):
-        nested_list = super().read()
+        all_nets_dict = self.read_net_to_dict()
+        regex = re.compile(r'^(JD|JP)\d+')
 
         net_nodes_dict = {}
-        for item in nested_list:
-            # Get the nets from nestedList
-            if type(item) == list and item[0] == 'net':
-                net = []
-                net_name = item[1].strip('\"')
-                for sublist in item:
-                    if type(sublist) == list:
-                        if sublist[0] == 'node':
-                            # Add all nodes to a list
-                            net.append([sublist[1].strip('\"'),
-                                        sublist[2].strip('\"')])
-                # Loop over the list to find PT(JP#) and DCB(JD#)
-                for node1 in net:
-                    if 'JP' in node1[0] and 'JPL' not in node1[0]:
-                        # Start with a JP node, to pair with JD
-                        for node2 in net:
-                            if 'JD' in node2[0]:
-                                # NetNode format: form PT-DCB pair
-                                net_node = NetNode(node2[0],
-                                                   node2[1],
-                                                   node1[0],
-                                                   node1[1])
-                                # Add NetNode to net_nodes_dict
-                                net_nodes_dict[net_node] = {'NETNAME': net_name,
-                                                            'ATTR': None}
-                            elif 'JP' in node2[0] and 'JPL' not in node2[0]:
-                                # Skip JP-JP nodes
-                                continue
-                            else:
-                                # Add NetNode with only JP and NETNAME
-                                net_node = NetNode(None,
-                                                   None,
-                                                   node1[0],
-                                                   node1[1])
-                                net_nodes_dict[net_node] = {'NETNAME': net_name,
-                                                            'ATTR': None}
 
-                    if 'JD' in node1[0]:
-                        # Start with JD, to pair with non-JP
-                        for node2 in net:
-                            if 'JP' not in node2[0]:
-                                net_node = NetNode(node1[0],
-                                                   node1[1],
-                                                   None,
-                                                   None)
-                                net_nodes_dict[net_node] = {'NETNAME': net_name,
-                                                            'ATTR': None}
-                            elif 'JPL' in node2[0]:
-                                net_node = NetNode(node1[0],
-                                                   node1[1],
-                                                   None,
-                                                   None)
-                                net_nodes_dict[net_node] = {'NETNAME': net_name,
-                                                            'ATTR': None}
+        for netname in all_nets_dict:
+            dcb_pt_nodes = list(filter(lambda x: regex.search(x[0]),
+                                       all_nets_dict[netname]))
+            other_nodes = list(set(all_nets_dict[netname]) - set(dcb_pt_nodes))
+
+            # First, handle all DCB-DCB, DCB-PT, PT-PT connections
+            doublet_connections = make_combinations(dcb_pt_nodes)
+            for n in doublet_connections:
+                if 'DCB' not in n[0][0]:
+                    n.reverse
+
+                if 'DCB' in n[0][0] and 'DCB' in n[1][0]:
+                    # It's a DCB-DCB connection, ignore it for the moment
+                    pass
+                else:
+                    net_nodes_dict[self.net_node_gen(*n)] = {
+                        'NETNAME': netname,
+                        'ATTR': None
+                    }
+
+            # Now if we do have other components...
+            if other_nodes:
+                for c in dcb_pt_nodes:
+                    if 'DCB' in c[0]:
+                        n = (c, None)
+                    else:
+                        n = (None, c)
+
+                    net_nodes_dict[self.net_node_gen(*n)] = {
+                        'NETNAME': netname,
+                        'ATTR': None
+                    }
 
         return net_nodes_dict
 
@@ -294,7 +274,6 @@ class PcadReader(NestedListReader):
 
         return all_nets_dict
 
-    # This method should have associativity
     @staticmethod
     def net_node_gen(dcb_spec, pt_spec):
         try:
