@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 13, 2018 at 02:36 PM -0400
+# Last Change: Thu Sep 13, 2018 at 04:14 PM -0400
 
 import unittest
 from pathlib import Path
@@ -104,10 +104,10 @@ class PcadReaderTester(unittest.TestCase):
                          NetNode('JD1', '2', 'JP1', '1'))
 
     def test_recursive_combination_base(self):
-        self.assertEqual(make_combinations([1], []), [])
+        self.assertEqual(make_combinations([1]), [])
 
     def test_recursive_combination_sample(self):
-        result = make_combinations([1, 2, 3], [])
+        result = make_combinations([1, 2, 3])
         self.assertEqual(result, [(1, 2), (1, 3), (2, 3)])
 
 
