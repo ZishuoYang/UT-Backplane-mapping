@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 05, 2018 at 05:11 PM -0400
+# Last Change: Thu Sep 13, 2018 at 03:27 PM -0400
 
 import openpyxl
 import re
@@ -191,6 +191,17 @@ class XLReader(object):
 # For Pcad netlist #
 ####################
 
+def make_combinations(src, dest=[]):
+    if len(src) == 1:
+        return dest
+
+    else:
+        head = src[0]
+        for i in src[1:]:
+            dest.append((head, i))
+        return make_combinations(src[1:], dest)
+
+
 class NestedListReader(object):
     def __init__(self, filename):
         self.filename = filename
@@ -283,6 +294,7 @@ class PcadReader(NestedListReader):
 
         return all_nets_dict
 
+    # This method should have associativity
     @staticmethod
     def net_node_gen(dcb_spec, pt_spec):
         try:

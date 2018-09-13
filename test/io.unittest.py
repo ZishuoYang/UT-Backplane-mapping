@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 05, 2018 at 05:08 PM -0400
+# Last Change: Thu Sep 13, 2018 at 02:36 PM -0400
 
 import unittest
 from pathlib import Path
@@ -11,7 +11,7 @@ sys.path.insert(0, '..')
 
 from pyUTM.io import csv_line
 from pyUTM.io import parse_cell_range, XLReader
-from pyUTM.io import PcadReader
+from pyUTM.io import make_combinations, PcadReader
 from pyUTM.datatype import NetNode
 
 input_dir = Path('..') / Path('input')
@@ -102,6 +102,13 @@ class PcadReaderTester(unittest.TestCase):
                          NetNode(None, None, 'JP1', '1'))
         self.assertEqual(PcadReader.net_node_gen(('JD1', '2'), ('JP1', '1')),
                          NetNode('JD1', '2', 'JP1', '1'))
+
+    def test_recursive_combination_base(self):
+        self.assertEqual(make_combinations([1], []), [])
+
+    def test_recursive_combination_sample(self):
+        result = make_combinations([1, 2, 3], [])
+        self.assertEqual(result, [(1, 2), (1, 3), (2, 3)])
 
 
 if __name__ == '__main__':
