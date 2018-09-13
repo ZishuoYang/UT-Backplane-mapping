@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 13, 2018 at 04:35 PM -0400
+# Last Change: Thu Sep 13, 2018 at 04:47 PM -0400
 
 import openpyxl
 import re
@@ -217,25 +217,28 @@ class PcadReader(NestedListReader):
 
         net_nodes_dict = {}
 
-        for netname in all_nets_dict:
+        for netname in all_nets_dict.keys():
             dcb_pt_nodes = list(filter(lambda x: regex.search(x[0]),
                                        all_nets_dict[netname]))
             other_nodes = list(set(all_nets_dict[netname]) - set(dcb_pt_nodes))
 
-            # First, handle all DCB-DCB, DCB-PT, PT-PT connections
-            doublet_connections = make_combinations(dcb_pt_nodes)
-            for n in doublet_connections:
-                if 'DCB' not in n[0][0]:
-                    n.reverse
+            # First, handle all DCB-DCB, DCB-PT, PT-PT connections, if it's non-
+            # empty
+            if dcb_pt_nodes:
+                doublet_connections = make_combinations(dcb_pt_nodes)
+                for n in doublet_connections:
+                    if 'DCB' not in n[0][0]:
+                        n = list(n)
+                        n.reverse()
 
-                if 'DCB' in n[0][0] and 'DCB' in n[1][0]:
-                    # It's a DCB-DCB connection, ignore it for the moment
-                    pass
-                else:
-                    net_nodes_dict[self.net_node_gen(*n)] = {
-                        'NETNAME': netname,
-                        'ATTR': None
-                    }
+                    if 'DCB' in n[0][0] and 'DCB' in n[1][0]:
+                        # It's a DCB-DCB connection, ignore it for the moment
+                        pass
+                    else:
+                        net_nodes_dict[self.net_node_gen(*n)] = {
+                            'NETNAME': netname,
+                            'ATTR': None
+                        }
 
             # Now if we do have other components...
             if other_nodes:
@@ -269,7 +272,7 @@ class PcadReader(NestedListReader):
                     filter(lambda i: isinstance(i, list) and i[0] == 'node',
                            net):
                 all_nets_dict[net_name].append(
-                    list(map(lambda i: i.strip('\"'), node[1:3]))
+                    tuple(map(lambda i: i.strip('\"'), node[1:3]))
                 )
 
         return all_nets_dict
