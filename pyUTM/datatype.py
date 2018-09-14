@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 01:42 PM -0400
+# Last Change: Fri Sep 14, 2018 at 02:56 PM -0400
 
 import builtins
+import typing
+
 from string import ascii_uppercase
 from collections import namedtuple
 
@@ -111,5 +113,9 @@ class BrkStr(str):
 # NOTE: Again, this is an immutable data type.
 NetNode = namedtuple('NetNode', ['DCB', 'DCB_PIN', 'PT', 'PT_PIN'])
 
-GenericNetNode = namedtuple('GenericNetNode',
-                            ['Node1', 'Node1_PIN', 'Node2', 'Node2_PIN'])
+
+class GenericNetNode(typing.NamedTuple):
+    Node1: str
+    Node1_PIN: str
+    Node2: str
+    Node2_PIN: str
