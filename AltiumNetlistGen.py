@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 12:51 PM -0400
+# Last Change: Fri Sep 14, 2018 at 01:08 PM -0400
 
 from pathlib import Path
 
@@ -358,10 +358,12 @@ class RuleDCB_2V5(RulePD):
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
 
         for rule in self.rules:
-            if self.DCB_PREFIX+str(dcb_idx) in rule and \
-                    '2V5' in rule and 'SENSE' not in rule:
-                net_name = rule
-                break
+            if '2V5' in rule and 'SENSE' not in rule:
+                dcb1, dcb2, _ = rule.split('_', 2)
+                if self.DCB_PREFIX+str(dcb_idx) == dcb1 or \
+                        str(dcb_idx) == dcb2:
+                    net_name = rule
+                    break
         return (
             {
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
