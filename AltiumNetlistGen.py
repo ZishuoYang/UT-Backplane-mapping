@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 11:12 AM -0400
+# Last Change: Fri Sep 14, 2018 at 12:35 PM -0400
 
 from pathlib import Path
 
@@ -51,11 +51,17 @@ for cell_range in cell_range_headers.keys():
 
 # Now we get a behemoth list, each entry is a two-key dictionary. We want to
 # extract all values that is not 'GND' nor None.
-brkoutbrd_pin_assignments = list()
+brkoutbrd_pin_assignments_raw = list()
 for d in brkoutbrd_pin_assignments_with_dict:
     for key in d.keys():
         if d[key] != 'GND' and d[key] is not None:
-            brkoutbrd_pin_assignments.append(BrkStr(d[key]))
+            brkoutbrd_pin_assignments_raw.append(BrkStr(d[key]))
+
+# NOTE: This is required as we get some wired string mismatch issues with the
+# *_raw list.
+# e.g. 'JD0_JT0_1V5_SENSE_P' was in the list, but if we looping through the list
+# and test if '1V5' was IN any of the element, it would match None.
+brkoutbrd_pin_assignments = [str(i) for i in brkoutbrd_pin_assignments_raw]
 
 
 ##########################
@@ -421,27 +427,13 @@ class RuleDCB_GND(RulePD):
         )
 
 
-class RuleDCB_AGND(RulePD):
+class RuleDCB_AGND(RuleDCB_GND):
     def match(self, data, dcb_idx):
         if 'AGND' == data['Signal ID']:
             # Which means that this DCB pin AGND (not GND).
             return True
         else:
             return False
-
-    def process(self, data, dcb_idx):
-        net_name = \
-            self.DCB_PREFIX + str(dcb_idx) + '_' + \
-            data['Signal ID']
-        return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': data['SEAM pin'],
-                'PT': None,
-                'PT_PIN': None
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
 
 
 dcb_rules = [RuleDCB_PT(),
