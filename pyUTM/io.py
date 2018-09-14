@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 13, 2018 at 04:47 PM -0400
+# Last Change: Fri Sep 14, 2018 at 03:24 AM -0400
 
 import openpyxl
 import re
 
 from pyparsing import nestedExpr
+# from tco import with_continuations  # Make Python do tail recursion elimination
 
 from pyUTM.datatype import range, ColNum, NetNode
 from pyUTM.selection import RulePD
@@ -191,15 +192,16 @@ class XLReader(object):
 # For Pcad netlist #
 ####################
 
-def make_combinations(src, dest=[]):
-    if len(src) == 1:
-        return dest
+# @with_continuations()
+# def make_combinations(src, dest=[], self=None):
+    # if len(src) == 1:
+        # return dest
 
-    else:
-        head = src[0]
-        for i in src[1:]:
-            dest.append((head, i))
-        return make_combinations(src[1:], dest)
+    # else:
+        # head = src[0]
+        # for i in src[1:]:
+            # dest.append((head, i))
+        # return self(src[1:], dest)
 
 
 class NestedListReader(object):
@@ -212,43 +214,41 @@ class NestedListReader(object):
 
 class PcadReader(NestedListReader):
     def read(self):
-        all_nets_dict = self.read_net_to_dict()
-        regex = re.compile(r'^(JD|JP)\d+')
+        all_nets_dict = self.readnets()
+        regex_dcb = re.compile(r'^JD\d+')
+        regex_pt = re.compile(r'^JP\d+')
 
         net_nodes_dict = {}
 
         for netname in all_nets_dict.keys():
-            dcb_pt_nodes = list(filter(lambda x: regex.search(x[0]),
-                                       all_nets_dict[netname]))
-            other_nodes = list(set(all_nets_dict[netname]) - set(dcb_pt_nodes))
+            dcb_nodes = list(filter(lambda x: regex_dcb.search(x[0]),
+                                    all_nets_dict[netname]))
+            pt_nodes = list(filter(lambda x: regex_pt.search(x[0]),
+                                   all_nets_dict[netname]))
+            other_nodes = list(
+                set(all_nets_dict[netname]) - set(dcb_nodes) - set(pt_nodes)
+            )
 
-            # First, handle all DCB-DCB, DCB-PT, PT-PT connections, if it's non-
-            # empty
-            if dcb_pt_nodes:
-                doublet_connections = make_combinations(dcb_pt_nodes)
-                for n in doublet_connections:
-                    if 'DCB' not in n[0][0]:
-                        n = list(n)
-                        n.reverse()
-
-                    if 'DCB' in n[0][0] and 'DCB' in n[1][0]:
-                        # It's a DCB-DCB connection, ignore it for the moment
-                        pass
-                    else:
-                        net_nodes_dict[self.net_node_gen(*n)] = {
+            # First, handle DCB-PT connections
+            if dcb_nodes and pt_nodes:
+                for d in dcb_nodes:
+                    for p in pt_nodes:
+                        net_nodes_dict[self.net_node_gen(d, p)] = {
                             'NETNAME': netname,
                             'ATTR': None
                         }
 
             # Now if we do have other components...
-            if other_nodes:
-                for c in dcb_pt_nodes:
-                    if 'DCB' in c[0]:
-                        n = (c, None)
-                    else:
-                        n = (None, c)
+            if other_nodes and dcb_nodes:
+                for d in dcb_nodes:
+                    net_nodes_dict[self.net_node_gen(d, None)] = {
+                        'NETNAME': netname,
+                        'ATTR': None
+                    }
 
-                    net_nodes_dict[self.net_node_gen(*n)] = {
+            if other_nodes and pt_nodes:
+                for p in pt_nodes:
+                    net_nodes_dict[self.net_node_gen(None, p)] = {
                         'NETNAME': netname,
                         'ATTR': None
                     }
@@ -256,7 +256,7 @@ class PcadReader(NestedListReader):
         return net_nodes_dict
 
     # Zishuo's original implementation, with some omissions.
-    def read_net_to_dict(self):
+    def readnets(self):
         all_nets_dict = {}
 
         # First, keep only items that are netlists
