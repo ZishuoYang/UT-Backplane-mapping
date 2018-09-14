@@ -328,8 +328,9 @@ class RuleDCB_1V5(RulePD):
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
 
         for rule in self.rules:
-            if self.DCB_PREFIX+str(dcb_idx) in rule and \
-                    '1V5' in rule and 'SENSE' not in rule:
+            dcb_name, tail = rule.split('_', 1)
+            if self.DCB_PREFIX+str(dcb_idx) == dcb_name and \
+                    '1V5' in tail and 'SENSE' not in tail:
                 net_name = rule
                 break
         return (
@@ -390,8 +391,9 @@ class RuleDCB_1V5Sense(RulePD):
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
 
         for rule in self.rules:
-            if self.DCB_PREFIX+str(dcb_idx) in rule and \
-                    data['Signal ID'][:-2] in rule:
+            dcb_name, tail = rule.split('_', 1)
+            if self.DCB_PREFIX+str(dcb_idx) == dcb_name and \
+                    data['Signal ID'][:-2] in tail:
                 net_name = rule
                 break
         return (
