@@ -282,6 +282,30 @@ class RuleDCB_PT(RulePD):
         )
 
 
+class RuleDCB_DCB(RulePD):
+    def match(self, data, dcb_idx):
+        if data['SEAM pin D'] is not None:
+            # Which means that this DCB pin is connected to a DCB pin.
+            return True
+        else:
+            return False
+
+    def process(self, data, dcb_idx):
+        net_name = \
+            self.DCB_PREFIX + str(dcb_idx) + '_' + \
+            self.DCB_PREFIX + self.DCBID(data['SEAM slot']) + '_' + \
+            data['Signal ID']
+        return (
+            {
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': data['SEAM pin'],
+                'PT': self.DCB_PREFIX + self.DCBID(data['SEAM slot']),
+                'PT_PIN': self.DEPADDING(data['SEAM pin D'])
+            },
+            {'NETNAME': net_name, 'ATTR': None}
+        )
+
+
 class RuleDCB_1V5(RulePD):
     def __init__(self, brkoutbrd_rules):
         self.rules = brkoutbrd_rules
@@ -295,7 +319,7 @@ class RuleDCB_1V5(RulePD):
     def process(self, data, dcb_idx):
         net_name = \
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-        attr = '_ForRefOnly_'
+        attr = None
 
         for rule in self.rules:
             if self.DCB_PREFIX+str(dcb_idx) in rule and \
@@ -327,7 +351,7 @@ class RuleDCB_2V5(RulePD):
     def process(self, data, dcb_idx):
         net_name = \
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-        attr = '_ForRefOnly_'
+        attr = None
 
         for rule in self.rules:
             if self.DCB_PREFIX+str(dcb_idx) in rule and \
@@ -359,7 +383,7 @@ class RuleDCB_1V5Sense(RulePD):
     def process(self, data, dcb_idx):
         net_name = \
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-        attr = '_ForRefOnly_'
+        attr = None
 
         for rule in self.rules:
             if self.DCB_PREFIX+str(dcb_idx) in rule and \
@@ -428,6 +452,7 @@ dcb_rules = [RuleDCB_PT(),
              RuleDCB_1V5(brkoutbrd_pin_assignments),
              RuleDCB_2V5(brkoutbrd_pin_assignments),
              RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
+             RuleDCB_DCB(),
              RuleDCB_GND(),
              RuleDCB_AGND(),
              RuleDCBDefault()]
@@ -461,7 +486,7 @@ write_to_csv(pt_result_output_filename, pt_result, formatter=legacy_csv_line_pt)
 
 
 ####################################
-# Generate Altium list for PigTail #
+# Generate Altium list for DCB     #
 ####################################
 
 DcbSelector = SelectorPD(dcb_descr, dcb_rules)
