@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 03:24 AM -0400
+# Last Change: Fri Sep 14, 2018 at 03:40 AM -0400
 
 import unittest
 from pathlib import Path
@@ -12,7 +12,8 @@ sys.path.insert(0, '..')
 
 from pyUTM.io import csv_line
 from pyUTM.io import parse_cell_range, XLReader
-from pyUTM.io import make_combinations, PcadReader
+from pyUTM.io import PcadReader
+# from pyUTM.io import make_combinations, PcadReader
 from pyUTM.datatype import NetNode
 
 input_dir = Path('..') / Path('input')
