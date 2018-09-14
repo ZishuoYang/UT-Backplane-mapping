@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 01:21 PM -0400
+# Last Change: Fri Sep 14, 2018 at 01:25 PM -0400
 
 from pathlib import Path
 
@@ -441,7 +441,7 @@ dcb_rules = [RuleDCB_PT(),
              RuleDCB_1V5(brkoutbrd_pin_assignments),
              RuleDCB_2V5(brkoutbrd_pin_assignments),
              RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-             # RuleDCB_DCB(),
+             RuleDCB_DCB(),
              RuleDCB_GND(),
              RuleDCB_AGND(),
              RuleDCBDefault()]
