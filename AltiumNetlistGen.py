@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 10:56 AM -0400
+# Last Change: Fri Sep 14, 2018 at 11:06 AM -0400
 
 from pathlib import Path
 
@@ -485,9 +485,9 @@ pt_result = PtSelector.do()
 write_to_csv(pt_result_output_filename, pt_result, formatter=legacy_csv_line_pt)
 
 
-####################################
-# Generate Altium list for DCB     #
-####################################
+################################
+# Generate Altium list for DCB #
+################################
 
 DcbSelector = SelectorPD(dcb_descr, dcb_rules)
 print('====WARNINGS for DCB====')
