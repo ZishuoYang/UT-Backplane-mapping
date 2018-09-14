@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 02:42 PM -0400
+# Last Change: Fri Sep 14, 2018 at 10:56 AM -0400
 
 from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
-from pyUTM.io import legacy_csv_line_pt
+from pyUTM.io import legacy_csv_line_pt, legacy_csv_line_dcb
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import BrkStr
 
@@ -73,7 +73,7 @@ pt_descr = PtReader.read(range(0, 12), 'B5:K405',
 
 DcbReader = XLReader(dcb_filename)
 dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
-                           sortby=lambda d: d['SEAM pin'])
+                           sortby=lambda d: RulePD.PADDING(d['SEAM pin']))
 
 
 ########################################
@@ -429,6 +429,7 @@ dcb_rules = [RuleDCB_PT(),
              RuleDCB_2V5(brkoutbrd_pin_assignments),
              RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
              RuleDCB_GND(),
+             RuleDCB_AGND(),
              RuleDCBDefault()]
 
 
@@ -462,10 +463,10 @@ write_to_csv(pt_result_output_filename, pt_result, formatter=legacy_csv_line_pt)
 ####################################
 # Generate Altium list for PigTail #
 ####################################
+
 DcbSelector = SelectorPD(dcb_descr, dcb_rules)
 print('====WARNINGS for DCB====')
 dcb_result = DcbSelector.do()
-write_to_csv(dcb_result_output_filename, dcb_result, formatter=legacy_csv_line_pt)
 
-
-
+write_to_csv(dcb_result_output_filename, dcb_result,
+             formatter=legacy_csv_line_dcb)
