@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 11:06 AM -0400
+# Last Change: Fri Sep 14, 2018 at 11:12 AM -0400
 
 from pathlib import Path
 
@@ -311,7 +311,7 @@ class RuleDCB_1V5(RulePD):
         self.rules = brkoutbrd_rules
 
     def match(self, data, dcb_idx):
-        if '1V5' in data['Signal ID'] and 'SENSE' not in data['Signal ID']:
+        if data['Signal ID'] == '1.5V':
             return True
         else:
             return False
@@ -319,13 +319,11 @@ class RuleDCB_1V5(RulePD):
     def process(self, data, dcb_idx):
         net_name = \
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-        attr = None
 
         for rule in self.rules:
             if self.DCB_PREFIX+str(dcb_idx) in rule and \
                     '1V5' in rule and 'SENSE' not in rule:
                 net_name = rule
-                attr = None
                 break
         return (
             {
@@ -334,7 +332,7 @@ class RuleDCB_1V5(RulePD):
                 'PT': None,
                 'PT_PIN': None
             },
-            {'NETNAME': net_name, 'ATTR': attr}
+            {'NETNAME': net_name, 'ATTR': None}
         )
 
 
@@ -343,7 +341,7 @@ class RuleDCB_2V5(RulePD):
         self.rules = brkoutbrd_rules
 
     def match(self, data, dcb_idx):
-        if '2V5' in data['Signal ID'] and 'SENSE' not in data['Signal ID']:
+        if data['Signal ID'] == '2.5V':
             return True
         else:
             return False
@@ -351,13 +349,11 @@ class RuleDCB_2V5(RulePD):
     def process(self, data, dcb_idx):
         net_name = \
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-        attr = None
 
         for rule in self.rules:
             if self.DCB_PREFIX+str(dcb_idx) in rule and \
                     '2V5' in rule and 'SENSE' not in rule:
                 net_name = rule
-                attr = None
                 break
         return (
             {
@@ -366,7 +362,7 @@ class RuleDCB_2V5(RulePD):
                 'PT': None,
                 'PT_PIN': None
             },
-            {'NETNAME': net_name, 'ATTR': attr}
+            {'NETNAME': net_name, 'ATTR': None}
         )
 
 
@@ -452,7 +448,7 @@ dcb_rules = [RuleDCB_PT(),
              RuleDCB_1V5(brkoutbrd_pin_assignments),
              RuleDCB_2V5(brkoutbrd_pin_assignments),
              RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-             RuleDCB_DCB(),
+             # RuleDCB_DCB(),
              RuleDCB_GND(),
              RuleDCB_AGND(),
              RuleDCBDefault()]
