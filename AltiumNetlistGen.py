@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 01:25 PM -0400
+# Last Change: Fri Sep 14, 2018 at 04:43 PM -0400
 
 from pathlib import Path
 
@@ -438,14 +438,30 @@ class RuleDCB_AGND(RuleDCB_GND):
         else:
             return False
 
+    def process(self, data, dcb_idx):
+        net_name = \
+            self.DCB_PREFIX + str(dcb_idx) + '_' + \
+            data['Signal ID']
+        return (
+            {
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': data['SEAM pin'],
+                'PT': data['Pigtail slot'] if data['Pigtail slot'] is not None
+                else None,
+                'PT_PIN': data['Pigtail pin'] if data['Pigtail pin'] is not None
+                else None
+            },
+            {'NETNAME': net_name, 'ATTR': None}
+        )
 
-dcb_rules = [RuleDCB_PT(),
+
+dcb_rules = [RuleDCB_GND(),
+             RuleDCB_AGND(),
+             RuleDCB_PT(),
              RuleDCB_1V5(brkoutbrd_pin_assignments),
              RuleDCB_2V5(brkoutbrd_pin_assignments),
              RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
              RuleDCB_DCB(),
-             RuleDCB_GND(),
-             RuleDCB_AGND(),
              RuleDCBDefault()]
 
 
