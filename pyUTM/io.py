@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 12:48 PM -0400
+# Last Change: Fri Sep 14, 2018 at 12:55 PM -0400
 
 import openpyxl
 import re
@@ -101,7 +101,6 @@ def legacy_csv_line_dcb(node, prop):
     s += ','
 
     s += RulePD.PADDING(node.PT_PIN) if node.PT_PIN is not None else ''
-    s += ','
 
     return s
 
