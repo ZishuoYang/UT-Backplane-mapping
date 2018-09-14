@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 04:18 PM -0400
+# Last Change: Fri Sep 14, 2018 at 01:50 PM -0400
 
 import openpyxl
 import re
 
 from pyparsing import nestedExpr
+# from tco import with_continuations  # Make Python do tail recursion elimination
 
-from pyUTM.datatype import range, ColNum, NetNode
+from pyUTM.datatype import range, ColNum, NetNode, GenericNetNode
 from pyUTM.selection import RulePD
 
 
@@ -37,6 +38,71 @@ def csv_line(node, prop):
 
     # Remove the trailing ','
     return s[:-1]
+
+
+# NOTE: Backward-compatibility: For v0.3 or older.
+def legacy_csv_line_dcb(node, prop):
+    s = ''
+    netname = prop['NETNAME']
+    attr = prop['ATTR']
+
+    if netname is None:
+        s += attr
+
+    elif netname.endswith('1V5_M') or netname.endswith('1V5_S'):
+        netname = netname[:-2]
+        s += netname
+
+    elif attr is None and 'JP' not in netname:
+        s += netname
+
+    else:
+        attr = '_' if attr is None else attr
+
+        try:
+            net_head, net_body, net_tail = netname.split('_', 2)
+
+            if node.DCB is not None:
+                if node.DCB in net_head:
+                    net_head += RulePD.PADDING(node.DCB_PIN)
+
+                if node.DCB in net_body:
+                    net_body += RulePD.PADDING(node.DCB_PIN)
+
+            if node.PT is not None:
+                if node.PT in net_head:
+                    net_head += RulePD.PADDING(node.PT_PIN)
+
+                if node.PT in net_body:
+                    net_body += RulePD.PADDING(node.PT_PIN)
+
+            s += (net_head + attr + net_body + '_' + net_tail)
+
+        except Exception:
+            net_head, net_tail = netname.split('_', 1)
+
+            # Take advantage of lazy Boolean evaluation in Python.
+            if node.DCB is not None and node.DCB in net_head:
+                net_head += RulePD.PADDING(node.DCB_PIN)
+
+            if node.PT is not None and node.PT in net_head:
+                net_head += RulePD.PADDING(node.PT_PIN)
+
+            s += (net_head + attr + net_tail)
+    s += ','
+
+    s += node.DCB[2:] if node.DCB is not None else ''
+    s += ','
+
+    s += RulePD.PADDING(node.DCB_PIN) if node.DCB_PIN is not None else ''
+    s += ','
+
+    s += node.PT[2:] if node.PT is not None else ''
+    s += ','
+
+    s += RulePD.PADDING(node.PT_PIN) if node.PT_PIN is not None else ''
+
+    return s
 
 
 # NOTE: Backward-compatibility: For v0.3 or older.
@@ -191,6 +257,18 @@ class XLReader(object):
 # For Pcad netlist #
 ####################
 
+# @with_continuations()
+# def make_combinations(src, dest=[], self=None):
+    # if len(src) == 1:
+        # return dest
+
+    # else:
+        # head = src[0]
+        # for i in src[1:]:
+            # dest.append((head, i))
+        # return self(src[1:], dest)
+
+
 class NestedListReader(object):
     def __init__(self, filename):
         self.filename = filename
@@ -201,90 +279,79 @@ class NestedListReader(object):
 
 class PcadReader(NestedListReader):
     def read(self):
-        nested_list = super().read()
+        all_nets_dict = self.readnets()
+        regex_dcb = re.compile(r'^JD\d+')
+        regex_pt = re.compile(r'^JP\d+')
 
         net_nodes_dict = {}
-        for item in nested_list:
-            # Get the nets from nestedList
-            if type(item) == list and item[0] == 'net':
-                net = []
-                net_name = item[1].strip('\"')
-                for sublist in item:
-                    if type(sublist) == list:
-                        if sublist[0] == 'node':
-                            # Add all nodes to a list
-                            net.append([sublist[1].strip('\"'),
-                                        sublist[2].strip('\"')])
-                # Loop over the list to find PT(JP#) and DCB(JD#)
-                for node1 in net:
-                    if 'JP' in node1[0] and 'JPL' not in node1[0]:
-                        # Start with a JP node, to pair with JD
-                        for node2 in net:
-                            if 'JD' in node2[0]:
-                                # NetNode format: form PT-DCB pair
-                                net_node = NetNode(node2[0],
-                                                   node2[1],
-                                                   node1[0],
-                                                   node1[1])
-                                # Add NetNode to net_nodes_dict
-                                net_nodes_dict[net_node] = {'NETNAME': net_name,
-                                                            'ATTR': None}
-                            elif 'JP' in node2[0] and 'JPL' not in node2[0]:
-                                # Skip JP-JP nodes
-                                continue
-                            else:
-                                # Add NetNode with only JP and NETNAME
-                                net_node = NetNode(None,
-                                                   None,
-                                                   node1[0],
-                                                   node1[1])
-                                net_nodes_dict[net_node] = {'NETNAME': net_name,
-                                                            'ATTR': None}
 
-                    if 'JD' in node1[0]:
-                        # Start with JD, to pair with non-JP
-                        for node2 in net:
-                            if 'JP' not in node2[0]:
-                                net_node = NetNode(node1[0],
-                                                   node1[1],
-                                                   None,
-                                                   None)
-                                net_nodes_dict[net_node] = {'NETNAME': net_name,
-                                                            'ATTR': None}
-                            elif 'JPL' in node2[0]:
-                                net_node = NetNode(node1[0],
-                                                   node1[1],
-                                                   None,
-                                                   None)
-                                net_nodes_dict[net_node] = {'NETNAME': net_name,
-                                                            'ATTR': None}
+        for netname in all_nets_dict.keys():
+            dcb_nodes = list(filter(lambda x: regex_dcb.search(x[0]),
+                                    all_nets_dict[netname]))
+            pt_nodes = list(filter(lambda x: regex_pt.search(x[0]),
+                                   all_nets_dict[netname]))
+            other_nodes = list(
+                set(all_nets_dict[netname]) - set(dcb_nodes) - set(pt_nodes)
+            )
+
+            # First, handle DCB-PT connections
+            if dcb_nodes and pt_nodes:
+                for d in dcb_nodes:
+                    for p in pt_nodes:
+                        net_nodes_dict[self.net_node_gen(d, p)] = {
+                            'NETNAME': netname,
+                            'ATTR': None
+                        }
+
+            # Now if we do have other components...
+            if other_nodes and dcb_nodes:
+                for d in dcb_nodes:
+                    net_nodes_dict[self.net_node_gen(d, None)] = {
+                        'NETNAME': netname,
+                        'ATTR': None
+                    }
+
+            if other_nodes and pt_nodes:
+                for p in pt_nodes:
+                    net_nodes_dict[self.net_node_gen(None, p)] = {
+                        'NETNAME': netname,
+                        'ATTR': None
+                    }
 
         return net_nodes_dict
 
-    def readByNet(self):
-        nested_list = super().read()
-
+    # Zishuo's original implementation, with some omissions.
+    def readnets(self):
         all_nets_dict = {}
-        for item in nested_list:
-            # Get the nets from nestedList
-            if type(item) == list and item[0] == 'net':
-                net_dict = {}
-                net = []
-                net_attr = []
-                net_name = item[1].strip('\"')
-                for sublist in item:
-                    if type(sublist) == list:
-                        if sublist[0] == 'node':
-                            # Add node to the net
-                            net.append([sublist[1].strip('\"'),
-                                        sublist[2].strip('\"')])
-                        elif sublist[0] == 'attr':
-                            net_attr.append(sublist[1].strip('\"'))
-                        else:
-                            continue
-                # Sort nodes according to pin
-                net = sorted(net, key=lambda x: x[1])
-                net_dict['net'] = net
-                net_dict['attr'] = net_attr
-                all_nets_dict[net_name] = net_dict
+
+        # First, keep only items that are netlists
+        nets = filter(lambda i: isinstance(i, list) and i[0] == 'net',
+                      super().read())
+        for net in nets:
+            net_name = net[1].strip('\"')
+            # NOTE: unlike Zishuo's original implementation, this list will not
+            # be sorted
+            all_nets_dict[net_name] = []
+
+            for node in \
+                    filter(lambda i: isinstance(i, list) and i[0] == 'node',
+                           net):
+                all_nets_dict[net_name].append(
+                    tuple(map(lambda i: i.strip('\"'), node[1:3]))
+                )
+
         return all_nets_dict
+
+    @staticmethod
+    def net_node_gen(dcb_spec, pt_spec):
+        try:
+            dcb, dcb_pin = dcb_spec
+        except Exception:
+            dcb = dcb_pin = None
+
+        try:
+            pt, pt_pin = pt_spec
+        except Exception:
+            pt = pt_pin = None
+
+        return NetNode(dcb, dcb_pin, pt, pt_pin)

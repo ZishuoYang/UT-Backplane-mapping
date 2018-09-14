@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 02:42 PM -0400
+# Last Change: Fri Sep 14, 2018 at 01:25 PM -0400
 
 from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
-from pyUTM.io import legacy_csv_line_pt
+from pyUTM.io import legacy_csv_line_pt, legacy_csv_line_dcb
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import BrkStr
 
@@ -51,11 +51,17 @@ for cell_range in cell_range_headers.keys():
 
 # Now we get a behemoth list, each entry is a two-key dictionary. We want to
 # extract all values that is not 'GND' nor None.
-brkoutbrd_pin_assignments = list()
+brkoutbrd_pin_assignments_raw = list()
 for d in brkoutbrd_pin_assignments_with_dict:
     for key in d.keys():
         if d[key] != 'GND' and d[key] is not None:
-            brkoutbrd_pin_assignments.append(BrkStr(d[key]))
+            brkoutbrd_pin_assignments_raw.append(BrkStr(d[key]))
+
+# NOTE: This is required as we get some wired string mismatch issues with the
+# *_raw list.
+# e.g. 'JD0_JT0_1V5_SENSE_P' was in the list, but if we looping through the list
+# and test if '1V5' was IN any of the element, it would match None.
+brkoutbrd_pin_assignments = [str(i) for i in brkoutbrd_pin_assignments_raw]
 
 
 ##########################
@@ -73,7 +79,7 @@ pt_descr = PtReader.read(range(0, 12), 'B5:K405',
 
 DcbReader = XLReader(dcb_filename)
 dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
-                           sortby=lambda d: d['SEAM pin'])
+                           sortby=lambda d: RulePD.PADDING(d['SEAM pin']))
 
 
 ########################################
@@ -168,8 +174,9 @@ class RulePTPTLvSource(RulePD):
         attr = '_ForRefOnly_'
 
         for rule in self.rules:
-            if self.PT_PREFIX+str(pt_idx) in rule and \
-                    data['Signal ID'] in rule:
+            pt_name, tail = rule.split('_', 1)
+            if self.PT_PREFIX+str(pt_idx) == pt_name and \
+                    data['Signal ID'] in tail:
                 net_name = rule
                 attr = None
                 break
@@ -311,7 +318,7 @@ class RuleDCB_1V5(RulePD):
         self.rules = brkoutbrd_rules
 
     def match(self, data, dcb_idx):
-        if '1V5' in data['Signal ID'] and 'SENSE' not in data['Signal ID']:
+        if data['Signal ID'] == '1.5V':
             return True
         else:
             return False
@@ -319,13 +326,11 @@ class RuleDCB_1V5(RulePD):
     def process(self, data, dcb_idx):
         net_name = \
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-        attr = None
 
         for rule in self.rules:
             if self.DCB_PREFIX+str(dcb_idx) in rule and \
                     '1V5' in rule and 'SENSE' not in rule:
                 net_name = rule
-                attr = None
                 break
         return (
             {
@@ -334,7 +339,7 @@ class RuleDCB_1V5(RulePD):
                 'PT': None,
                 'PT_PIN': None
             },
-            {'NETNAME': net_name, 'ATTR': attr}
+            {'NETNAME': net_name, 'ATTR': None}
         )
 
 
@@ -343,7 +348,7 @@ class RuleDCB_2V5(RulePD):
         self.rules = brkoutbrd_rules
 
     def match(self, data, dcb_idx):
-        if '2V5' in data['Signal ID'] and 'SENSE' not in data['Signal ID']:
+        if data['Signal ID'] == '2.5V':
             return True
         else:
             return False
@@ -351,14 +356,14 @@ class RuleDCB_2V5(RulePD):
     def process(self, data, dcb_idx):
         net_name = \
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-        attr = None
 
         for rule in self.rules:
-            if self.DCB_PREFIX+str(dcb_idx) in rule and \
-                    '2V5' in rule and 'SENSE' not in rule:
-                net_name = rule
-                attr = None
-                break
+            if '2V5' in rule and 'SENSE' not in rule:
+                dcb1, dcb2, _ = rule.split('_', 2)
+                if self.DCB_PREFIX+str(dcb_idx) == dcb1 or \
+                        str(dcb_idx) == dcb2:
+                    net_name = rule
+                    break
         return (
             {
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
@@ -366,7 +371,7 @@ class RuleDCB_2V5(RulePD):
                 'PT': None,
                 'PT_PIN': None
             },
-            {'NETNAME': net_name, 'ATTR': attr}
+            {'NETNAME': net_name, 'ATTR': None}
         )
 
 
@@ -383,13 +388,11 @@ class RuleDCB_1V5Sense(RulePD):
     def process(self, data, dcb_idx):
         net_name = \
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-        attr = None
 
         for rule in self.rules:
             if self.DCB_PREFIX+str(dcb_idx) in rule and \
-                    data['Signal ID'] in rule:
+                    data['Signal ID'][:-2] in rule:
                 net_name = rule
-                attr = None
                 break
         return (
             {
@@ -398,7 +401,7 @@ class RuleDCB_1V5Sense(RulePD):
                 'PT': None,
                 'PT_PIN': None
             },
-            {'NETNAME': net_name, 'ATTR': attr}
+            {'NETNAME': net_name, 'ATTR': None}
         )
 
 
@@ -425,27 +428,13 @@ class RuleDCB_GND(RulePD):
         )
 
 
-class RuleDCB_AGND(RulePD):
+class RuleDCB_AGND(RuleDCB_GND):
     def match(self, data, dcb_idx):
         if 'AGND' == data['Signal ID']:
             # Which means that this DCB pin AGND (not GND).
             return True
         else:
             return False
-
-    def process(self, data, dcb_idx):
-        net_name = \
-            self.DCB_PREFIX + str(dcb_idx) + '_' + \
-            data['Signal ID']
-        return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': data['SEAM pin'],
-                'PT': None,
-                'PT_PIN': None
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
 
 
 dcb_rules = [RuleDCB_PT(),
@@ -485,13 +474,13 @@ pt_result = PtSelector.do()
 write_to_csv(pt_result_output_filename, pt_result, formatter=legacy_csv_line_pt)
 
 
-####################################
-# Generate Altium list for DCB     #
-####################################
+################################
+# Generate Altium list for DCB #
+################################
+
 DcbSelector = SelectorPD(dcb_descr, dcb_rules)
 print('====WARNINGS for DCB====')
 dcb_result = DcbSelector.do()
-write_to_csv(dcb_result_output_filename, dcb_result, formatter=legacy_csv_line_pt)
 
-
-
+write_to_csv(dcb_result_output_filename, dcb_result,
+             formatter=legacy_csv_line_dcb)

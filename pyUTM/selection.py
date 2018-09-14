@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 02:43 PM -0400
+# Last Change: Fri Sep 14, 2018 at 01:25 PM -0400
 
 import re
 import abc
@@ -112,7 +112,7 @@ class RulePD(Rule):
 
     @staticmethod
     def DCBID(s):
-        dcb_idx, _, _ = s.split()
+        dcb_idx, _, _ = s.split(' ', 2)
         return str(int(dcb_idx))
 
     @staticmethod

@@ -1,16 +1,19 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Aug 31, 2018 at 02:54 PM -0400
+# Last Change: Fri Sep 14, 2018 at 03:40 AM -0400
 
 import unittest
 from pathlib import Path
+# from math import factorial
 
 import sys
 sys.path.insert(0, '..')
 
 from pyUTM.io import csv_line
 from pyUTM.io import parse_cell_range, XLReader
+from pyUTM.io import PcadReader
+# from pyUTM.io import make_combinations, PcadReader
 from pyUTM.datatype import NetNode
 
 input_dir = Path('..') / Path('input')
@@ -89,6 +92,31 @@ class XLReaderTester(unittest.TestCase):
         # FIXME: '9' will come after '11'
         self.assertEqual(result[0][3]['Conn'], 'JD11_10_JPL2_2V5')
         self.assertEqual(result[0][-1]['Conn'], 'JP11_JPL2_P4_LV_SOURCE')
+
+
+class PcadReaderTester(unittest.TestCase):
+    def test_net_node_gen(self):
+        self.assertEqual(PcadReader.net_node_gen(None, None),
+                         NetNode(None, None, None, None))
+        self.assertEqual(PcadReader.net_node_gen(('JD1', '1'), None),
+                         NetNode('JD1', '1', None, None))
+        self.assertEqual(PcadReader.net_node_gen(None, ('JP1', '1')),
+                         NetNode(None, None, 'JP1', '1'))
+        self.assertEqual(PcadReader.net_node_gen(('JD1', '2'), ('JP1', '1')),
+                         NetNode('JD1', '2', 'JP1', '1'))
+
+    # NOTE: Forget about recursion for now.
+    # def test_recursive_combination_base(self):
+        # self.assertEqual(make_combinations([1]), [])
+
+    # FIXME: Too bad, with TCO, these unit test breaks.
+    # def test_recursive_combination_sample(self):
+        # self.assertEqual(make_combinations([1, 2, 3]), [(1, 2), (1, 3), (2, 3)])
+
+    # def test_recursive_combination_recursion_limit(self):
+        # cap = 1000
+        # result = make_combinations([i for i in range(1, cap+1)])
+        # self.assertTrue(len(result) == factorial(cap))
 
 
 if __name__ == '__main__':
