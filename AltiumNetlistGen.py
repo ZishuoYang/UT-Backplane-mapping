@@ -21,7 +21,7 @@ dcb_filename = input_dir / Path(
     'backplaneMapping_SEAMPins_trueType_v4.1.xlsm')
 
 pt_result_output_filename = output_dir / Path('AltiumNetlist_PT.csv')
-dcp_result_output_filename = output_dir / Path('AltiumNetlist_DCB.csv')
+dcb_result_output_filename = output_dir / Path('AltiumNetlist_DCB.csv')
 
 
 ############################################
@@ -218,6 +218,221 @@ pt_rules = [RulePTPathFinder(),
 
 
 ####################################
+# Define rules for DCB Altium list #
+####################################
+
+class RuleDCBDefault(RulePD):
+    def match(self, data, dcb_idx):
+        return True
+
+    def process(self, data, dcb_idx):
+        net_name = self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
+        return (
+            {
+                'PT': None,
+                'PT_PIN': None,
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': self.DEPADDING(data['SEAM pin'])
+            },
+            {'NETNAME': net_name, 'ATTR': '_ForRefOnly_'}
+        )
+
+
+class RuleDCBPathFinder(RulePD):
+    def match(self, data, dcb_idx):
+        # For slot 0 or 1, we need to process the non-BOB nets so skip this
+        # rule.
+        if dcb_idx in [0, 2, 4]:
+            return False
+
+    def process(self, data, dcb_idx):
+        # Note: here the matching nodes will have placeholder in netlist file.
+        return (
+            {
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': self.DEPADDING(data['SEAM pin']),
+                'PT': None,
+                'PT_PIN': None
+            },
+            {'NETNAME': None, 'ATTR': '_PlaceHolder_'}
+        )
+
+
+class RuleDCB_PT(RulePD):
+    def match(self, data, dcb_idx):
+        if data['Pigtail pin'] is not None:
+            # Which means that this DCB pin is connected to a PT pin.
+            return True
+        else:
+            return False
+
+    def process(self, data, dcb_idx):
+        net_name = \
+            self.DCB_PREFIX + str(dcb_idx) + '_' + \
+            self.PT_PREFIX + self.PTID(data['Pigtail slot']) + '_' + \
+            data['Signal ID']
+        return (
+            {
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': data['SEAM pin'],
+                'PT': self.PT_PREFIX + self.PTID(data['Pigtail slot']),
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
+            },
+            {'NETNAME': net_name, 'ATTR': None}
+        )
+
+
+class RuleDCB_1V5(RulePD):
+    def __init__(self, brkoutbrd_rules):
+        self.rules = brkoutbrd_rules
+
+    def match(self, data, dcb_idx):
+        if '1V5' in data['Signal ID'] and 'SENSE' not in data['Signal ID']:
+            return True
+        else:
+            return False
+
+    def process(self, data, dcb_idx):
+        net_name = \
+            self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
+        attr = '_ForRefOnly_'
+
+        for rule in self.rules:
+            if self.DCB_PREFIX+str(dcb_idx) in rule and \
+                    '1V5' in rule and 'SENSE' not in rule:
+                net_name = rule
+                attr = None
+                break
+        return (
+            {
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': self.DEPADDING(data['SEAM pin']),
+                'PT': None,
+                'PT_PIN': None
+            },
+            {'NETNAME': net_name, 'ATTR': attr}
+        )
+
+
+class RuleDCB_2V5(RulePD):
+    def __init__(self, brkoutbrd_rules):
+        self.rules = brkoutbrd_rules
+
+    def match(self, data, dcb_idx):
+        if '2V5' in data['Signal ID'] and 'SENSE' not in data['Signal ID']:
+            return True
+        else:
+            return False
+
+    def process(self, data, dcb_idx):
+        net_name = \
+            self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
+        attr = '_ForRefOnly_'
+
+        for rule in self.rules:
+            if self.DCB_PREFIX+str(dcb_idx) in rule and \
+                    '2V5' in rule and 'SENSE' not in rule:
+                net_name = rule
+                attr = None
+                break
+        return (
+            {
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': self.DEPADDING(data['SEAM pin']),
+                'PT': None,
+                'PT_PIN': None
+            },
+            {'NETNAME': net_name, 'ATTR': attr}
+        )
+
+
+class RuleDCB_1V5Sense(RulePD):
+    def __init__(self, brkoutbrd_rules):
+        self.rules = brkoutbrd_rules
+
+    def match(self, data, dcb_idx):
+        if '1V5_SENSE' in data['Signal ID']:
+            return True
+        else:
+            return False
+
+    def process(self, data, dcb_idx):
+        net_name = \
+            self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
+        attr = '_ForRefOnly_'
+
+        for rule in self.rules:
+            if self.DCB_PREFIX+str(dcb_idx) in rule and \
+                    data['Signal ID'] in rule:
+                net_name = rule
+                attr = None
+                break
+        return (
+            {
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': self.DEPADDING(data['SEAM pin']),
+                'PT': None,
+                'PT_PIN': None
+            },
+            {'NETNAME': net_name, 'ATTR': attr}
+        )
+
+
+class RuleDCB_GND(RulePD):
+    def match(self, data, dcb_idx):
+        if 'GND' == data['Signal ID']:
+            # Which means that this DCB pin GND (not AGND).
+            return True
+        else:
+            return False
+
+    def process(self, data, dcb_idx):
+        net_name = \
+            self.DCB_PREFIX + str(dcb_idx) + '_' + \
+            data['Signal ID']
+        return (
+            {
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': data['SEAM pin'],
+                'PT': None,
+                'PT_PIN': None
+            },
+            {'NETNAME': net_name, 'ATTR': None}
+        )
+
+
+class RuleDCB_AGND(RulePD):
+    def match(self, data, dcb_idx):
+        if 'AGND' == data['Signal ID']:
+            # Which means that this DCB pin AGND (not GND).
+            return True
+        else:
+            return False
+
+    def process(self, data, dcb_idx):
+        net_name = \
+            self.DCB_PREFIX + str(dcb_idx) + '_' + \
+            data['Signal ID']
+        return (
+            {
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': data['SEAM pin'],
+                'PT': None,
+                'PT_PIN': None
+            },
+            {'NETNAME': net_name, 'ATTR': None}
+        )
+
+
+dcb_rules = [RuleDCB_PT(),
+             RuleDCB_1V5(brkoutbrd_pin_assignments),
+             RuleDCB_2V5(brkoutbrd_pin_assignments),
+             RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
+             RuleDCB_GND(),
+             RuleDCBDefault()]
+
+
+####################################
 # Generate Altium list for PigTail #
 ####################################
 
@@ -242,3 +457,15 @@ pt_result = PtSelector.do()
 
 # Finally, write to csv file
 write_to_csv(pt_result_output_filename, pt_result, formatter=legacy_csv_line_pt)
+
+
+####################################
+# Generate Altium list for PigTail #
+####################################
+DcbSelector = SelectorPD(dcb_descr, dcb_rules)
+print('====WARNINGS for DCB====')
+dcb_result = DcbSelector.do()
+write_to_csv(dcb_result_output_filename, dcb_result, formatter=legacy_csv_line_pt)
+
+
+
