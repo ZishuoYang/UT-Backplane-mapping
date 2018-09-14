@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 01:50 PM -0400
+# Last Change: Fri Sep 14, 2018 at 04:46 PM -0400
 
 import openpyxl
 import re
@@ -53,6 +53,9 @@ def legacy_csv_line_dcb(node, prop):
         netname = netname[:-2]
         s += netname
 
+    elif '2V5' in netname:
+        s += netname
+
     elif attr is None and 'JP' not in netname:
         s += netname
 
@@ -97,7 +100,10 @@ def legacy_csv_line_dcb(node, prop):
     s += RulePD.PADDING(node.DCB_PIN) if node.DCB_PIN is not None else ''
     s += ','
 
-    s += node.PT[2:] if node.PT is not None else ''
+    if node.PT is not None and '|' in node.PT:
+        s += node.PT
+    else:
+        s += node.PT[2:] if node.PT is not None else ''
     s += ','
 
     s += RulePD.PADDING(node.PT_PIN) if node.PT_PIN is not None else ''
