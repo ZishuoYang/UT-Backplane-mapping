@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 12:35 PM -0400
+# Last Change: Fri Sep 14, 2018 at 12:51 PM -0400
 
 from pathlib import Path
 
@@ -174,8 +174,9 @@ class RulePTPTLvSource(RulePD):
         attr = '_ForRefOnly_'
 
         for rule in self.rules:
-            if self.PT_PREFIX+str(pt_idx) in rule and \
-                    data['Signal ID'] in rule:
+            pt_name, tail = rule.split('_', 1)
+            if self.PT_PREFIX+str(pt_idx) == pt_name and \
+                    data['Signal ID'] in tail:
                 net_name = rule
                 attr = None
                 break
