@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 12:55 PM -0400
+# Last Change: Fri Sep 14, 2018 at 01:21 PM -0400
 
 import openpyxl
 import re
@@ -49,7 +49,7 @@ def legacy_csv_line_dcb(node, prop):
     if netname is None:
         s += attr
 
-    elif '1V5_M' in netname or '1V5_S' in netname:
+    elif netname.endswith('1V5_M') or netname.endswith('1V5_S'):
         netname = netname[:-2]
         s += netname
 

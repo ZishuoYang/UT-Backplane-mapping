@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 01:08 PM -0400
+# Last Change: Fri Sep 14, 2018 at 01:21 PM -0400
 
 from pathlib import Path
 
@@ -388,13 +388,11 @@ class RuleDCB_1V5Sense(RulePD):
     def process(self, data, dcb_idx):
         net_name = \
             self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-        attr = None
 
         for rule in self.rules:
             if self.DCB_PREFIX+str(dcb_idx) in rule and \
-                    data['Signal ID'] in rule:
+                    data['Signal ID'][:-2] in rule:
                 net_name = rule
-                attr = None
                 break
         return (
             {
@@ -403,7 +401,7 @@ class RuleDCB_1V5Sense(RulePD):
                 'PT': None,
                 'PT_PIN': None
             },
-            {'NETNAME': net_name, 'ATTR': attr}
+            {'NETNAME': net_name, 'ATTR': None}
         )
 
 
