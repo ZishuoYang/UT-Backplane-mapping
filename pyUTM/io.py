@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 03:19 PM -0400
+# Last Change: Mon Sep 17, 2018 at 04:22 PM -0400
 
 import openpyxl
 import re
 
 from pyparsing import nestedExpr
-# from tco import with_continuations  # Make Python do tail recursion elimination
+from tco import with_continuations  # Make Python do tail recursion elimination
 
-from pyUTM.datatype import range, ColNum, NetNode
+from pyUTM.datatype import range, ColNum, NetNode, GenericNetNode
 
 
 ##################
@@ -135,16 +135,16 @@ class XLReader(object):
 # For Pcad netlist #
 ####################
 
-# @with_continuations()
-# def make_combinations(src, dest=[], self=None):
-    # if len(src) == 1:
-        # return dest
+@with_continuations()
+def make_combinations(src, dest=[], self=None):
+    if len(src) == 1:
+        return dest
 
-    # else:
-        # head = src[0]
-        # for i in src[1:]:
-            # dest.append((head, i))
-        # return self(src[1:], dest)
+    else:
+        head = src[0]
+        for i in src[1:]:
+            dest.append((head, i))
+        return self(src[1:], dest)
 
 
 class NestedListReader(object):
@@ -180,6 +180,16 @@ class PcadReader(NestedListReader):
                             'NETNAME': netname,
                             'ATTR': None
                         }
+
+            # Now deal with DCB-DCB connections, with recursion
+            if dcb_nodes:
+                dcb_combo = make_combinations(dcb_nodes)
+                for d1, d2 in dcb_combo:
+                    net_nodes_dict[self.net_node_gen(
+                        d1, d2, datatype=GenericNetNode)] = {
+                        'NETNAME': netname,
+                        'ATTR': None
+                    }
 
             # Now if we do have other components...
             if other_nodes and dcb_nodes:
@@ -221,7 +231,7 @@ class PcadReader(NestedListReader):
         return all_nets_dict
 
     @staticmethod
-    def net_node_gen(dcb_spec, pt_spec):
+    def net_node_gen(dcb_spec, pt_spec, datatype=NetNode):
         try:
             dcb, dcb_pin = dcb_spec
         except Exception:
@@ -232,4 +242,4 @@ class PcadReader(NestedListReader):
         except Exception:
             pt = pt_pin = None
 
-        return NetNode(dcb, dcb_pin, pt, pt_pin)
+        return datatype(dcb, dcb_pin, pt, pt_pin)
