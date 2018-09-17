@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 01:25 PM -0400
+# Last Change: Mon Sep 17, 2018 at 02:37 PM -0400
 
 import re
 import abc
@@ -60,8 +60,16 @@ class SelectorPD(Selector):
                 for rule in self.rules:
                     result = rule.filter((entry, connector_idx))
                     if result is not None:
-                        node_args, prop = result
-                        key = NetNode(**node_args)
+                        node_spec, prop = result
+
+                        # Generate a 'NetNode' if 'node_spec' is a dictionary,
+                        # otherwise use it as-is as a dictionary key, assume it
+                        # is hashable.
+                        if isinstance(node_spec, dict):
+                            key = NetNode(**node_spec)
+                        else:
+                            key = node_spec
+
                         processed_dataset[key] = prop
                         break
 

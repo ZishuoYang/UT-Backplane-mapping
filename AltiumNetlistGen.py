@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 04:43 PM -0400
+# Last Change: Mon Sep 17, 2018 at 03:41 PM -0400
 
 from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
-from pyUTM.io import legacy_csv_line_pt, legacy_csv_line_dcb
 from pyUTM.selection import SelectorPD, RulePD
-from pyUTM.datatype import BrkStr
+from pyUTM.datatype import BrkStr, GenericNetNode
+from pyUTM.legacy import legacy_csv_line_pt, legacy_csv_line_dcb
 
 input_dir = Path('input')
 output_dir = Path('output')
@@ -303,12 +303,12 @@ class RuleDCB_DCB(RulePD):
             self.DCB_PREFIX + self.DCBID(data['SEAM slot']) + '_' + \
             data['Signal ID']
         return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': data['SEAM pin'],
-                'PT': self.DCB_PREFIX + self.DCBID(data['SEAM slot']),
-                'PT_PIN': self.DEPADDING(data['SEAM pin D'])
-            },
+            GenericNetNode(
+                self.DCB_PREFIX + str(dcb_idx),
+                data['SEAM pin'],
+                self.DCB_PREFIX + self.DCBID(data['SEAM slot']),
+                self.DEPADDING(data['SEAM pin D'])
+            ),
             {'NETNAME': net_name, 'ATTR': None}
         )
 

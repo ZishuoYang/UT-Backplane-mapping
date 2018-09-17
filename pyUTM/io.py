@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 04:46 PM -0400
+# Last Change: Mon Sep 17, 2018 at 04:22 PM -0400
 
 import openpyxl
 import re
 
 from pyparsing import nestedExpr
-# from tco import with_continuations  # Make Python do tail recursion elimination
+from tco import with_continuations  # Make Python do tail recursion elimination
 
 from pyUTM.datatype import range, ColNum, NetNode, GenericNetNode
-from pyUTM.selection import RulePD
 
 
 ##################
@@ -31,6 +30,7 @@ def csv_line(node, prop):
         s += netname
     s += ','
 
+    # This should be fine as long as 'node' is a list-like structure.
     for item in node:
         if item is not None:
             s += item
@@ -38,134 +38,6 @@ def csv_line(node, prop):
 
     # Remove the trailing ','
     return s[:-1]
-
-
-# NOTE: Backward-compatibility: For v0.3 or older.
-def legacy_csv_line_dcb(node, prop):
-    s = ''
-    netname = prop['NETNAME']
-    attr = prop['ATTR']
-
-    if netname is None:
-        s += attr
-
-    elif netname.endswith('1V5_M') or netname.endswith('1V5_S'):
-        netname = netname[:-2]
-        s += netname
-
-    elif '2V5' in netname:
-        s += netname
-
-    elif attr is None and 'JP' not in netname:
-        s += netname
-
-    else:
-        attr = '_' if attr is None else attr
-
-        try:
-            net_head, net_body, net_tail = netname.split('_', 2)
-
-            if node.DCB is not None:
-                if node.DCB in net_head:
-                    net_head += RulePD.PADDING(node.DCB_PIN)
-
-                if node.DCB in net_body:
-                    net_body += RulePD.PADDING(node.DCB_PIN)
-
-            if node.PT is not None:
-                if node.PT in net_head:
-                    net_head += RulePD.PADDING(node.PT_PIN)
-
-                if node.PT in net_body:
-                    net_body += RulePD.PADDING(node.PT_PIN)
-
-            s += (net_head + attr + net_body + '_' + net_tail)
-
-        except Exception:
-            net_head, net_tail = netname.split('_', 1)
-
-            # Take advantage of lazy Boolean evaluation in Python.
-            if node.DCB is not None and node.DCB in net_head:
-                net_head += RulePD.PADDING(node.DCB_PIN)
-
-            if node.PT is not None and node.PT in net_head:
-                net_head += RulePD.PADDING(node.PT_PIN)
-
-            s += (net_head + attr + net_tail)
-    s += ','
-
-    s += node.DCB[2:] if node.DCB is not None else ''
-    s += ','
-
-    s += RulePD.PADDING(node.DCB_PIN) if node.DCB_PIN is not None else ''
-    s += ','
-
-    if node.PT is not None and '|' in node.PT:
-        s += node.PT
-    else:
-        s += node.PT[2:] if node.PT is not None else ''
-    s += ','
-
-    s += RulePD.PADDING(node.PT_PIN) if node.PT_PIN is not None else ''
-
-    return s
-
-
-# NOTE: Backward-compatibility: For v0.3 or older.
-def legacy_csv_line_pt(node, prop):
-    s = ''
-    netname = prop['NETNAME']
-    attr = prop['ATTR']
-
-    if netname is None:
-        s += attr
-
-    elif attr is None and 'JD' not in netname:
-        s += netname
-
-    else:
-        attr = '_' if attr is None else attr
-
-        try:
-            net_head, net_body, net_tail = netname.split('_', 2)
-
-            if node.DCB is not None:
-                if node.DCB in net_head:
-                    net_head += RulePD.PADDING(node.DCB_PIN)
-
-                if node.DCB in net_body:
-                    net_body += RulePD.PADDING(node.DCB_PIN)
-
-            if node.PT is not None:
-                if node.PT in net_head:
-                    net_head += RulePD.PADDING(node.PT_PIN)
-
-                if node.PT in net_body:
-                    net_body += RulePD.PADDING(node.PT_PIN)
-
-            s += (net_head + attr + net_body + '_' + net_tail)
-
-        except Exception:
-            net_head, net_tail = netname.split('_', 1)
-
-            # Take advantage of lazy Boolean evaluation in Python.
-            if node.DCB is not None and node.DCB in net_head:
-                net_head += RulePD.PADDING(node.DCB_PIN)
-
-            if node.PT is not None and node.PT in net_head:
-                net_head += RulePD.PADDING(node.PT_PIN)
-
-            s += (net_head + attr + net_tail)
-    s += ','
-
-    s += node.PT[2:] if node.PT is not None else ''
-    s += ','
-
-    s += RulePD.PADDING(node.PT_PIN) if node.PT_PIN is not None else ''
-    s += ','
-    s += ','
-
-    return s
 
 
 def write_to_csv(filename, data, formatter=csv_line):
@@ -263,16 +135,16 @@ class XLReader(object):
 # For Pcad netlist #
 ####################
 
-# @with_continuations()
-# def make_combinations(src, dest=[], self=None):
-    # if len(src) == 1:
-        # return dest
+@with_continuations()
+def make_combinations(src, dest=[], self=None):
+    if len(src) == 1:
+        return dest
 
-    # else:
-        # head = src[0]
-        # for i in src[1:]:
-            # dest.append((head, i))
-        # return self(src[1:], dest)
+    else:
+        head = src[0]
+        for i in src[1:]:
+            dest.append((head, i))
+        return self(src[1:], dest)
 
 
 class NestedListReader(object):
@@ -308,6 +180,16 @@ class PcadReader(NestedListReader):
                             'NETNAME': netname,
                             'ATTR': None
                         }
+
+            # Now deal with DCB-DCB connections, with recursion
+            if dcb_nodes:
+                dcb_combo = make_combinations(dcb_nodes)
+                for d1, d2 in dcb_combo:
+                    net_nodes_dict[self.net_node_gen(
+                        d1, d2, datatype=GenericNetNode)] = {
+                        'NETNAME': netname,
+                        'ATTR': None
+                    }
 
             # Now if we do have other components...
             if other_nodes and dcb_nodes:
@@ -349,7 +231,7 @@ class PcadReader(NestedListReader):
         return all_nets_dict
 
     @staticmethod
-    def net_node_gen(dcb_spec, pt_spec):
+    def net_node_gen(dcb_spec, pt_spec, datatype=NetNode):
         try:
             dcb, dcb_pin = dcb_spec
         except Exception:
@@ -360,4 +242,4 @@ class PcadReader(NestedListReader):
         except Exception:
             pt = pt_pin = None
 
-        return NetNode(dcb, dcb_pin, pt, pt_pin)
+        return datatype(dcb, dcb_pin, pt, pt_pin)
