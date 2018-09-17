@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 02:56 PM -0400
+# Last Change: Mon Sep 17, 2018 at 01:21 PM -0400
 
 import builtins
 import typing
@@ -109,8 +109,8 @@ class BrkStr(str):
 ##############################################################
 # Define an immutable data type to store single netlist node #
 ##############################################################
+# NOTE: These are immutable data types.
 
-# NOTE: Again, this is an immutable data type.
 NetNode = namedtuple('NetNode', ['DCB', 'DCB_PIN', 'PT', 'PT_PIN'])
 
 
@@ -119,3 +119,20 @@ class GenericNetNode(typing.NamedTuple):
     Node1_PIN: str
     Node2: str
     Node2_PIN: str
+
+    def __eq__(self, other):
+        if type(self) == type(other):
+            if self.Node1 == other.Node1 \
+                    and self.Node1_PIN == other.Node1_PIN \
+                    and self.Node2 == other.Node2 \
+                    and self.Node2_PIN == other.Node2_PIN:
+                return True
+            elif self.Node1 == other.Node2 \
+                    and self.Node1_PIN == other.Node2_PIN \
+                    and self.Node2 == other.Node1 \
+                    and self.Node2_PIN == other.Node1_PIN:
+                return True
+            else:
+                return False
+        else:
+            return False

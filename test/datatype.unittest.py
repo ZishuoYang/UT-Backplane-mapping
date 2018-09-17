@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 29, 2018 at 04:28 PM -0400
+# Last Change: Mon Sep 17, 2018 at 01:35 PM -0400
 
 import unittest
 
@@ -10,6 +10,7 @@ sys.path.insert(0, '..')
 
 from pyUTM.datatype import ColNum, range
 from pyUTM.datatype import BrkStr
+from pyUTM.datatype import GenericNetNode
 
 
 class DataTypeTester(unittest.TestCase):
@@ -110,6 +111,22 @@ class BrkStrTester(unittest.TestCase):
         self.assertTrue('JD11' in name3)
         self.assertTrue('JPL2' in name3)
         self.assertFalse('JPL3' in name3)
+
+
+class GenericNetNodeTester(unittest.TestCase):
+    def test_assignment(self):
+        node = GenericNetNode('1', '1.1', '2', '2.1')
+        self.assertEqual(node.Node1, '1')
+        self.assertEqual(node.Node2_PIN, '2.1')
+
+    def test_equal_reflexivity(self):
+        node = GenericNetNode('node1', 'pin1', 'node2', 'pin2')
+        self.assertEqual(node, node)
+
+    def test_equal_data_associativity(self):
+        node1 = GenericNetNode('node1', 'pin1', 'node2', 'pin2')
+        node2 = GenericNetNode('node2', 'pin2', 'node1', 'pin1')
+        self.assertEqual(node1, node2)
 
 
 if __name__ == '__main__':
