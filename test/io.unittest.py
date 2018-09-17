@@ -20,7 +20,7 @@ input_dir = Path('..') / Path('input')
 pt_filename = input_dir / Path(
     'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
 brkoutbrd_filename = input_dir / Path(
-    'BrkOutBrd_Pin_Assignments_Updated20180917.xlsx')
+    'BrkOutBrd_Pin_Assignments_20180917.xlsx')
 
 
 class GenerateCsvLineTester(unittest.TestCase):
