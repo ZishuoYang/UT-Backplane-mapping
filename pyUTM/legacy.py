@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 03:27 PM -0400
+# Last Change: Mon Sep 17, 2018 at 04:05 PM -0400
 
-from pyUTM.datatype import NetNode, GenericNetNode
+from pyUTM.datatype import NetNode
 from pyUTM.selection import RulePD
 
 
@@ -23,7 +23,31 @@ def legacy_csv_line_dcb(node, prop):
         s += netname
 
     elif attr is None and 'JP' not in netname:
-        s += netname
+        if netname.count('JD') > 1:
+            # We are in DCB-DCB case.
+            # NOTE: Now 'node' is a 'GenericNetNode', not a 'NetNode'.
+            net_dcb1, net_dcb2, net_tail = netname.split('_', 2)
+
+            if node.Node1 == net_dcb1:
+                net_dcb1 += RulePD.PADDING(node.Node1_PIN)
+                net_dcb2 += RulePD.PADDING(node.Node2_PIN)
+
+            else:
+                net_dcb1 += RulePD.PADDING(node.Node2_PIN)
+                net_dcb2 += RulePD.PADDING(node.Node1_PIN)
+
+            if int(node.Node1[2:]) > int(node.Node2[2:]):
+                s += (net_dcb2 + '_' + net_dcb1 + '_' + net_tail)
+            else:
+                s += (net_dcb1 + '_' + net_dcb2 + '_' + net_tail)
+
+            # NOTE: We also know in this case, 'Node' is a 'GenericNetNode', so
+            # we convert it to a 'NetNode'.
+            node = NetNode(node.Node1, node.Node1_PIN,
+                           node.Node2, node.Node2_PIN)
+
+        else:
+            s += netname
 
     else:
         attr = '_' if attr is None else attr
