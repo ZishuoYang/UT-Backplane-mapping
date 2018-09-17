@@ -90,8 +90,8 @@ class XLReaderTester(unittest.TestCase):
                              sortby=lambda item: item['Conn'])
         self.assertEqual(result[0][0]['Conn'], 'GND')
         # FIXME: '9' will come after '11'
-        self.assertEqual(result[0][3]['Conn'], 'JP11_JPL2_P1_WEST_LV_SOURCE')
-        self.assertEqual(result[0][-1]['Conn'], 'JD8_JPL2_1V5_S')
+        self.assertEqual(result[0][3]['Conn'], 'JD10_JPL2_1V5_S')
+        self.assertEqual(result[0][-1]['Conn'], 'JP8_JPL2_P4_LV_SOURCE')
 
 
 class PcadReaderTester(unittest.TestCase):
