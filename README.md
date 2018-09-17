@@ -19,13 +19,13 @@ tco
 
 
 ## Usage
-If only the copy-and-paste .csv are needed:
+If only the copy-and-paste `.csv` are needed:
 ```
 python ./AltiumNetlistGen.py > WARNINGS.log
 ```
 
 If additional error checking is required (note that this script would also
-generate .csv files):
+generate `.csv` files):
 ```
 python ./SchematicCheck.py > ERRORS.log
 ```
