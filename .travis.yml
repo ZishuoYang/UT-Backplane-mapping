@@ -17,7 +17,7 @@ script:
     - python ./io.unittest.py
     - python ./selection.unittest.py
     - cd ../ && mkdir output
-    - python ./SchematicCheck.py > ./WARNINGS.log
+    - python ./SchematicCheck.py | tee ./WARNINGS.log
     - sed '/inconsistent/d' ./WARNINGS.log > WARNINGS-lite.log
 
 deploy:
