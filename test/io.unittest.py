@@ -20,7 +20,7 @@ input_dir = Path('..') / Path('input')
 pt_filename = input_dir / Path(
     'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
 brkoutbrd_filename = input_dir / Path(
-    'BrkOutBrd_Pin_Assignments_Mar27_2018_PM1.xlsx')
+    'BrkOutBrd_Pin_Assignments_Updated20180917.xlsx')
 
 
 class GenerateCsvLineTester(unittest.TestCase):
@@ -90,8 +90,8 @@ class XLReaderTester(unittest.TestCase):
                              sortby=lambda item: item['Conn'])
         self.assertEqual(result[0][0]['Conn'], 'GND')
         # FIXME: '9' will come after '11'
-        self.assertEqual(result[0][3]['Conn'], 'JD11_10_JPL2_2V5')
-        self.assertEqual(result[0][-1]['Conn'], 'JP11_JPL2_P4_LV_SOURCE')
+        self.assertEqual(result[0][3]['Conn'], 'JD10_JPL2_1V5_S')
+        self.assertEqual(result[0][-1]['Conn'], 'JP8_JPL2_P4_LV_SOURCE')
 
 
 class PcadReaderTester(unittest.TestCase):
