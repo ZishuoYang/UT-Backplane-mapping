@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 03:21 PM -0400
+# Last Change: Mon Sep 17, 2018 at 03:27 PM -0400
 
-from pyUTM.selection import RulePD
 from pyUTM.datatype import NetNode, GenericNetNode
+from pyUTM.selection import RulePD
 
 
 def legacy_csv_line_dcb(node, prop):
@@ -28,36 +28,36 @@ def legacy_csv_line_dcb(node, prop):
     else:
         attr = '_' if attr is None else attr
 
-    try:
-        net_head, net_body, net_tail = netname.split('_', 2)
+        try:
+            net_head, net_body, net_tail = netname.split('_', 2)
 
-        if node.DCB is not None:
-            if node.DCB in net_head:
+            if node.DCB is not None:
+                if node.DCB in net_head:
+                    net_head += RulePD.PADDING(node.DCB_PIN)
+
+                if node.DCB in net_body:
+                    net_body += RulePD.PADDING(node.DCB_PIN)
+
+            if node.PT is not None:
+                if node.PT in net_head:
+                    net_head += RulePD.PADDING(node.PT_PIN)
+
+                if node.PT in net_body:
+                    net_body += RulePD.PADDING(node.PT_PIN)
+
+            s += (net_head + attr + net_body + '_' + net_tail)
+
+        except Exception:
+            net_head, net_tail = netname.split('_', 1)
+
+            # Take advantage of lazy Boolean evaluation in Python.
+            if node.DCB is not None and node.DCB in net_head:
                 net_head += RulePD.PADDING(node.DCB_PIN)
 
-        if node.DCB in net_body:
-            net_body += RulePD.PADDING(node.DCB_PIN)
-
-        if node.PT is not None:
-            if node.PT in net_head:
+            if node.PT is not None and node.PT in net_head:
                 net_head += RulePD.PADDING(node.PT_PIN)
 
-        if node.PT in net_body:
-            net_body += RulePD.PADDING(node.PT_PIN)
-
-        s += (net_head + attr + net_body + '_' + net_tail)
-
-    except Exception:
-        net_head, net_tail = netname.split('_', 1)
-
-        # Take advantage of lazy Boolean evaluation in Python.
-        if node.DCB is not None and node.DCB in net_head:
-            net_head += RulePD.PADDING(node.DCB_PIN)
-
-        if node.PT is not None and node.PT in net_head:
-            net_head += RulePD.PADDING(node.PT_PIN)
-
-        s += (net_head + attr + net_tail)
+            s += (net_head + attr + net_tail)
     s += ','
 
     s += node.DCB[2:] if node.DCB is not None else ''
@@ -77,7 +77,6 @@ def legacy_csv_line_dcb(node, prop):
     return s
 
 
-# NOTE: Backward-compatibility: For v0.3 or older.
 def legacy_csv_line_pt(node, prop):
     s = ''
     netname = prop['NETNAME']
@@ -92,36 +91,36 @@ def legacy_csv_line_pt(node, prop):
     else:
         attr = '_' if attr is None else attr
 
-    try:
-        net_head, net_body, net_tail = netname.split('_', 2)
+        try:
+            net_head, net_body, net_tail = netname.split('_', 2)
 
-        if node.DCB is not None:
-            if node.DCB in net_head:
+            if node.DCB is not None:
+                if node.DCB in net_head:
+                    net_head += RulePD.PADDING(node.DCB_PIN)
+
+                if node.DCB in net_body:
+                    net_body += RulePD.PADDING(node.DCB_PIN)
+
+            if node.PT is not None:
+                if node.PT in net_head:
+                    net_head += RulePD.PADDING(node.PT_PIN)
+
+                if node.PT in net_body:
+                    net_body += RulePD.PADDING(node.PT_PIN)
+
+            s += (net_head + attr + net_body + '_' + net_tail)
+
+        except Exception:
+            net_head, net_tail = netname.split('_', 1)
+
+            # Take advantage of lazy Boolean evaluation in Python.
+            if node.DCB is not None and node.DCB in net_head:
                 net_head += RulePD.PADDING(node.DCB_PIN)
 
-        if node.DCB in net_body:
-            net_body += RulePD.PADDING(node.DCB_PIN)
-
-        if node.PT is not None:
-            if node.PT in net_head:
+            if node.PT is not None and node.PT in net_head:
                 net_head += RulePD.PADDING(node.PT_PIN)
 
-        if node.PT in net_body:
-            net_body += RulePD.PADDING(node.PT_PIN)
-
-        s += (net_head + attr + net_body + '_' + net_tail)
-
-    except Exception:
-        net_head, net_tail = netname.split('_', 1)
-
-        # Take advantage of lazy Boolean evaluation in Python.
-        if node.DCB is not None and node.DCB in net_head:
-            net_head += RulePD.PADDING(node.DCB_PIN)
-
-        if node.PT is not None and node.PT in net_head:
-            net_head += RulePD.PADDING(node.PT_PIN)
-
-        s += (net_head + attr + net_tail)
+            s += (net_head + attr + net_tail)
     s += ','
 
     s += node.PT[2:] if node.PT is not None else ''
