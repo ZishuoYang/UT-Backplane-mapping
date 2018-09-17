@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 01:47 PM -0400
+# Last Change: Mon Sep 17, 2018 at 02:07 PM -0400
 
 import unittest
 
@@ -127,6 +127,11 @@ class GenericNetNodeTester(unittest.TestCase):
         node1 = GenericNetNode('node1', 'pin1', 'node2', 'pin2')
         node2 = GenericNetNode('node2', 'pin2', 'node1', 'pin1')
         self.assertEqual(node1, node2)
+
+    def test_not_equal_data_associativity(self):
+        node1 = GenericNetNode('node1', 'pin1', 'node2', 'pin2')
+        node2 = GenericNetNode('node2', 'pin3', 'node1', 'pin1')
+        self.assertFalse(node1 == node2)
 
     def test_in_list(self):
         node1 = GenericNetNode('node1', 'pin1', 'node2', 'pin2')
