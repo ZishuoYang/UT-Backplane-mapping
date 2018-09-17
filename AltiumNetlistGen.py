@@ -14,7 +14,7 @@ input_dir = Path('input')
 output_dir = Path('output')
 
 brkoutbrd_filename = input_dir / Path(
-    'BrkOutBrd_Pin_Assignments_Mar27_2018_PM1.xlsx')
+    'BrkOutBrd_Pin_Assignments_Updated20180917.xlsx')
 pt_filename = input_dir / Path(
     'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
 dcb_filename = input_dir / Path(
