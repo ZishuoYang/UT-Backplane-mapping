@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 02:07 PM -0400
+# Last Change: Mon Sep 17, 2018 at 04:39 PM -0400
 
 import unittest
 
@@ -136,7 +136,9 @@ class GenericNetNodeTester(unittest.TestCase):
     def test_in_list(self):
         node1 = GenericNetNode('node1', 'pin1', 'node2', 'pin2')
         node2 = GenericNetNode('node2', 'pin2', 'node1', 'pin1')
+        node3 = GenericNetNode('node2', 'pin3', 'node1', 'pin1')
         self.assertTrue(node2 in [node1])
+        self.assertFalse(node3 in [node1])
 
 
 if __name__ == '__main__':
