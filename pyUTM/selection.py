@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 02:37 PM -0400
+# Last Change: Tue Sep 18, 2018 at 12:10 PM -0400
 
 import re
 import abc
@@ -70,6 +70,8 @@ class SelectorPD(Selector):
                         else:
                             key = node_spec
 
+                        # NOTE: The insertion-order is preserved starting in
+                        # Python 3.7.0.
                         processed_dataset[key] = prop
                         break
 
