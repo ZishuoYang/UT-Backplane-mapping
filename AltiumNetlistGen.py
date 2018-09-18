@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Sep 18, 2018 at 11:14 AM -0400
+# Last Change: Tue Sep 18, 2018 at 11:19 AM -0400
 
 from pathlib import Path
 
@@ -215,12 +215,32 @@ class RulePT_PTThermistor(RulePT_PTLvSource):
             return False
 
 
+class RulePT_UnusedToGND(RulePD):
+    def match(self, data, pt_idx):
+        if data['Signal ID'] == 'UNUSED':
+            return True
+        else:
+            return False
+
+    def process(self, data, pt_idx):
+        return (
+            {
+                'DCB': None,
+                'DCB_PIN': None,
+                'PT': self.PT_PREFIX + str(pt_idx),
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
+            },
+            {'NETNAME': 'GND', 'ATTR': None}
+        )
+
+
 pt_rules = [RulePT_PathFinder(),
             RulePT_DCB(),
             RulePT_PTLvSource(brkoutbrd_pin_assignments),
             RulePT_PTLvReturn(brkoutbrd_pin_assignments),
             RulePT_PTLvSense(brkoutbrd_pin_assignments),
             RulePT_PTThermistor(brkoutbrd_pin_assignments),
+            RulePT_UnusedToGND(),
             RulePT_Default()]
 
 
