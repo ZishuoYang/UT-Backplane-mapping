@@ -16,9 +16,9 @@ output_dir = Path('output')
 brkoutbrd_filename = input_dir / Path(
     'BrkOutBrd_Pin_Assignments_20180917.xlsx')
 pt_filename = input_dir / Path(
-    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
+    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.2.xlsm')
 dcb_filename = input_dir / Path(
-    'backplaneMapping_SEAMPins_trueType_v4.1.xlsm')
+    'backplaneMapping_SEAMPins_trueType_v5.2.xlsm')
 
 pt_result_output_filename = output_dir / Path('AltiumNetlist_PT.csv')
 dcb_result_output_filename = output_dir / Path('AltiumNetlist_DCB.csv')
