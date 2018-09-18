@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Sep 18, 2018 at 11:19 AM -0400
+# Last Change: Tue Sep 18, 2018 at 05:14 PM -0400
 
 from pathlib import Path
 
@@ -234,14 +234,16 @@ class RulePT_UnusedToGND(RulePD):
         )
 
 
-pt_rules = [RulePT_PathFinder(),
-            RulePT_DCB(),
-            RulePT_PTLvSource(brkoutbrd_pin_assignments),
-            RulePT_PTLvReturn(brkoutbrd_pin_assignments),
-            RulePT_PTLvSense(brkoutbrd_pin_assignments),
-            RulePT_PTThermistor(brkoutbrd_pin_assignments),
-            RulePT_UnusedToGND(),
-            RulePT_Default()]
+pt_rules = [
+    RulePT_PathFinder(),
+    RulePT_DCB(),
+    RulePT_PTLvSource(brkoutbrd_pin_assignments),
+    RulePT_PTLvReturn(brkoutbrd_pin_assignments),
+    RulePT_PTLvSense(brkoutbrd_pin_assignments),
+    RulePT_PTThermistor(brkoutbrd_pin_assignments),
+    RulePT_UnusedToGND(),
+    RulePT_Default()
+]
 
 
 ####################################
@@ -475,14 +477,16 @@ class RuleDCB_AGND(RuleDCB_GND):
         )
 
 
-dcb_rules = [RuleDCB_GND(),
-             RuleDCB_AGND(),
-             RuleDCB_PT(),
-             RuleDCB_1V5(brkoutbrd_pin_assignments),
-             RuleDCB_2V5(brkoutbrd_pin_assignments),
-             RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-             RuleDCB_DCB(),
-             RuleDCB_Default()]
+dcb_rules = [
+    RuleDCB_GND(),
+    RuleDCB_AGND(),
+    RuleDCB_PT(),
+    RuleDCB_1V5(brkoutbrd_pin_assignments),
+    RuleDCB_2V5(brkoutbrd_pin_assignments),
+    RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
+    RuleDCB_DCB(),
+    RuleDCB_Default()
+]
 
 
 ####################################
