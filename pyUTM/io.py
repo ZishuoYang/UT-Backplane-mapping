@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 04:22 PM -0400
+# Last Change: Tue Sep 18, 2018 at 05:04 PM -0400
 
 import openpyxl
 import re
@@ -156,20 +156,22 @@ class NestedListReader(object):
 
 
 class PcadReader(NestedListReader):
-    def read(self):
-        all_nets_dict = self.readnets()
-        regex_dcb = re.compile(r'^JD\d+')
-        regex_pt = re.compile(r'^JP\d+')
+    def __init__(self, *args, **kwargs):
+        self.all_nets_dict = None
+        super().__init__(*args, **kwargs)
 
+    def read(self):
+        all_nets_dict = self.readnets() if self.all_nets_dict is None else \
+            self.all_nets_dict
         net_nodes_dict = {}
 
         for netname in all_nets_dict.keys():
-            dcb_nodes = list(filter(lambda x: regex_dcb.search(x[0]),
-                                    all_nets_dict[netname]))
-            pt_nodes = list(filter(lambda x: regex_pt.search(x[0]),
-                                   all_nets_dict[netname]))
+            net = all_nets_dict[netname]
+
+            dcb_nodes = self.find_node_match_regex(net, re.compile(r'^JD\d+'))
+            pt_nodes = self.find_node_match_regex(net, re.compile(r'^JP\d+'))
             other_nodes = list(
-                set(all_nets_dict[netname]) - set(dcb_nodes) - set(pt_nodes)
+                set(net) - set(dcb_nodes) - set(pt_nodes)
             )
 
             # First, handle DCB-PT connections
@@ -228,6 +230,9 @@ class PcadReader(NestedListReader):
                     tuple(map(lambda i: i.strip('\"'), node[1:3]))
                 )
 
+        # Store generated dict as a cache in case we need it.
+        self.all_nets_dict = all_nets_dict
+
         return all_nets_dict
 
     @staticmethod
@@ -243,3 +248,7 @@ class PcadReader(NestedListReader):
             pt = pt_pin = None
 
         return datatype(dcb, dcb_pin, pt, pt_pin)
+
+    @staticmethod
+    def find_node_match_regex(nodes_list, regex):
+        return list(filter(lambda x: regex.search(x[0]), nodes_list))
