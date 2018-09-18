@@ -18,7 +18,7 @@ from pyUTM.datatype import NetNode
 
 input_dir = Path('..') / Path('input')
 pt_filename = input_dir / Path(
-    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.1.xlsm')
+    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.2.xlsm')
 brkoutbrd_filename = input_dir / Path(
     'BrkOutBrd_Pin_Assignments_20180917.xlsx')
 
