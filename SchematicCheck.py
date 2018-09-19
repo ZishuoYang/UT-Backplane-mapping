@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 02:51 PM -0400
+# Last Change: Wed Sep 19, 2018 at 03:33 PM -0400
 
 from pathlib import Path
 
@@ -55,6 +55,25 @@ class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
         )
 
 
+class RuleNet_DCB_Or_PT_NetName_Inconsistent(RuleNet):
+    def match(self, node):
+        if self.reference[node]['NETNAME'] != \
+                self.netlist_dict[node]['NETNAME']:
+            return True
+        else:
+            return False
+
+    def process(self, node):
+        return (
+            'DCB-None or None-PT',
+            "NETNAME inconsistent: Tom's: {}, Zishuo: {}, NODE: {}".format(
+                self.netlist_dict[node]['NETNAME'],
+                self.reference[node]['NETNAME'],
+                self.node_to_str(node)
+            )
+        )
+
+
 class RuleNet_Node_NotIn(RuleNet):
     def match(self, node):
         if node not in self.netlist_list:
@@ -91,6 +110,8 @@ net_rules = [
     RuleNet_ForRefOnly(netlist_dict, netlist_list, pt_result),
     RuleNet_Node_NotIn(netlist_dict, netlist_list, pt_result),
     RuleNet_DCB_PT_NetName_Inconsistent(netlist_dict, netlist_list, pt_result),
+    RuleNet_DCB_Or_PT_NetName_Inconsistent(
+        netlist_dict, netlist_list, pt_result),
     # RuleNet_DCB_PT_In(netlist_dict, netlist_list, pt_result),
     # RuleNet_DCB_PT_NotIn(netlist_dict, netlist_list, pt_result),
     # RuleNet_Node_NotIn(net_descr, pt_result),
