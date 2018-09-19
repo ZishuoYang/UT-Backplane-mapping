@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 03:41 PM -0400
+# Last Change: Tue Sep 18, 2018 at 05:14 PM -0400
 
 from pathlib import Path
 
@@ -92,7 +92,7 @@ dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
 
 # This needs to be placed at the end of the rules list.  It always returns
 # 'True' to handle entries NOT matched by any other rules.
-class RulePTDefault(RulePD):
+class RulePT_Default(RulePD):
     def match(self, data, pt_idx):
         return True
 
@@ -109,7 +109,7 @@ class RulePTDefault(RulePD):
         )
 
 
-class RulePTPathFinder(RulePD):
+class RulePT_PathFinder(RulePD):
     def match(self, data, pt_idx):
         # For slot 0 or 1, we need to process the non-BOB nets so skip this
         # rule.
@@ -134,7 +134,7 @@ class RulePTPathFinder(RulePD):
         )
 
 
-class RulePTDCB(RulePD):
+class RulePT_DCB(RulePD):
     def match(self, data, pt_idx):
         if data['SEAM pin'] is not None:
             # Which means that this PT pin is connected to a DCB pin.
@@ -158,7 +158,7 @@ class RulePTDCB(RulePD):
         )
 
 
-class RulePTPTLvSource(RulePD):
+class RulePT_PTLvSource(RulePD):
     def __init__(self, brkoutbrd_rules):
         self.rules = brkoutbrd_rules
 
@@ -191,7 +191,7 @@ class RulePTPTLvSource(RulePD):
         )
 
 
-class RulePTPTLvReturn(RulePTPTLvSource):
+class RulePT_PTLvReturn(RulePT_PTLvSource):
     def match(self, data, pt_idx):
         if 'LV_RETURN' in data['Signal ID']:
             return True
@@ -199,7 +199,7 @@ class RulePTPTLvReturn(RulePTPTLvSource):
             return False
 
 
-class RulePTPTLvSense(RulePTPTLvSource):
+class RulePT_PTLvSense(RulePT_PTLvSource):
     def match(self, data, pt_idx):
         if 'LV_SENSE' in data['Signal ID']:
             return True
@@ -207,7 +207,7 @@ class RulePTPTLvSense(RulePTPTLvSource):
             return False
 
 
-class RulePTPTThermistor(RulePTPTLvSource):
+class RulePT_PTThermistor(RulePT_PTLvSource):
     def match(self, data, pt_idx):
         if 'THERMISTOR' in data['Signal ID']:
             return True
@@ -221,9 +221,6 @@ class RulePTPTSingleToDiff(RulePD):
         if 'HYB_i2C' in data['Signal ID'] or \
                 'EC_RESET' in data['Signal ID'] or \
                 'EC_ADC' in data['Signal ID']:
-            return True
-        else:
-            return False
 
     def process(self, data, pt_idx):
         net_name = \
@@ -241,20 +238,42 @@ class RulePTPTSingleToDiff(RulePD):
         )
 
 
-pt_rules = [RulePTPathFinder(),
-            RulePTDCB(),
-            RulePTPTLvSource(brkoutbrd_pin_assignments),
-            RulePTPTLvReturn(brkoutbrd_pin_assignments),
-            RulePTPTLvSense(brkoutbrd_pin_assignments),
-            RulePTPTThermistor(brkoutbrd_pin_assignments),
-            RulePTDefault()]
+class RulePT_UnusedToGND(RulePD):
+    def match(self, data, pt_idx):
+        if data['Signal ID'] == 'UNUSED':
+            return True
+        else:
+            return False
+
+    def process(self, data, pt_idx):
+        return (
+            {
+                'DCB': None,
+                'DCB_PIN': None,
+                'PT': self.PT_PREFIX + str(pt_idx),
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
+            },
+            {'NETNAME': 'GND', 'ATTR': None}
+        )
+
+
+pt_rules = [
+    RulePT_PathFinder(),
+    RulePT_DCB(),
+    RulePT_PTLvSource(brkoutbrd_pin_assignments),
+    RulePT_PTLvReturn(brkoutbrd_pin_assignments),
+    RulePT_PTLvSense(brkoutbrd_pin_assignments),
+    RulePT_PTThermistor(brkoutbrd_pin_assignments),
+    RulePT_UnusedToGND(),
+    RulePT_Default()
+]
 
 
 ####################################
 # Define rules for DCB Altium list #
 ####################################
 
-class RuleDCBDefault(RulePD):
+class RuleDCB_Default(RulePD):
     def match(self, data, dcb_idx):
         return True
 
@@ -271,7 +290,7 @@ class RuleDCBDefault(RulePD):
         )
 
 
-class RuleDCBPathFinder(RulePD):
+class RuleDCB_PathFinder(RulePD):
     def match(self, data, dcb_idx):
         # For slot 0 or 1, we need to process the non-BOB nets so skip this
         # rule.
@@ -481,14 +500,16 @@ class RuleDCB_AGND(RuleDCB_GND):
         )
 
 
-dcb_rules = [RuleDCB_GND(),
-             RuleDCB_AGND(),
-             RuleDCB_PT(),
-             RuleDCB_1V5(brkoutbrd_pin_assignments),
-             RuleDCB_2V5(brkoutbrd_pin_assignments),
-             RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-             RuleDCB_DCB(),
-             RuleDCBDefault()]
+dcb_rules = [
+    RuleDCB_GND(),
+    RuleDCB_AGND(),
+    RuleDCB_PT(),
+    RuleDCB_1V5(brkoutbrd_pin_assignments),
+    RuleDCB_2V5(brkoutbrd_pin_assignments),
+    RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
+    RuleDCB_DCB(),
+    RuleDCB_Default()
+]
 
 
 ####################################

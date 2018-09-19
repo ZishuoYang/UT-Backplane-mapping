@@ -11,7 +11,7 @@ the third one includes break-out boards pin assignments.
 
 ## Prerequisite
 ```
-Python: >= 3.6
+Python: >= 3.7
 openpyxl: >= 2.5.3
 pyparsing
 tco
