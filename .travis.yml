@@ -17,7 +17,7 @@ script:
     - python ./io.unittest.py
     - python ./selection.unittest.py
     - cd ../ && mkdir output
-    - travis_wait 30 python ./SchematicCheck.py | tee ./WARNINGS.log
+    - travis_wait 30 python ./NetlistCheck.py | tee ./WARNINGS.log
     - sed '/inconsistent/d' ./WARNINGS.log > WARNINGS-lite.log
 
 deploy:
