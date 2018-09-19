@@ -345,6 +345,39 @@ class RuleDCB_PT(RulePD):
         )
 
 
+# Put PTSingleToDiff rule above the general PTDCB rule
+class RuleDCB_PTSingleToDiff(RulePD):
+    def match(self, data, dcb_idx):
+        if 'HYB_i2C' in data['Signal ID'] or \
+                'EC_RESET' in data['Signal ID'] or \
+                'EC_ADC' in data['Signal ID']:
+            return True
+        else:
+            return False
+
+    def process(self, data, dcb_idx):
+        if 'EC_ADC' in data['Signal ID']:
+            # Becuase EC_ADC connects to Thermistor, add prefix THERM
+            net_name = \
+                self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
+                self.PT_PREFIX + str(dcb_idx) + '_THERM_' + \
+                data['Signal ID'] + '_P'
+        else:
+            net_name = \
+                self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
+                self.PT_PREFIX + str(dcb_idx) + '_' + \
+                data['Signal ID'] + '_P'
+        return (
+            {
+                'DCB': self.DCB_PREFIX + str(dcb_idx),
+                'DCB_PIN': data['SEAM pin'],
+                'PT': self.PT_PREFIX + self.PTID(data['Pigtail slot']),
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
+            },
+            {'NETNAME': net_name, 'ATTR': None}
+        )
+
+
 class RuleDCB_DCB(RulePD):
     def match(self, data, dcb_idx):
         if data['SEAM pin D'] is not None:
