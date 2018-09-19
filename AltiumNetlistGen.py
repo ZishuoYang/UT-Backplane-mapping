@@ -226,10 +226,17 @@ class RulePT_PTSingleToDiff(RulePD):
             return False
 
     def process(self, data, pt_idx):
-        net_name = \
-            self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
-            self.PT_PREFIX + str(pt_idx) + '_' + \
-            data['Signal ID'] + '_P'
+        if 'EC_ADC' in data['Signal ID']:
+            # Becuase EC_ADC connects to Thermistor, add prefix THERM
+            net_name = \
+                    self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
+                    self.PT_PREFIX + str(pt_idx) + '_THERM_' + \
+                    data['Signal ID'] + '_P'
+        else:
+            net_name = \
+                self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
+                self.PT_PREFIX + str(pt_idx) + '_' + \
+                data['Signal ID'] + '_P'
         return (
             {
                 'DCB': self.DCB_PREFIX + self.DCBID(data['DCB slot']),
