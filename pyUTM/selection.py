@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Sep 18, 2018 at 12:10 PM -0400
+# Last Change: Tue Sep 18, 2018 at 05:46 PM -0400
 
 import re
 import abc
+
+from collections import defaultdict
 
 from pyUTM.datatype import NetNode
 
@@ -45,6 +47,20 @@ class Rule(metaclass=abc.ABCMeta):
         '''
         Manipulate data in a certain way if it matches the rule.
         '''
+
+    @staticmethod
+    def AND(l):
+        if False in l:
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def OR(l):
+        if True in l:
+            return True
+        else:
+            return False
 
 
 ###################################
@@ -88,20 +104,6 @@ class RulePD(Rule):
             return self.process(data, connector_idx)
 
     @staticmethod
-    def AND(l):
-        if False in l:
-            return False
-        else:
-            return True
-
-    @staticmethod
-    def OR(l):
-        if True in l:
-            return True
-        else:
-            return False
-
-    @staticmethod
     def PADDING(s):
         # FIXME: Still unclear on how to deal with multiple pins.
         if '|' in s or '/' in s:
@@ -132,3 +134,54 @@ class RulePD(Rule):
         else:
             pt_idx, _, _ = s.split()
         return str(int(pt_idx))
+
+
+##########################################
+# Selection rules for schematic checking #
+##########################################
+
+class SelectorNet(Selector):
+    def do(self):
+        processed_dataset = defaultdict(list)
+
+        for node in self.full_dataset.keys():
+            for rule in self.rules:
+                result = rule.filter(node)
+                if result is not None:
+                    section, entry = result
+                    processed_dataset[section].append(entry)
+
+        return processed_dataset
+
+
+class RuleNet(Rule):
+    def __init__(self, netlist_node_dict, reference):
+        self.netlist_node_dict = netlist_node_dict
+        self.netlist_node_dict_keys_list = netlist_node_dict.keys()
+        self.reference = reference
+
+    def filter(self, node):
+        if self.match(node):
+            return self.process(node)
+
+    def process(self, node):
+        pass
+
+    def node_to_str(self, node):
+        attrs = self.node_data_properties(node)
+
+        s = ''
+        for a in attrs:
+            s += (a + ': ')
+            if getattr(node, a) is not None:
+                s += getattr(node, a)
+            else:
+                s += 'None'
+            s += ','
+
+        return s[:-1]
+
+    @staticmethod
+    def node_data_properties(node):
+        candidate = [attr for attr in dir(node) if not attr.startswith('_')]
+        return [attr for attr in candidate if attr not in ['count', 'index']]
