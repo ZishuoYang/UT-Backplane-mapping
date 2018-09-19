@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Sep 18, 2018 at 05:14 PM -0400
+# Last Change: Wed Sep 19, 2018 at 04:56 PM -0400
 
 from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import BrkStr, GenericNetNode
-from pyUTM.legacy import legacy_csv_line_pt, legacy_csv_line_dcb
+from pyUTM.legacy import legacy_csv_line_dcb
 
 input_dir = Path('input')
 output_dir = Path('output')
@@ -229,9 +229,9 @@ class RulePT_PTSingleToDiff(RulePD):
         if 'EC_ADC' in data['Signal ID']:
             # Becuase EC_ADC connects to Thermistor, add prefix THERM
             net_name = \
-                    self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
-                    self.PT_PREFIX + str(pt_idx) + '_THERM_' + \
-                    data['Signal ID'] + '_P'
+                self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
+                self.PT_PREFIX + str(pt_idx) + '_THERM_' + \
+                data['Signal ID'] + '_P'
         else:
             net_name = \
                 self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
@@ -547,7 +547,7 @@ print('====WARNINGS for PigTail====')
 pt_result = PtSelector.do()
 
 # Finally, write to csv file
-write_to_csv(pt_result_output_filename, pt_result, formatter=legacy_csv_line_pt)
+write_to_csv(pt_result_output_filename, pt_result)
 
 
 ################################

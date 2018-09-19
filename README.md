@@ -15,6 +15,7 @@ Python: >= 3.7
 openpyxl: >= 2.5.3
 pyparsing
 tco
+joblib
 ```
 
 
