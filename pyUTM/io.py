@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Sep 18, 2018 at 05:04 PM -0400
+# Last Change: Wed Sep 19, 2018 at 10:56 AM -0400
 
 import openpyxl
 import re
@@ -156,13 +156,8 @@ class NestedListReader(object):
 
 
 class PcadReader(NestedListReader):
-    def __init__(self, *args, **kwargs):
-        self.all_nets_dict = None
-        super().__init__(*args, **kwargs)
-
     def read(self):
-        all_nets_dict = self.readnets() if self.all_nets_dict is None else \
-            self.all_nets_dict
+        all_nets_dict = self.readnets()
         net_nodes_dict = {}
 
         for netname in all_nets_dict.keys():
@@ -229,9 +224,6 @@ class PcadReader(NestedListReader):
                 all_nets_dict[net_name].append(
                     tuple(map(lambda i: i.strip('\"'), node[1:3]))
                 )
-
-        # Store generated dict as a cache in case we need it.
-        self.all_nets_dict = all_nets_dict
 
         return all_nets_dict
 
