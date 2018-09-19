@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 14, 2018 at 03:40 AM -0400
+# Last Change: Wed Sep 19, 2018 at 01:50 PM -0400
 
 import unittest
+import re
 from pathlib import Path
 # from math import factorial
 
@@ -13,7 +14,7 @@ sys.path.insert(0, '..')
 from pyUTM.io import csv_line
 from pyUTM.io import parse_cell_range, XLReader
 from pyUTM.io import PcadReader
-# from pyUTM.io import make_combinations, PcadReader
+from pyUTM.io import make_combinations
 from pyUTM.datatype import NetNode
 
 input_dir = Path('..') / Path('input')
@@ -105,9 +106,31 @@ class PcadReaderTester(unittest.TestCase):
         self.assertEqual(PcadReader.net_node_gen(('JD1', '2'), ('JP1', '1')),
                          NetNode('JD1', '2', 'JP1', '1'))
 
-    # NOTE: Forget about recursion for now.
-    # def test_recursive_combination_base(self):
-        # self.assertEqual(make_combinations([1]), [])
+    def test_find_node_match_regex(self):
+        self.assertEqual(
+            PcadReader.find_node_match_regex(
+                [('JP1', 1), ('JP2', 1), ('JPL1', 1), ('JP11', 0), ('JD1', 1)],
+                re.compile(r'^JP\d+')),
+            [('JP1', 1), ('JP2', 1), ('JP11', 0)]
+        )
+
+    def test_parse_netlist_dict_dcb_pt(self):
+        reader = PcadReader('/dev/null')
+        self.assertEqual(
+            reader.parse_netlist_dict(
+                {
+                    'JD4_JP0_DC5_ELK_CH9_N':
+                    [('JD4', 'E7'), ('JP0', 'A2')]
+                }
+            ),
+            {
+                NetNode('JD4', 'E7', 'JP0', 'A2'):
+                {'NETNAME': 'JD4_JP0_DC5_ELK_CH9_N', 'ATTR': None}
+            }
+        )
+
+    def test_recursive_combination_base(self):
+        self.assertEqual(make_combinations([1]), [])
 
     # FIXME: Too bad, with TCO, these unit test breaks.
     # def test_recursive_combination_sample(self):

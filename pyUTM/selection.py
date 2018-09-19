@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 02:37 PM -0400
+# Last Change: Wed Sep 19, 2018 at 01:12 PM -0400
 
 import re
 import abc
+
+from collections import defaultdict
 
 from pyUTM.datatype import NetNode
 
@@ -46,6 +48,20 @@ class Rule(metaclass=abc.ABCMeta):
         Manipulate data in a certain way if it matches the rule.
         '''
 
+    @staticmethod
+    def AND(l):
+        if False in l:
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def OR(l):
+        if True in l:
+            return True
+        else:
+            return False
+
 
 ###################################
 # Selection rules for PigTail/DCB #
@@ -70,6 +86,8 @@ class SelectorPD(Selector):
                         else:
                             key = node_spec
 
+                        # NOTE: The insertion-order is preserved starting in
+                        # Python 3.7.0.
                         processed_dataset[key] = prop
                         break
 
@@ -84,20 +102,6 @@ class RulePD(Rule):
         data, connector_idx = databundle
         if self.match(data, connector_idx):
             return self.process(data, connector_idx)
-
-    @staticmethod
-    def AND(l):
-        if False in l:
-            return False
-        else:
-            return True
-
-    @staticmethod
-    def OR(l):
-        if True in l:
-            return True
-        else:
-            return False
 
     @staticmethod
     def PADDING(s):
@@ -130,3 +134,55 @@ class RulePD(Rule):
         else:
             pt_idx, _, _ = s.split()
         return str(int(pt_idx))
+
+
+##########################################
+# Selection rules for schematic checking #
+##########################################
+
+class SelectorNet(Selector):
+    def do(self):
+        processed_dataset = defaultdict(list)
+
+        for node in self.full_dataset.keys():
+            for rule in self.rules:
+                result = rule.filter(node)
+                if result is not None:
+                    section, entry = result
+                    processed_dataset[section].append(entry)
+                    break
+
+        return processed_dataset
+
+
+class RuleNet(Rule):
+    def __init__(self, netlist_dict, netlist_list, reference):
+        self.netlist_dict = netlist_dict
+        self.netlist_list = netlist_list
+        self.reference = reference
+
+    def filter(self, node):
+        if self.match(node):
+            return self.process(node)
+
+    def process(self, node):
+        pass
+
+    def node_to_str(self, node):
+        attrs = self.node_data_properties(node)
+
+        s = ''
+        for a in attrs:
+            s += (a + ': ')
+            if getattr(node, a) is not None:
+                s += getattr(node, a)
+            else:
+                s += 'None'
+            s += ', '
+
+        return s[:-2]
+
+    @staticmethod
+    def node_data_properties(node):
+        candidate = [attr for attr in dir(node) if not attr.startswith('_')]
+        return [attr for attr in candidate if attr not in ['count', 'index']]

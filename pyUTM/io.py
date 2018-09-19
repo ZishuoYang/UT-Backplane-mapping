@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 04:22 PM -0400
+# Last Change: Wed Sep 19, 2018 at 01:32 PM -0400
 
 import openpyxl
 import re
 
 from pyparsing import nestedExpr
 from tco import with_continuations  # Make Python do tail recursion elimination
+from joblib import Memory  # For persistent cache
 
 from pyUTM.datatype import range, ColNum, NetNode, GenericNetNode
 
@@ -157,19 +158,18 @@ class NestedListReader(object):
 
 class PcadReader(NestedListReader):
     def read(self):
-        all_nets_dict = self.readnets()
-        regex_dcb = re.compile(r'^JD\d+')
-        regex_pt = re.compile(r'^JP\d+')
+        return self.parse_netlist_dict(self.readnets())
 
+    def parse_netlist_dict(self, all_nets_dict):
         net_nodes_dict = {}
 
         for netname in all_nets_dict.keys():
-            dcb_nodes = list(filter(lambda x: regex_dcb.search(x[0]),
-                                    all_nets_dict[netname]))
-            pt_nodes = list(filter(lambda x: regex_pt.search(x[0]),
-                                   all_nets_dict[netname]))
+            net = all_nets_dict[netname]
+
+            dcb_nodes = self.find_node_match_regex(net, re.compile(r'^JD\d+'))
+            pt_nodes = self.find_node_match_regex(net, re.compile(r'^JP\d+'))
             other_nodes = list(
-                set(all_nets_dict[netname]) - set(dcb_nodes) - set(pt_nodes)
+                set(net) - set(dcb_nodes) - set(pt_nodes)
             )
 
             # First, handle DCB-PT connections
@@ -243,3 +243,16 @@ class PcadReader(NestedListReader):
             pt = pt_pin = None
 
         return datatype(dcb, dcb_pin, pt, pt_pin)
+
+    @staticmethod
+    def find_node_match_regex(nodes_list, regex):
+        return list(filter(lambda x: regex.search(x[0]), nodes_list))
+
+
+class PcadReaderCached(PcadReader):
+    def __init__(self, cache_dir, *args):
+        self.mem = Memory(cache_dir)
+        super().__init__(*args)
+
+        self.read = self.mem.cache(super().read)
+        self.readnets = self.mem.cache(super().readnets)
