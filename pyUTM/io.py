@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 10:56 AM -0400
+# Last Change: Wed Sep 19, 2018 at 11:07 AM -0400
 
 import openpyxl
 import re
 
 from pyparsing import nestedExpr
 from tco import with_continuations  # Make Python do tail recursion elimination
+from joblib import Memory  # For persistent cache
 
 from pyUTM.datatype import range, ColNum, NetNode, GenericNetNode
 
@@ -244,3 +245,12 @@ class PcadReader(NestedListReader):
     @staticmethod
     def find_node_match_regex(nodes_list, regex):
         return list(filter(lambda x: regex.search(x[0]), nodes_list))
+
+
+class PcadReaderCached(PcadReader):
+    def __init__(self, cache_dir, *args):
+        self.mem = Memory(cache_dir)
+        super().__init__(*args)
+
+        self.read = self.mem.cache(super().read)
+        self.readnets = self.mem.cache(super().readnets)

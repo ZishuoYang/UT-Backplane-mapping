@@ -1,23 +1,24 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Sep 18, 2018 at 05:38 PM -0400
+# Last Change: Wed Sep 19, 2018 at 11:14 AM -0400
 
 from pathlib import Path
 
-from pyUTM.io import PcadReader
+from pyUTM.io import PcadReaderCached
 from pyUTM.selection import SelectorNet, RuleNet
 from pyUTM.datatype import GenericNetNode
 from AltiumNetlistGen import input_dir, pt_result
 
 netlist = input_dir / Path("backplane_netlists") / Path('Aug21_2018.net')
+cache_dir = 'cache'
 
 
 ####################################
 # Read info from backplane netlist #
 ####################################
 
-NetReader = PcadReader(netlist)
+NetReader = PcadReaderCached(cache_dir, netlist)
 net_descr = NetReader.read()
 
 
