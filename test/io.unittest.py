@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 11:13 AM -0400
+# Last Change: Wed Sep 19, 2018 at 01:50 PM -0400
 
 import unittest
 import re
@@ -112,6 +112,21 @@ class PcadReaderTester(unittest.TestCase):
                 [('JP1', 1), ('JP2', 1), ('JPL1', 1), ('JP11', 0), ('JD1', 1)],
                 re.compile(r'^JP\d+')),
             [('JP1', 1), ('JP2', 1), ('JP11', 0)]
+        )
+
+    def test_parse_netlist_dict_dcb_pt(self):
+        reader = PcadReader('/dev/null')
+        self.assertEqual(
+            reader.parse_netlist_dict(
+                {
+                    'JD4_JP0_DC5_ELK_CH9_N':
+                    [('JD4', 'E7'), ('JP0', 'A2')]
+                }
+            ),
+            {
+                NetNode('JD4', 'E7', 'JP0', 'A2'):
+                {'NETNAME': 'JD4_JP0_DC5_ELK_CH9_N', 'ATTR': None}
+            }
         )
 
     def test_recursive_combination_base(self):
