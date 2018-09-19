@@ -215,6 +215,32 @@ class RulePTPTThermistor(RulePTPTLvSource):
             return False
 
 
+# Put PTSingleToDiff rule above the general PTDCB rule
+class RulePTPTSingleToDiff(RulePD):
+    def match(self, data, pt_idx):
+        if 'HYB_i2C' in data['Signal ID'] or \
+                'EC_RESET' in data['Signal ID'] or \
+                'EC_ADC' in data['Signal ID']:
+            return True
+        else:
+            return False
+
+    def process(self, data, pt_idx):
+        net_name = \
+            self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
+            self.PT_PREFIX + str(pt_idx) + '_' + \
+            data['Signal ID'] + '_P'
+        return (
+            {
+                'DCB': self.DCB_PREFIX + self.DCBID(data['DCB slot']),
+                'DCB_PIN': data['SEAM pin'],
+                'PT': self.PT_PREFIX + str(pt_idx),
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
+            },
+            {'NETNAME': net_name, 'ATTR': None}
+        )
+
+
 pt_rules = [RulePTPathFinder(),
             RulePTDCB(),
             RulePTPTLvSource(brkoutbrd_pin_assignments),

@@ -16,7 +16,8 @@ netlist = input_dir / Path("backplane_netlists") / Path('Aug21_2018.net')
 ####################################
 
 NetReader = PcadReader(netlist)
-net_descr = NetReader.read()
+all_nets_dict = NetReader.readnets()
+net_descr = NetReader.read(all_nets_dict)
 net_result = list(net_descr.keys())
 
 
