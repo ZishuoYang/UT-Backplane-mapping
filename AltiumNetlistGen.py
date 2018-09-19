@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 04:53 PM -0400
+# Last Change: Wed Sep 19, 2018 at 04:56 PM -0400
 
 from pathlib import Path
 
@@ -229,9 +229,9 @@ class RulePT_PTSingleToDiff(RulePD):
         if 'EC_ADC' in data['Signal ID']:
             # Becuase EC_ADC connects to Thermistor, add prefix THERM
             net_name = \
-                    self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
-                    self.PT_PREFIX + str(pt_idx) + '_THERM_' + \
-                    data['Signal ID'] + '_P'
+                self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
+                self.PT_PREFIX + str(pt_idx) + '_THERM_' + \
+                data['Signal ID'] + '_P'
         else:
             net_name = \
                 self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
