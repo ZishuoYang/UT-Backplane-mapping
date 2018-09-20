@@ -1,13 +1,10 @@
 language: python
+python: 3.7
+dist: xenial
+sudo: true
 
 env:
     - IN_TRAVIS_CI=yes
-
-matrix:
-    include:
-        - python: 3.7
-          dist: xenial
-          sudo: true
 
 cache: pip
 
