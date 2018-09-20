@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 05:25 PM -0400
+# Last Change: Thu Sep 20, 2018 at 05:28 PM -0400
 
 import builtins
 import typing
@@ -102,9 +102,9 @@ class BrkStr(str):
 
 
 class ExcelCell(str):
-    def __new__(cls, name, color=None):
+    def __new__(cls, name, font_color=None):
         self = super(ExcelCell, cls).__new__(cls, name)
-        self.color = color
+        self.font_color = font_color
         return self
 
 
