@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 11:25 AM -0400
+# Last Change: Thu Sep 20, 2018 at 11:55 AM -0400
 
 from pathlib import Path
 from os import environ
@@ -144,6 +144,12 @@ class RuleNet_One_To_N(RuleNet):
 
                 if node1 in all_nodes_list:
                     for node in all_nodes_list:
+                        # NOTE: If a connector includes 'JS_PT', assuming it is
+                        # jumped to another correct component.
+                        if 'JS_PT' in node:
+                            return True
+
+                    for node in all_nodes_list:
                         if node2 in node:
                             return True
 
@@ -154,6 +160,7 @@ class RuleNet_One_To_N(RuleNet):
     def replace_arabic_number_to_english(node_name):
         number_replacement_rules = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR',
                                     'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE']
+
         splitted = node_name.split('JPU')
         if len(splitted) == 2:
             name, num = splitted
