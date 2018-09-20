@@ -163,7 +163,7 @@ class RulePT_NotConnected(RulePD):
         if data['SEAM pin'] is None and \
                 self.OR([
                         'ASIC' in data['Signal ID'],
-                        'CLK' in data['Signal ID'],
+                        '_CLK_' in data['Signal ID'],
                         'TFC' in data['Signal ID'],
                         'THERMISTOR' in data['Signal ID']
                         ]):
