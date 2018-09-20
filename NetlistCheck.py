@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 01:10 AM -0400
+# Last Change: Thu Sep 20, 2018 at 01:30 AM -0400
 
 from pathlib import Path
 from os import environ
@@ -64,9 +64,7 @@ class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
 
 class RuleNet_DCB_Or_PT_NetName_Inconsistent(RuleNet):
     def match(self, node):
-        if self.reference[node]['NETNAME'] != \
-                self.node_dict[node]['NETNAME'].replace('EAST_LV', 'WEST_LV'):
-                # ^Seems that 'WEST_LV' and 'EAST_LV' are always equivalent
+        if self.reference[node]['NETNAME'] != self.node_dict[node]['NETNAME']:
             return True
         else:
             return False
@@ -80,6 +78,16 @@ class RuleNet_DCB_Or_PT_NetName_Inconsistent(RuleNet):
                 self.node_to_str(node)
             )
         )
+
+
+class RuleNet_DCB_Or_PT_NetName_Equal_Cavalier(RuleNet):
+    def match(self, node):
+        if self.reference[node]['NETNAME'] == \
+                self.node_dict[node]['NETNAME'].replace('EAST_LV', 'WEST_LV'):
+                # ^Seems that 'WEST_LV' and 'EAST_LV' are always equivalent
+            return True
+        else:
+            return False
 
 
 class RuleNet_Node_NotIn(RuleNet):
@@ -128,7 +136,8 @@ class RuleNet_One_To_N(RuleNet):
             node1, node2, signal_id = netname_by_tom.split('_', 2)
             _, _, reference_signal_id = netname_by_zishuo.split('_', 2)
 
-            if signal_id == reference_signal_id:
+            if signal_id.replace('EAST_LV', 'WEST_LV') == reference_signal_id \
+                    or signal_id == reference_signal_id:
                 all_nodes_list = \
                     list(zip(*self.netlist_dict[netname_by_tom]))[0]
                 node2 = self.replace_arabic_number_to_english(node2)
@@ -160,8 +169,8 @@ net_rules = [
     RuleNet_Node_NotIn(node_dict, node_list, pt_result),
     RuleNet_DCB_PT_NetName_Inconsistent(node_dict, node_list, pt_result),
     RuleNet_One_To_N(netlist_dict, node_dict, node_list, pt_result),
-    RuleNet_DCB_Or_PT_NetName_Inconsistent(
-        node_dict, node_list, pt_result),
+    RuleNet_DCB_Or_PT_NetName_Equal_Cavalier(node_dict, node_list, pt_result),
+    RuleNet_DCB_Or_PT_NetName_Inconsistent(node_dict, node_list, pt_result),
 ]
 
 
