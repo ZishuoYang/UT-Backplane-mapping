@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 04:56 PM -0400
+# Last Change: Thu Sep 20, 2018 at 06:02 PM -0400
 
 from pathlib import Path
 
@@ -277,7 +277,9 @@ class RulePT_PTSingleToDiff(RulePD):
 
 class RulePT_UnusedToGND(RulePD):
     def match(self, data, pt_idx):
-        if data['Signal ID'] == 'UNUSED':
+        if data['Signal ID'] is not None \
+                and data['Signal ID'].font_color is not None \
+                and data['Signal ID'].font_color.tint != 0.0:
             return True
         else:
             return False
@@ -297,13 +299,13 @@ class RulePT_UnusedToGND(RulePD):
 pt_rules = [
     RulePT_PathFinder(),
     RulePT_PTSingleToDiff(),
+    RulePT_UnusedToGND(),
     RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),
     RulePT_PTLvReturn(brkoutbrd_pin_assignments),
     RulePT_PTLvSense(brkoutbrd_pin_assignments),
     RulePT_PTThermistor(brkoutbrd_pin_assignments),
-    RulePT_UnusedToGND(),
     RulePT_Default()
 ]
 
