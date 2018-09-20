@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 01:21 PM -0400
+# Last Change: Thu Sep 20, 2018 at 05:28 PM -0400
 
 import builtins
 import typing
@@ -97,13 +97,15 @@ class BrkStr(str):
 
     @staticmethod
     def split_signal_id_into_three(id):
-        splitted = id.split('_')
-
-        src_pin = splitted[0]
-        dest_pin = splitted[1]
-        signal_id = '_'.join(splitted[2:])
-
+        src_pin, dest_pin, signal_id = id.split('_', 2)
         return [src_pin, dest_pin, signal_id]
+
+
+class ExcelCell(str):
+    def __new__(cls, name, font_color=None):
+        self = super(ExcelCell, cls).__new__(cls, name)
+        self.font_color = font_color
+        return self
 
 
 ##############################################################

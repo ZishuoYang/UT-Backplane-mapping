@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 04:39 PM -0400
+# Last Change: Thu Sep 20, 2018 at 05:23 PM -0400
 
 import unittest
 
@@ -11,6 +11,7 @@ sys.path.insert(0, '..')
 from pyUTM.datatype import ColNum, range
 from pyUTM.datatype import BrkStr
 from pyUTM.datatype import GenericNetNode
+from pyUTM.datatype import ExcelCell
 
 
 class DataTypeTester(unittest.TestCase):
@@ -111,6 +112,14 @@ class BrkStrTester(unittest.TestCase):
         self.assertTrue('JD11' in name3)
         self.assertTrue('JPL2' in name3)
         self.assertFalse('JPL3' in name3)
+
+
+class ExcelCellTester(unittest.TestCase):
+    def test_string_equality(self):
+        self.assertEqual('test', ExcelCell('test', None))
+
+    def test_string_in(self):
+        self.assertTrue('test' in [ExcelCell('test', None)])
 
 
 class GenericNetNodeTester(unittest.TestCase):
