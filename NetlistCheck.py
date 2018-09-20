@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 11:55 AM -0400
+# Last Change: Thu Sep 20, 2018 at 12:00 PM -0400
 
 from pathlib import Path
 from os import environ
@@ -137,7 +137,9 @@ class RuleNet_One_To_N(RuleNet):
             _, _, reference_signal_id = netname_by_zishuo.split('_', 2)
 
             if signal_id.replace('EAST_LV', 'WEST_LV') == reference_signal_id \
-                    or signal_id == reference_signal_id:
+                    or signal_id == reference_signal_id \
+                    or ('LV_RETURN' in signal_id and 'LV_RETURN' in
+                        reference_signal_id):
                 all_nodes_list = \
                     list(zip(*self.netlist_dict[netname_by_tom]))[0]
                 node2 = self.replace_arabic_number_to_english(node2)
