@@ -158,6 +158,31 @@ class RulePT_DCB(RulePD):
         )
 
 
+class RulePT_NotConnected(RulePD):
+    def match(self, data, pt_idx):
+        if data['SEAM pin'] is None and \
+                'ASIC' in data['Signal ID'] or \
+                'CLK' in data['Signal ID'] or \
+                'TFC' in data['Signal ID'] or \
+                'THERMISTOR' in data['Signal ID']:
+            # Which means that this PT pin is not connected to a DCB pin.
+            return True
+        else:
+            return False
+
+    def process(self, data, pt_idx):
+        net_name = 'GND'
+        return (
+            {
+                'DCB': None,
+                'DCB_PIN': None,
+                'PT': self.PT_PREFIX + str(pt_idx),
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
+            },
+            {'NETNAME': net_name, 'ATTR': None}
+        )
+
+
 class RulePT_PTLvSource(RulePD):
     def __init__(self, brkoutbrd_rules):
         self.rules = brkoutbrd_rules
@@ -270,6 +295,7 @@ class RulePT_UnusedToGND(RulePD):
 pt_rules = [
     RulePT_PathFinder(),
     RulePT_PTSingleToDiff(),
+    RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),
     RulePT_PTLvReturn(brkoutbrd_pin_assignments),
