@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 05:30 PM -0400
+# Last Change: Thu Sep 20, 2018 at 12:20 AM -0400
 
 from pathlib import Path
 from os import environ
@@ -25,8 +25,9 @@ if 'IN_TRAVIS_CI' in environ:
 else:
     NetReader = PcadReaderCached(cache_dir, netlist)
 
-netlist_dict = NetReader.read()
-netlist_list = list(netlist_dict.keys())
+node_dict = NetReader.read()
+node_list = list(node_dict.keys())
+netlist_dict = NetReader.readnets()
 
 
 ########################################
@@ -45,7 +46,7 @@ class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
     def match(self, node):
         if node.PT is not None and node.DCB is not None \
                 and self.reference[node]['NETNAME'] != \
-                self.netlist_dict[node]['NETNAME']:
+                self.node_dict[node]['NETNAME']:
             return True
         else:
             return False
@@ -53,8 +54,8 @@ class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
     def process(self, node):
         return (
             'DCB-PT',
-            "NETNAME inconsistent: Tom's: {}, Zishuo: {}, NODE: {}".format(
-                self.netlist_dict[node]['NETNAME'],
+            "NETNAME inconsistent: Tom's: {}, Zishuo's: {}, NODE: {}".format(
+                self.node_dict[node]['NETNAME'],
                 self.reference[node]['NETNAME'],
                 self.node_to_str(node)
             )
@@ -64,7 +65,7 @@ class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
 class RuleNet_DCB_Or_PT_NetName_Inconsistent(RuleNet):
     def match(self, node):
         if self.reference[node]['NETNAME'] != \
-                self.netlist_dict[node]['NETNAME']:
+                self.node_dict[node]['NETNAME']:
             return True
         else:
             return False
@@ -72,8 +73,8 @@ class RuleNet_DCB_Or_PT_NetName_Inconsistent(RuleNet):
     def process(self, node):
         return (
             'DCB-None or None-PT',
-            "NETNAME inconsistent: Tom's: {}, Zishuo: {}, NODE: {}".format(
-                self.netlist_dict[node]['NETNAME'],
+            "NETNAME inconsistent: Tom's: {}, Zishuo's: {}, NODE: {}".format(
+                self.node_dict[node]['NETNAME'],
                 self.reference[node]['NETNAME'],
                 self.node_to_str(node)
             )
@@ -82,7 +83,7 @@ class RuleNet_DCB_Or_PT_NetName_Inconsistent(RuleNet):
 
 class RuleNet_Node_NotIn(RuleNet):
     def match(self, node):
-        if node not in self.netlist_list:
+        if node not in self.node_list:
             return True
         else:
             return False
@@ -112,17 +113,36 @@ class RuleNet_ForRefOnly(RuleNet):
         )
 
 
+class RuleNet_One_To_N(RuleNet):
+    def __init__(self, netlist_dict, *args):
+        self.netlist_dict = netlist_dict
+        super().__init__(*args)
+
+    def match(self, node):
+        netname_by_tom = self.node_dict[node]['NETNAME']
+        netname_by_zishuo = self.reference[node]['NETNAME']
+
+        if netname_by_tom.count('_') >= 2 \
+                and netname_by_zishuo.count('_') >= 2:
+            node1, node2, signal_id = netname_by_tom.split('_', 2)
+            _, _, reference_signal_id = netname_by_zishuo.split('_', 2)
+
+            if signal_id == reference_signal_id:
+                all_nodes_list = \
+                    list(zip(*self.netlist_dict[netname_by_tom]))[0]
+                if node1 in all_nodes_list and node2 in all_nodes_list:
+                    return True
+
+        return False
+
+
 net_rules = [
-    RuleNet_ForRefOnly(netlist_dict, netlist_list, pt_result),
-    RuleNet_Node_NotIn(netlist_dict, netlist_list, pt_result),
-    RuleNet_DCB_PT_NetName_Inconsistent(netlist_dict, netlist_list, pt_result),
+    RuleNet_ForRefOnly(node_dict, node_list, pt_result),
+    RuleNet_Node_NotIn(node_dict, node_list, pt_result),
+    RuleNet_DCB_PT_NetName_Inconsistent(node_dict, node_list, pt_result),
+    RuleNet_One_To_N(netlist_dict, node_dict, node_list, pt_result),
     RuleNet_DCB_Or_PT_NetName_Inconsistent(
-        netlist_dict, netlist_list, pt_result),
-    # RuleNet_DCB_PT_In(netlist_dict, netlist_list, pt_result),
-    # RuleNet_DCB_PT_NotIn(netlist_dict, netlist_list, pt_result),
-    # RuleNet_Node_NotIn(net_descr, pt_result),
-    # RuleNet_Node_In_NetNameAgree(net_descr, pt_result),
-    # RuleNet_Node_In_NetNameNotAgree(net_descr, pt_result)
+        node_dict, node_list, pt_result),
 ]
 
 

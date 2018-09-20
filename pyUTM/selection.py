@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 01:12 PM -0400
+# Last Change: Wed Sep 19, 2018 at 06:17 PM -0400
 
 import re
 import abc
@@ -147,7 +147,10 @@ class SelectorNet(Selector):
         for node in self.full_dataset.keys():
             for rule in self.rules:
                 result = rule.filter(node)
-                if result is not None:
+                if result is False:
+                    break
+
+                elif result is not None:
                     section, entry = result
                     processed_dataset[section].append(entry)
                     break
@@ -156,9 +159,9 @@ class SelectorNet(Selector):
 
 
 class RuleNet(Rule):
-    def __init__(self, netlist_dict, netlist_list, reference):
-        self.netlist_dict = netlist_dict
-        self.netlist_list = netlist_list
+    def __init__(self, node_dict, node_list, reference):
+        self.node_dict = node_dict
+        self.node_list = node_list
         self.reference = reference
 
     def filter(self, node):
@@ -166,7 +169,7 @@ class RuleNet(Rule):
             return self.process(node)
 
     def process(self, node):
-        pass
+        return False
 
     def node_to_str(self, node):
         attrs = self.node_data_properties(node)
