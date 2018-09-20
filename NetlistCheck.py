@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 01:30 AM -0400
+# Last Change: Thu Sep 20, 2018 at 11:25 AM -0400
 
 from pathlib import Path
 from os import environ
@@ -155,13 +155,16 @@ class RuleNet_One_To_N(RuleNet):
         number_replacement_rules = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR',
                                     'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE']
         splitted = node_name.split('JPU')
-
         if len(splitted) == 2:
             name, num = splitted
             return name + '_' + number_replacement_rules[int(num)]
 
-        else:
-            return node_name
+        splitted = node_name.split('JPL')
+        if len(splitted) == 2:
+            name, num = splitted
+            return name + '_' + number_replacement_rules[int(num)]
+
+        return node_name
 
 
 net_rules = [
