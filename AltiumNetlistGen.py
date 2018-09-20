@@ -161,10 +161,12 @@ class RulePT_DCB(RulePD):
 class RulePT_NotConnected(RulePD):
     def match(self, data, pt_idx):
         if data['SEAM pin'] is None and \
-                'ASIC' in data['Signal ID'] or \
-                'CLK' in data['Signal ID'] or \
-                'TFC' in data['Signal ID'] or \
-                'THERMISTOR' in data['Signal ID']:
+                self.OR([
+                        'ASIC' in data['Signal ID'],
+                        'CLK' in data['Signal ID'],
+                        'TFC' in data['Signal ID'],
+                        'THERMISTOR' in data['Signal ID']
+                        ]):
             # Which means that this PT pin is not connected to a DCB pin.
             return True
         else:
