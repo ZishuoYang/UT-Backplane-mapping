@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 12:56 AM -0400
+# Last Change: Thu Sep 20, 2018 at 01:10 AM -0400
 
 from pathlib import Path
 from os import environ
@@ -65,7 +65,8 @@ class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
 class RuleNet_DCB_Or_PT_NetName_Inconsistent(RuleNet):
     def match(self, node):
         if self.reference[node]['NETNAME'] != \
-                self.node_dict[node]['NETNAME']:
+                self.node_dict[node]['NETNAME'].replace('EAST_LV', 'WEST_LV'):
+                # ^Seems that 'WEST_LV' and 'EAST_LV' are always equivalent
             return True
         else:
             return False
