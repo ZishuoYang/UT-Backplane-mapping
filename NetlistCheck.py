@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 12:20 AM -0400
+# Last Change: Thu Sep 20, 2018 at 12:56 AM -0400
 
 from pathlib import Path
 from os import environ
@@ -130,10 +130,28 @@ class RuleNet_One_To_N(RuleNet):
             if signal_id == reference_signal_id:
                 all_nodes_list = \
                     list(zip(*self.netlist_dict[netname_by_tom]))[0]
-                if node1 in all_nodes_list and node2 in all_nodes_list:
-                    return True
+                node2 = self.replace_arabic_number_to_english(node2)
+
+                if node1 in all_nodes_list:
+                    for node in all_nodes_list:
+                        if node2 in node:
+                            return True
 
         return False
+
+    # This is needed because Tom is cavalier in picking names.
+    @staticmethod
+    def replace_arabic_number_to_english(node_name):
+        number_replacement_rules = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR',
+                                    'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE']
+        splitted = node_name.split('JPU')
+
+        if len(splitted) == 2:
+            name, num = splitted
+            return name + '_' + number_replacement_rules[int(num)]
+
+        else:
+            return node_name
 
 
 net_rules = [
