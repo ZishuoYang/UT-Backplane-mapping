@@ -10,7 +10,7 @@ from pyparsing import nestedExpr
 from tco import with_continuations  # Make Python do tail recursion elimination
 from joblib import Memory  # For persistent cache
 
-from pyUTM.datatype import range, ColNum, NetNode, GenericNetNode
+from pyUTM.datatype import range, ColNum, NetNode, GenericNetNode, ExcelCell
 
 
 ##################
@@ -125,9 +125,20 @@ class XLReader(object):
         data = []
         for row in range(self.initial_row+initial_row_bump, self.final_row):
             pin_spec = dict()
+            
             for col in headers.keys():
                 anchor = str(col) + str(row)
-                pin_spec[headers[col]] = sheet[anchor].value
+
+                name = sheet[anchor].value
+                if name is None:
+                    pin_spec[headers[col]] = None
+                else:
+                    try:
+                        font_color = sheet[anchor].font.color
+                    except AttributeError:
+                        font_color = None
+                    pin_spec[headers[col]] = ExcelCell(name, font_color)
+
             data.append(pin_spec)
         return data
 
