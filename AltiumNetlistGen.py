@@ -242,6 +242,31 @@ class RulePT_PTThermistor(RulePT_PTLvSource):
             return False
 
 
+# This rule is a last resort if Tom cannot correct his netnames.
+# Should NOT be used normally.
+class RulePT_LVSenseGND(RulePD):
+    def match(self, data, pt_idx):
+        if 'LV_SENSE_GND' in data['Signal ID']:
+            return True
+        else:
+            return False
+
+    def process(self, data, pt_idx):
+        net_name = \
+            self.PT_PREFIX + str(pt_idx) + \
+            data['Pigtail pin'] + '_' + \
+            data['Signal ID']
+        return (
+            {
+                'DCB': None,
+                'DCB_PIN': None,
+                'PT': self.PT_PREFIX + str(pt_idx),
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
+            },
+            {'NETNAME': net_name, 'ATTR': None}
+        )
+
+
 # Put PTSingleToDiff rule above the general PTDCB rule
 class RulePT_PTSingleToDiff(RulePD):
     def match(self, data, pt_idx):
@@ -300,6 +325,7 @@ pt_rules = [
     RulePT_PathFinder(),
     RulePT_PTSingleToDiff(),
     RulePT_UnusedToGND(),
+    RulePT_LVSenseGND(),
     RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),
