@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 04:56 PM -0400
+# Last Change: Thu Sep 20, 2018 at 06:02 PM -0400
 
 from pathlib import Path
 
@@ -325,7 +325,6 @@ pt_rules = [
     RulePT_PathFinder(),
     RulePT_PTSingleToDiff(),
     RulePT_UnusedToGND(),
-    RulePT_LVSenseGND(),
     RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),

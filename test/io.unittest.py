@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 01:50 PM -0400
+# Last Change: Fri Sep 21, 2018 at 01:15 PM -0400
 
 import unittest
 import re
@@ -67,15 +67,15 @@ class XLReaderTester(unittest.TestCase):
     def test_read_single_spec(self):
         reader = XLReader(pt_filename)
         result = reader.read([0], 'B5:H6')
-        self.assertEqual(result[0][0]['ref'], 199)
+        self.assertEqual(result[0][0]['ref'], '199')
 
     def test_read_sort(self):
         reader = XLReader(pt_filename)
         result = reader.read([0], 'B5:H11',
                              sortby=lambda item: item['SEAM pin'])
-        self.assertEqual(result[0][0]['ref'], 228)
-        self.assertEqual(result[0][2]['ref'], 207)
-        self.assertEqual(result[0][-1]['ref'], 200)
+        self.assertEqual(result[0][0]['ref'], '228')
+        self.assertEqual(result[0][2]['ref'], '207')
+        self.assertEqual(result[0][-1]['ref'], '200')
 
     def test_read_with_headers_single_spec(self):
         reader = XLReader(brkoutbrd_filename)

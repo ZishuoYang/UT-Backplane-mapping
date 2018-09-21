@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 01:32 PM -0400
+# Last Change: Thu Sep 20, 2018 at 05:33 PM -0400
 
 import openpyxl
 import re
@@ -125,7 +125,7 @@ class XLReader(object):
         data = []
         for row in range(self.initial_row+initial_row_bump, self.final_row):
             pin_spec = dict()
-            
+
             for col in headers.keys():
                 anchor = str(col) + str(row)
 
