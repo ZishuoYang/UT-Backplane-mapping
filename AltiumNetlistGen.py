@@ -269,11 +269,12 @@ class RulePT_LVSenseGND(RulePD):
 
 
 # Put PTSingleToDiff rule above the general PTDCB rule
-class RulePT_PTSingleToDiff(RulePD):
+class RulePT_PTSingleToDiffP(RulePD):
     def match(self, data, pt_idx):
-        if 'HYB_i2C' in data['Signal ID'] or \
-                'EC_RESET' in data['Signal ID'] or \
-                'EC_ADC' in data['Signal ID']:
+        if not data['Signal ID'].endswith('_N') and \
+                ('HYB_i2C' in data['Signal ID'] or
+                 'EC_RESET' in data['Signal ID'] or
+                 'EC_ADC' in data['Signal ID']):
             return True
         else:
             return False
@@ -301,11 +302,36 @@ class RulePT_PTSingleToDiff(RulePD):
         )
 
 
+class RulePT_PTSingleToDiffN(RulePD):
+    def match(self, data, pt_idx):
+        if data['Signal ID'].endswith('_N') and \
+                ('HYB_i2C' in data['Signal ID'] or
+                 'EC_RESET' in data['Signal ID'] or
+                 'EC_ADC' in data['Signal ID']):
+            return True
+        else:
+            return False
+
+    def process(self, data, pt_idx):
+        dcb_name, tail = data['Signal ID'].split('_', 1)
+        net_name = dcb_name + '_' + self.PT_PREFIX + str(pt_idx) + '_' + tail
+        return (
+            {
+                'DCB': None,
+                'DCB_PIN': None,
+                'PT': self.PT_PREFIX + str(pt_idx),
+                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
+            },
+            {'NETNAME': net_name, 'ATTR': None}
+        )
+
+
 class RulePT_UnusedToGND(RulePD):
     def match(self, data, pt_idx):
         if data['Signal ID'] is not None \
                 and data['Signal ID'].font_color is not None \
-                and data['Signal ID'].font_color.tint != 0.0:
+                and data['Signal ID'].font_color.tint != 0.0 \
+                and data['Signal ID'].font_color.theme == 0:
             return True
         else:
             return False
@@ -324,7 +350,8 @@ class RulePT_UnusedToGND(RulePD):
 
 pt_rules = [
     RulePT_PathFinder(),
-    RulePT_PTSingleToDiff(),
+    RulePT_PTSingleToDiffP(),
+    RulePT_PTSingleToDiffN(),
     RulePT_UnusedToGND(),
     RulePT_NotConnected(),
     RulePT_DCB(),
@@ -620,18 +647,22 @@ dcb_rules = [
 for pt_id in range(0, len(pt_descr)):
     for pt_entry in pt_descr[pt_id]:
         if pt_entry['Signal ID'] is not None \
-                and pt_entry['Signal ID'].endswith('_N'):
+                and (pt_entry['Signal ID'].endswith('SCL_N') or
+                     pt_entry['Signal ID'].endswith('SDA_N') or
+                     pt_entry['Signal ID'].endswith('RESET_N')):
             reference_id = pt_entry['Signal ID'][:-1] + 'P'
             for pt_entry_ref in pt_descr[pt_id]:
                 if pt_entry_ref['Signal ID'] == reference_id:
-                    if pt_entry_ref['SEAM pin'] is None:
-                        pt_entry['Signal ID'] = ExcelCell('GND')
+                    if pt_entry_ref['SEAM pin'] is not None:
+                        dcb_id = RulePD.DCBID(pt_entry_ref['DCB slot'])
+                        for dcb_entry in dcb_descr[int(dcb_id)]:
+                            if pt_entry_ref['SEAM pin'] == dcb_entry['SEAM pin'] \
+                                    and dcb_entry['Pigtail slot'] is not None \
+                                    and str(pt_id) == RulePD.PTID(dcb_entry['Pigtail slot']) \
+                                    and pt_entry_ref['Pigtail pin'] == dcb_entry['Pigtail pin']:
+                                pt_entry['Signal ID'] = ExcelCell("JD"+str(dcb_id)+'_'+dcb_entry['Signal ID']+'_N')
+                                break
                         break
-
-                    else:
-                        pt_entry['DCB slot'] = pt_entry_ref['DCB slot']
-                        # Easier to identify in rules.
-                        pt_entry['SEAM pin'] = ExcelCell('IMAGINARY')
 
 
 # Second, replace 'Signal ID' to DCB side definitions.
