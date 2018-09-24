@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 06:02 PM -0400
+# Last Change: Mon Sep 24, 2018 at 01:48 PM -0400
 
 from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import BrkStr, GenericNetNode
+from pyUTM.datatype import ExcelCell
 from pyUTM.legacy import legacy_csv_line_dcb
 
 input_dir = Path('input')
@@ -615,7 +616,25 @@ dcb_rules = [
 # Generate Altium list for PigTail #
 ####################################
 
-# First, replace 'Signal ID' to DCB side definitions.
+# First, deal with differential pairs.
+for pt_id in range(0, len(pt_descr)):
+    for pt_entry in pt_descr[pt_id]:
+        if pt_entry['Signal ID'] is not None \
+                and pt_entry['Signal ID'].endswith('_N'):
+            reference_id = pt_entry['Signal ID'][:-1] + 'P'
+            for pt_entry_ref in pt_descr[pt_id]:
+                if pt_entry_ref['Signal ID'] == reference_id:
+                    if pt_entry_ref['SEAM pin'] is None:
+                        pt_entry['Signal ID'] = ExcelCell('GND')
+                        break
+
+                    else:
+                        pt_entry['DCB slot'] = pt_entry_ref['DCB slot']
+                        # Easier to identify in rules.
+                        pt_entry['SEAM pin'] = ExcelCell('IMAGINARY')
+
+
+# Second, replace 'Signal ID' to DCB side definitions.
 for pt_id in range(0, len(pt_descr)):
     for pt_entry in pt_descr[pt_id]:
         if pt_entry['DCB slot'] is not None:
