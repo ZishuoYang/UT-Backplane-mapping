@@ -353,6 +353,7 @@ pt_rules = [
     RulePT_PTSingleToDiffP(),
     RulePT_PTSingleToDiffN(),
     RulePT_UnusedToGND(),
+    RulePT_LVSenseGND(),
     RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),
