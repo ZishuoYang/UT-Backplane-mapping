@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 26, 2018 at 02:21 PM -0400
+# Last Change: Wed Sep 26, 2018 at 02:51 PM -0400
 
 import yaml
 
@@ -54,6 +54,8 @@ cell_range_read_spec = {
     'H55:I69':  {'I': 'Signal ID', 'H': 'Connector & Pin'},
     'A106:B120':  {'A': 'Signal ID', 'B': 'Connector & Pin'},
     'C106:D120':  {'D': 'Signal ID', 'C': 'Connector & Pin'},
+    'F106:G120':  {'F': 'Signal ID', 'G': 'Connector & Pin'},
+    'H106:I120':  {'I': 'Signal ID', 'H': 'Connector & Pin'},
     'K4:L53':  {'K': 'Signal ID', 'L': 'Connector & Pin'},
     'M4:N53':  {'N': 'Signal ID', 'M': 'Connector & Pin'},
     'K55:L104':  {'K': 'Signal ID', 'L': 'Connector & Pin'},
