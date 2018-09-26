@@ -2,3 +2,4 @@ openpyxl
 pyparsing
 tco
 joblib
+pyyaml
