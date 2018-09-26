@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 26, 2018 at 01:42 PM -0400
+# Last Change: Wed Sep 26, 2018 at 02:21 PM -0400
 
 import yaml
 
@@ -21,6 +21,16 @@ brkoutbrd_yaml_filename = input_dir / Path('brkoutbrd_pin_assignments.yml')
 
 # Configure yaml so that defaultdict is dumped as regular dict
 yaml.add_representer(defaultdict, Representer.represent_dict)
+
+
+###########
+# Generic #
+###########
+
+def xstr(s):
+    if s is None:
+        return None
+    return str(s)
 
 
 #########################################
@@ -63,7 +73,7 @@ brkoutbrd_yaml_dict = defaultdict(list)
 for entry in brkoutbrd_pin_assignments:
     connector, pin = sep_connector_pin(entry['Connector & Pin'])
     brkoutbrd_yaml_dict[connector].append({pin: {
-        'Signal ID': str(entry['Signal ID'])}
+        'Signal ID': xstr(entry['Signal ID'])}
     })
 
 # Sort entries based on pins

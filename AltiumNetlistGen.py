@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 24, 2018 at 01:48 PM -0400
+# Last Change: Wed Sep 26, 2018 at 02:05 PM -0400
+
+import yaml
 
 from pathlib import Path
 
@@ -15,7 +17,7 @@ input_dir = Path('input')
 output_dir = Path('output')
 
 brkoutbrd_filename = input_dir / Path(
-    'BrkOutBrd_Pin_Assignments_20180917.xlsx')
+    'brkoutbrd_pin_assignments.yml')
 pt_filename = input_dir / Path(
     'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.2.xlsm')
 dcb_filename = input_dir / Path(
@@ -29,40 +31,15 @@ dcb_result_output_filename = output_dir / Path('AltiumNetlist_DCB.csv')
 # Read pin assignments from breakout board #
 ############################################
 
-BrkReader = XLReader(brkoutbrd_filename)
-cell_range_headers = {
-    'A4:D18':    {'A': 'left', 'D': 'right'},
-    'F4:I18':    {'F': 'left', 'I': 'right'},
-    'A55:D69':   {'A': 'left', 'D': 'right'},
-    'F55:I69':   {'F': 'left', 'I': 'right'},
-    'A106:D120': {'A': 'left', 'D': 'right'},
-    'F106:I120': {'F': 'left', 'I': 'right'},
-    'K4:N53':    {'K': 'left', 'N': 'right'},
-    'K55:N104':  {'K': 'left', 'N': 'right'},
-    'K106:N155': {'K': 'left', 'N': 'right'}
-}
+with open(brkoutbrd_filename) as yaml_file:
+    brkoutbrd_pin_assignments_yaml = yaml.safe_load(yaml_file)
 
-brkoutbrd_pin_assignments_with_dict = list()
-for cell_range in cell_range_headers.keys():
-    # Note: 'extend' is used so we won't get a nested list.
-    brkoutbrd_pin_assignments_with_dict.extend(
-        BrkReader.read(['PinAssignments'], cell_range,
-                       headers=cell_range_headers[cell_range])[0]
-    )
-
-# Now we get a behemoth list, each entry is a two-key dictionary. We want to
-# extract all values that is not 'GND' nor None.
-brkoutbrd_pin_assignments_raw = list()
-for d in brkoutbrd_pin_assignments_with_dict:
-    for key in d.keys():
-        if d[key] != 'GND' and d[key] is not None:
-            brkoutbrd_pin_assignments_raw.append(BrkStr(d[key]))
-
-# NOTE: This is required as we get some wired string mismatch issues with the
-# *_raw list.
-# e.g. 'JD0_JT0_1V5_SENSE_P' was in the list, but if we looping through the list
-# and test if '1V5' was IN any of the element, it would match None.
-brkoutbrd_pin_assignments = [str(i) for i in brkoutbrd_pin_assignments_raw]
+brkoutbrd_pin_assignments = []
+for connector in brkoutbrd_pin_assignments_yaml.keys():
+    for pin_entry in brkoutbrd_pin_assignments_yaml[connector]:
+        signal = list(pin_entry.values())[0]['Signal ID']
+        if signal is not None and signal != 'GND':
+            brkoutbrd_pin_assignments.append(signal)
 
 
 ##########################
