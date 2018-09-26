@@ -647,21 +647,24 @@ dcb_rules = [
 # First, deal with differential pairs.
 for pt_id in range(0, len(pt_descr)):
     for pt_entry in pt_descr[pt_id]:
-        if pt_entry['Signal ID'] is not None \
-                and (pt_entry['Signal ID'].endswith('SCL_N') or
-                     pt_entry['Signal ID'].endswith('SDA_N') or
-                     pt_entry['Signal ID'].endswith('RESET_N')):
+        if pt_entry['Signal ID'] is not None and (
+           pt_entry['Signal ID'].endswith('SCL_N') or
+           pt_entry['Signal ID'].endswith('SDA_N') or
+           pt_entry['Signal ID'].endswith('RESET_N')):
             reference_id = pt_entry['Signal ID'][:-1] + 'P'
             for pt_entry_ref in pt_descr[pt_id]:
                 if pt_entry_ref['Signal ID'] == reference_id:
                     if pt_entry_ref['SEAM pin'] is not None:
                         dcb_id = RulePD.DCBID(pt_entry_ref['DCB slot'])
                         for dcb_entry in dcb_descr[int(dcb_id)]:
-                            if pt_entry_ref['SEAM pin'] == dcb_entry['SEAM pin'] \
-                                    and dcb_entry['Pigtail slot'] is not None \
-                                    and str(pt_id) == RulePD.PTID(dcb_entry['Pigtail slot']) \
-                                    and pt_entry_ref['Pigtail pin'] == dcb_entry['Pigtail pin']:
-                                pt_entry['Signal ID'] = ExcelCell("JD"+str(dcb_id)+'_'+dcb_entry['Signal ID']+'_N')
+                            if pt_entry_ref['SEAM pin'] == dcb_entry['SEAM pin'] and\
+                               dcb_entry['Pigtail slot'] is not None and\
+                               str(pt_id) == RulePD.PTID(dcb_entry['Pigtail slot']) and\
+                               pt_entry_ref['Pigtail pin'] == dcb_entry['Pigtail pin']:
+                                pt_entry['Signal ID'] = \
+                                        ExcelCell(
+                                        "JD"+str(dcb_id)+'_'+dcb_entry['Signal ID']+'_N'
+                                        )
                                 break
                         break
 
