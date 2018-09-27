@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 26, 2018 at 02:05 PM -0400
+# Last Change: Thu Sep 27, 2018 at 01:06 AM -0400
 
 import yaml
 
@@ -9,15 +9,14 @@ from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
-from pyUTM.datatype import BrkStr, GenericNetNode
+from pyUTM.datatype import GenericNetNode
 from pyUTM.datatype import ExcelCell
 from pyUTM.legacy import legacy_csv_line_dcb
 
 input_dir = Path('input')
 output_dir = Path('output')
 
-brkoutbrd_filename = input_dir / Path(
-    'brkoutbrd_pin_assignments.yml')
+brkoutbrd_filename = input_dir / Path('brkoutbrd_pin_assignments.yml')
 pt_filename = input_dir / Path(
     'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.2.xlsm')
 dcb_filename = input_dir / Path(
@@ -34,6 +33,7 @@ dcb_result_output_filename = output_dir / Path('AltiumNetlist_DCB.csv')
 with open(brkoutbrd_filename) as yaml_file:
     brkoutbrd_pin_assignments_yaml = yaml.safe_load(yaml_file)
 
+# We intent to keep 'Signal ID' only, in a list.
 brkoutbrd_pin_assignments = []
 for connector in brkoutbrd_pin_assignments_yaml.keys():
     for pin_entry in brkoutbrd_pin_assignments_yaml[connector]:
@@ -63,10 +63,6 @@ dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
 ########################################
 # Define rules for PigTail Altium list #
 ########################################
-# Each of Zishuo's list entry is defined as:
-#   ['DCB slot #', 'DCB connector letter pin', 'DCB connector numerical pin',
-#    'PT slot #',  'PT connector letter pin',  'PT connector numerical pin',
-#    'Signal ID']
 
 # This needs to be placed at the end of the rules list.  It always returns
 # 'True' to handle entries NOT matched by any other rules.
