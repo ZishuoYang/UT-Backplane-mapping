@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Oct 01, 2018 at 01:21 PM -0400
+# Last Change: Mon Oct 01, 2018 at 01:36 PM -0400
 
 import openpyxl
 import re
@@ -283,6 +283,7 @@ def transpose(l):
     return dict(result)
 
 
+# NOTE: This functions modify the 'l' in-place.
 def flatten(l, header='PlaceHolder'):
     result = []
     for i in l:

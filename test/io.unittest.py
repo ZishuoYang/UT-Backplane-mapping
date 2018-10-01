@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Oct 01, 2018 at 01:22 PM -0400
+# Last Change: Mon Oct 01, 2018 at 01:37 PM -0400
 
 import unittest
 import re
@@ -110,6 +110,32 @@ class YamlHelper(unittest.TestCase):
             {'Tom': 1, 'Tim': 2}, {'Tom': 3, 'Tim': 4}, {'Tom': 5, 'Tim': 6}]
         self.assertEqual(transpose(test_list),
                          {'Tom': [1, 3, 5], 'Tim': [2, 4, 6]})
+
+    def test_flatten_default_header(self):
+        test_list_dict = [
+            {'Some':  {'A': 1, 'B': 2}},
+            {'Stuff': {'A': 3, 'B': 4}},
+        ]
+        self.assertEqual(
+            flatten(test_list_dict),
+            [
+                {'PlaceHolder': 'Some', 'A': 1, 'B': 2},
+                {'PlaceHolder': 'Stuff', 'A': 3, 'B': 4},
+            ]
+        )
+
+    def test_flatten_custom_header(self):
+        test_list_dict = [
+            {'Some':  {'A': 1, 'B': 2}},
+            {'Stuff': {'A': 3, 'B': 4}},
+        ]
+        self.assertEqual(
+            flatten(test_list_dict, header='Custom'),
+            [
+                {'Custom': 'Some', 'A': 1, 'B': 2},
+                {'Custom': 'Stuff', 'A': 3, 'B': 4},
+            ]
+        )
 
 
 if __name__ == '__main__':
