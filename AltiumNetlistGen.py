@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 27, 2018 at 01:06 AM -0400
+# Last Change: Mon Oct 01, 2018 at 01:18 PM -0400
 
 import yaml
 
 from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
+from pyUTM.io import flatten, transpose
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import GenericNetNode
 from pyUTM.datatype import ExcelCell
@@ -36,10 +37,9 @@ with open(brkoutbrd_filename) as yaml_file:
 # We intent to keep 'Signal ID' only, in a list.
 brkoutbrd_pin_assignments = []
 for connector in brkoutbrd_pin_assignments_yaml.keys():
-    for pin_entry in brkoutbrd_pin_assignments_yaml[connector]:
-        signal = list(pin_entry.values())[0]['Signal ID']
-        if signal is not None and signal != 'GND':
-            brkoutbrd_pin_assignments.append(signal)
+    data = transpose(flatten(brkoutbrd_pin_assignments_yaml[connector]))
+    signals = [s for s in data['Signal ID'] if s is not None and s != 'GND']
+    brkoutbrd_pin_assignments += signals
 
 
 ##########################
