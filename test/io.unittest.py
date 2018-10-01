@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Oct 01, 2018 at 01:37 PM -0400
+# Last Change: Mon Oct 01, 2018 at 01:48 PM -0400
 
 import unittest
 import re
@@ -134,6 +134,19 @@ class YamlHelper(unittest.TestCase):
             [
                 {'Custom': 'Some', 'A': 1, 'B': 2},
                 {'Custom': 'Stuff', 'A': 3, 'B': 4},
+            ]
+        )
+
+    def test_unflatten(self):
+        test_list_dict = [
+            {'Custom': 'Some', 'A': 1, 'B': 2},
+            {'Custom': 'Stuff', 'A': 3, 'B': 4},
+        ]
+        self.assertEqual(
+            unflatten(test_list_dict, 'Custom'),
+            [
+                {'Some':  {'A': 1, 'B': 2}},
+                {'Stuff': {'A': 3, 'B': 4}},
             ]
         )
 

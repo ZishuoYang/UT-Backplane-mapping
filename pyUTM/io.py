@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Oct 01, 2018 at 01:36 PM -0400
+# Last Change: Mon Oct 01, 2018 at 01:49 PM -0400
 
 import openpyxl
 import re
@@ -293,5 +293,11 @@ def flatten(l, header='PlaceHolder'):
     return result
 
 
-def unflatten(d, header):
-    pass
+# NOTE: This functions modify the 'l' in-place.
+def unflatten(l, header):
+    result = []
+    for i in l:
+        key = i[header]
+        del i[header]
+        result.append({key: i})
+    return result
