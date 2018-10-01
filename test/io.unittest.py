@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 26, 2018 at 02:56 PM -0400
+# Last Change: Mon Oct 01, 2018 at 01:22 PM -0400
 
 import unittest
 import re
@@ -14,6 +14,7 @@ from pyUTM.io import csv_line
 from pyUTM.io import parse_cell_range
 from pyUTM.io import PcadReader
 from pyUTM.io import make_combinations
+from pyUTM.io import transpose, flatten, unflatten
 from pyUTM.datatype import NetNode
 
 
@@ -101,6 +102,14 @@ class PcadReaderTester(unittest.TestCase):
         # cap = 1000
         # result = make_combinations([i for i in range(1, cap+1)])
         # self.assertTrue(len(result) == factorial(cap))
+
+
+class YamlHelper(unittest.TestCase):
+    def test_transpose(self):
+        test_list = [
+            {'Tom': 1, 'Tim': 2}, {'Tom': 3, 'Tim': 4}, {'Tom': 5, 'Tim': 6}]
+        self.assertEqual(transpose(test_list),
+                         {'Tom': [1, 3, 5], 'Tim': [2, 4, 6]})
 
 
 if __name__ == '__main__':
