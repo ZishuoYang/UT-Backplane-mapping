@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 27, 2018 at 12:03 AM -0400
+# Last Change: Tue Oct 02, 2018 at 04:45 PM -0400
 
 import yaml
 
@@ -13,11 +13,17 @@ import sys
 sys.path.insert(0, '..')
 
 from pyUTM.io import XLReader
+from pyUTM.selection import RulePD
 
 input_dir = Path('..') / Path('input')
+
 brkoutbrd_filename = input_dir / Path(
     'BrkOutBrd_Pin_Assignments_20180917.xlsx')
 brkoutbrd_yaml_filename = input_dir / Path('brkoutbrd_pin_assignments.yml')
+
+pt_filename = input_dir / Path(
+    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.2.xlsm')
+pt_yaml_filename = input_dir / Path('backplane_mapping_PT_true.yml')
 
 # Configure yaml so that defaultdict is dumped as regular dict
 yaml.add_representer(defaultdict, Representer.represent_dict)
@@ -89,3 +95,7 @@ with open(brkoutbrd_yaml_filename, 'w') as yaml_file:
 ##############
 # PT to yaml #
 ##############
+
+PtReader = XLReader(pt_filename)
+pt_descr = PtReader.read(range(0, 12), 'B5:K405',
+                         sortby=lambda d: RulePD.PADDING(d['Pigtail pin']))
