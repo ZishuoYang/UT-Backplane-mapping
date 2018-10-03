@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Oct 03, 2018 at 03:04 PM -0400
+# Last Change: Wed Oct 03, 2018 at 03:16 PM -0400
 
 import unittest
 
@@ -10,6 +10,7 @@ sys.path.insert(0, '..')
 
 from pyUTM.legacy import PADDING, DEPADDING
 from pyUTM.legacy import PINID
+from pyUTM.legacy import CONID
 
 
 class PadderTester(unittest.TestCase):
@@ -46,6 +47,18 @@ class PinIdTester(unittest.TestCase):
 
     def test_two_two_separation(self):
         self.assertEqual(PINID('A1/A2|B2/B3'), [['A1', 'A2'], ['B2', 'B3']])
+
+
+class ConIdTester(unittest.TestCase):
+    def test_nominal(self):
+        self.assertEqual(CONID('00'), 'JP0')
+
+    def test_multiple(self):
+        self.assertEqual(CONID('00|01|02'), ['JP0', 'JP1', 'JP2'])
+
+    def test_dcb_multiple(self):
+        self.assertEqual(CONID('00|01', lambda x: 'JD'+str(int(x))),
+                         ['JD0', 'JD1'])
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Oct 03, 2018 at 03:04 PM -0400
+# Last Change: Wed Oct 03, 2018 at 03:15 PM -0400
 
 import re
 
@@ -179,18 +179,22 @@ def DEPADDING(s):
 
 def PINID(s, padder=DEPADDING):
     if '|' in s:
-        connectors = s.split('|')
-        for idx in range(0, len(connectors)):
-            if '/' in connectors[idx]:
-                connectors[idx] = list(map(padder, connectors[idx].split('/')))
+        pins = s.split('|')
+        for idx in range(0, len(pins)):
+            if '/' in pins[idx]:
+                pins[idx] = list(map(padder, pins[idx].split('/')))
             else:
-                connectors[idx] = padder(connectors[idx])
+                pins[idx] = padder(pins[idx])
 
     else:
-        connectors = padder(s)
+        pins = padder(s)
 
+    return pins
+
+
+def CONID(s, prefix=lambda x: 'JP'+str(int(x))):
+    if '|' in s:
+        connectors = list(map(prefix, s.split('|')))
+    else:
+        connectors = prefix(s)
     return connectors
-
-
-def CONID(s):
-    pass
