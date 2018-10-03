@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Oct 03, 2018 at 12:00 PM -0400
+# Last Change: Wed Oct 03, 2018 at 03:04 PM -0400
 
 import re
 
@@ -177,5 +177,20 @@ def DEPADDING(s):
     return letter+str(int(num))
 
 
-def PTPINID(s, padder=DEPADDING):
+def PINID(s, padder=DEPADDING):
+    if '|' in s:
+        connectors = s.split('|')
+        for idx in range(0, len(connectors)):
+            if '/' in connectors[idx]:
+                connectors[idx] = list(map(padder, connectors[idx].split('/')))
+            else:
+                connectors[idx] = padder(connectors[idx])
+
+    else:
+        connectors = padder(s)
+
+    return connectors
+
+
+def CONID(s):
     pass
