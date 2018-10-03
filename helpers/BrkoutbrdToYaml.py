@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Oct 02, 2018 at 05:17 PM -0400
+# Last Change: Wed Oct 03, 2018 at 12:53 AM -0400
 
 import yaml
 
@@ -25,7 +25,7 @@ yaml.add_representer(defaultdict, Representer.represent_dict)
 
 
 ###########
-# Generic #
+# Helpers #
 ###########
 
 def xstr(s):
@@ -34,13 +34,14 @@ def xstr(s):
     return str(s)
 
 
-#########################################
-# Breakout board pin assignment to yaml #
-#########################################
-
 def sep_connector_pin(s):
     connector, pin = s.split('-', 1)
     return (connector, pin)
+
+
+#################################################
+# Read from Breakout board pin assignment Excel #
+#################################################
 
 
 BrkReader = XLReader(brkoutbrd_filename)
@@ -71,6 +72,11 @@ for cell_range in cell_range_read_spec.keys():
         BrkReader.read(['PinAssignments'], cell_range,
                        headers=cell_range_read_spec[cell_range])[0]
     )
+
+
+#################
+# Generate yaml #
+#################
 
 brkoutbrd_yaml_dict = defaultdict(list)
 for entry in brkoutbrd_pin_assignments:
