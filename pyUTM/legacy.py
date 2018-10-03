@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 04:05 PM -0400
+# Last Change: Wed Oct 03, 2018 at 12:00 PM -0400
+
+import re
 
 from pyUTM.datatype import NetNode
 from pyUTM.selection import RulePD
 
+##############
+# Formatters #
+##############
 
 def legacy_csv_line_dcb(node, prop):
     s = ''
@@ -155,3 +160,22 @@ def legacy_csv_line_pt(node, prop):
     s += ','
 
     return s
+
+
+##################
+# Data regulator #
+##################
+
+def PADDING(s):
+    letter, num = filter(None, re.split(r'(\d+)', s))
+    num = '0'+num if len(num) == 1 else num
+    return letter+num
+
+
+def DEPADDING(s):
+    letter, num = filter(None, re.split(r'(\d+)', s))
+    return letter+str(int(num))
+
+
+def PTPINID(s, padder=DEPADDING):
+    pass
