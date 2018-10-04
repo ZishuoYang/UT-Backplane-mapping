@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Oct 03, 2018 at 03:15 PM -0400
+# Last Change: Thu Oct 04, 2018 at 10:53 AM -0400
 
 import re
 
@@ -178,6 +178,9 @@ def DEPADDING(s):
 
 
 def PINID(s, padder=DEPADDING):
+    if s is None:
+        return s
+
     if '|' in s:
         pins = s.split('|')
         for idx in range(0, len(pins)):
@@ -193,6 +196,9 @@ def PINID(s, padder=DEPADDING):
 
 
 def CONID(s, prefix=lambda x: 'JP'+str(int(x))):
+    if s is None:
+        return s
+
     if '|' in s:
         connectors = list(map(prefix, s.split('|')))
     else:

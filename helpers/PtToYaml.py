@@ -1,101 +1,91 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Oct 02, 2018 at 04:45 PM -0400
+# Last Change: Thu Oct 04, 2018 at 11:15 AM -0400
 
 import yaml
 
 from pathlib import Path
-from collections import defaultdict
-from yaml.representer import Representer
 
 import sys
 sys.path.insert(0, '..')
 
+from pyUTM.datatype import ExcelCell
 from pyUTM.io import XLReader
-from pyUTM.selection import RulePD
+from pyUTM.io import unflatten
+from pyUTM.legacy import PADDING, DEPADDING
 
 input_dir = Path('..') / Path('input')
-
-brkoutbrd_filename = input_dir / Path(
-    'BrkOutBrd_Pin_Assignments_20180917.xlsx')
-brkoutbrd_yaml_filename = input_dir / Path('brkoutbrd_pin_assignments.yml')
 
 pt_filename = input_dir / Path(
     'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.2.xlsm')
 pt_yaml_filename = input_dir / Path('backplane_mapping_PT_true.yml')
 
-# Configure yaml so that defaultdict is dumped as regular dict
-yaml.add_representer(defaultdict, Representer.represent_dict)
-
 
 ###########
-# Generic #
+# Helpers #
 ###########
 
-def xstr(s):
-    if s is None:
-        return None
-    return str(s)
+def str_presenter(dumper, data):
+    # check for multiline strings
+    if len(data.splitlines()) == 1 and data[-1] == '\n':
+        return dumper.represent_scalar(
+            'tag:yaml.org,2002:str', data, style='>')
+    if len(data.splitlines()) > 1:
+        return dumper.represent_scalar(
+            'tag:yaml.org,2002:str', data, style='|')
+    return dumper.represent_scalar(
+        'tag:yaml.org,2002:str', data.strip())
 
 
-#########################################
-# Breakout board pin assignment to yaml #
-#########################################
-
-def sep_connector_pin(s):
-    connector, pin = s.split('-', 1)
-    return (connector, pin)
+# Configure yaml so that ExcelCell is dumped as regular string
+yaml.add_representer(ExcelCell, str_presenter)
 
 
-BrkReader = XLReader(brkoutbrd_filename)
-cell_range_read_spec = {
-    'A4:B18':  {'A': 'Signal ID', 'B': 'Connector & Pin'},
-    'C4:D18':  {'D': 'Signal ID', 'C': 'Connector & Pin'},
-    'A55:B69':  {'A': 'Signal ID', 'B': 'Connector & Pin'},
-    'C55:D69':  {'D': 'Signal ID', 'C': 'Connector & Pin'},
-    'F4:G18':  {'F': 'Signal ID', 'G': 'Connector & Pin'},
-    'H4:I18':  {'I': 'Signal ID', 'H': 'Connector & Pin'},
-    'F55:G69':  {'F': 'Signal ID', 'G': 'Connector & Pin'},
-    'H55:I69':  {'I': 'Signal ID', 'H': 'Connector & Pin'},
-    'A106:B120':  {'A': 'Signal ID', 'B': 'Connector & Pin'},
-    'C106:D120':  {'D': 'Signal ID', 'C': 'Connector & Pin'},
-    'F106:G120':  {'F': 'Signal ID', 'G': 'Connector & Pin'},
-    'H106:I120':  {'I': 'Signal ID', 'H': 'Connector & Pin'},
-    'K4:L53':  {'K': 'Signal ID', 'L': 'Connector & Pin'},
-    'M4:N53':  {'N': 'Signal ID', 'M': 'Connector & Pin'},
-    'K55:L104':  {'K': 'Signal ID', 'L': 'Connector & Pin'},
-    'M55:N104':  {'N': 'Signal ID', 'M': 'Connector & Pin'},
-    'K106:L155':  {'K': 'Signal ID', 'L': 'Connector & Pin'},
-    'M106:N155':  {'N': 'Signal ID', 'M': 'Connector & Pin'},
-}
-
-brkoutbrd_pin_assignments = []
-for cell_range in cell_range_read_spec.keys():
-    brkoutbrd_pin_assignments.extend(
-        BrkReader.read(['PinAssignments'], cell_range,
-                       headers=cell_range_read_spec[cell_range])[0]
-    )
-
-brkoutbrd_yaml_dict = defaultdict(list)
-for entry in brkoutbrd_pin_assignments:
-    connector, pin = sep_connector_pin(entry['Connector & Pin'])
-    brkoutbrd_yaml_dict[connector].append({pin: {
-        'Signal ID': xstr(entry['Signal ID'])}
-    })
-
-# Sort entries based on pins
-for connector in brkoutbrd_yaml_dict:
-    brkoutbrd_yaml_dict[connector].sort(key=lambda x: int(list(x.keys())[0]))
-
-with open(brkoutbrd_yaml_filename, 'w') as yaml_file:
-    yaml.dump(brkoutbrd_yaml_dict, yaml_file, default_flow_style=False)
+def note_generator(s):
+    if s is not None and s.font_color is not None:
+        if s.font_color.theme != 0:
+            return 'Alpha only'
+        elif s.font_color.tint != 0.0:
+            return 'Unused'
 
 
-##############
-# PT to yaml #
-##############
+######################
+# Read from PT Excel #
+######################
 
 PtReader = XLReader(pt_filename)
 pt_descr = PtReader.read(range(0, 12), 'B5:K405',
-                         sortby=lambda d: RulePD.PADDING(d['Pigtail pin']))
+                         sortby=lambda d: PADDING(d['Pigtail pin']))
+
+
+####################
+# Reformat entries #
+####################
+
+pt_yaml_dict = {}
+for idx in range(0, len(pt_descr)):
+    connector = 'JP' + str(idx)
+    connector_list = []
+
+    for entry in pt_descr[idx]:
+        # Make sure there's no padding for the pins.
+        entry['Pigtail pin'] = DEPADDING(entry['Pigtail pin'])
+        # entry['SEAM pin'] = DEPADDING(entry['SEAM pin'])
+
+        # Make sure 'ref' is stored as a number
+        entry['ref'] = int(entry['ref'])
+
+        # See if the pin is unused, or alpha only, based on color
+        entry['Note'] = note_generator(entry['Signal ID'])
+
+    # Now unflatten the list
+    pt_yaml_dict[connector] = unflatten(pt_descr[idx], 'Pigtail pin')
+
+
+#################
+# Generate yaml #
+#################
+
+with open(pt_yaml_filename, 'w') as yaml_file:
+    yaml.dump(pt_yaml_dict, yaml_file, default_flow_style=False)
