@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Oct 03, 2018 at 03:16 PM -0400
+# Last Change: Thu Oct 04, 2018 at 12:04 PM -0400
 
 import unittest
 
@@ -51,7 +51,7 @@ class PinIdTester(unittest.TestCase):
 
 class ConIdTester(unittest.TestCase):
     def test_nominal(self):
-        self.assertEqual(CONID('00'), 'JP0')
+        self.assertEqual(CONID('00 / X-O'), 'JP0')
 
     def test_multiple(self):
         self.assertEqual(CONID('00|01|02'), ['JP0', 'JP1', 'JP2'])

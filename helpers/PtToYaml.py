@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Oct 04, 2018 at 11:15 AM -0400
+# Last Change: Thu Oct 04, 2018 at 11:24 AM -0400
 
 import yaml
 
@@ -14,6 +14,7 @@ from pyUTM.datatype import ExcelCell
 from pyUTM.io import XLReader
 from pyUTM.io import unflatten
 from pyUTM.legacy import PADDING, DEPADDING
+from pyUTM.legacy import PINID, CONID
 
 input_dir = Path('..') / Path('input')
 
@@ -66,15 +67,17 @@ pt_descr = PtReader.read(range(0, 12), 'B5:K405',
 pt_yaml_dict = {}
 for idx in range(0, len(pt_descr)):
     connector = 'JP' + str(idx)
-    connector_list = []
 
     for entry in pt_descr[idx]:
         # Make sure there's no padding for the pins.
         entry['Pigtail pin'] = DEPADDING(entry['Pigtail pin'])
-        # entry['SEAM pin'] = DEPADDING(entry['SEAM pin'])
+        entry['SEAM pin'] = PINID(entry['SEAM pin'])
 
         # Make sure 'ref' is stored as a number
         entry['ref'] = int(entry['ref'])
+
+        # Replace 'DCB slot' with its connector name
+        # entry['DCB slot'] = CONID(entry['DCB slot'])
 
         # See if the pin is unused, or alpha only, based on color
         entry['Note'] = note_generator(entry['Signal ID'])

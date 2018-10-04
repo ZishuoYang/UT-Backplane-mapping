@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Oct 04, 2018 at 10:53 AM -0400
+# Last Change: Thu Oct 04, 2018 at 12:03 PM -0400
 
 import re
 
@@ -202,5 +202,6 @@ def CONID(s, prefix=lambda x: 'JP'+str(int(x))):
     if '|' in s:
         connectors = list(map(prefix, s.split('|')))
     else:
-        connectors = prefix(s)
+        connectors, _, _  = s.split(' ', 2)
+        connectors = prefix(connectors)
     return connectors
