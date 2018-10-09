@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Oct 09, 2018 at 01:07 PM -0400
+# Last Change: Tue Oct 09, 2018 at 01:34 PM -0400
 
 import yaml
 
@@ -15,7 +15,7 @@ pt_yaml_filename = input_dir / Path('backplane_mapping_PT_true.yml')
 dcb_yaml_filename = input_dir / Path('backplane_mapping_DCB_true.yml')
 
 output_dir = Path('..') / Path('output')
-output_dot_filename = output_dir / Path('pt_dcb_connection_optimizer.dot')
+dot_filename = output_dir / Path('pt_dcb_connection_optimizer.dot')
 
 
 #########################
@@ -52,3 +52,11 @@ for pt in pt_dict.keys():
 #####################
 # Generate dot file #
 #####################
+
+with open(dot_filename, 'w') as dot_file:
+    dot_file.write('graph G {\n')
+    dot_file.write('  {{rank=same {}}}\n'.format(' '.join(pt_connectors)))
+    dot_file.write('  {{rank=same {}}}\n'.format(' '.join(dcb_connectors)))
+    for conn in connections:
+        dot_file.write('    {} -- {};\n'.format(*conn))
+    dot_file.write('}\n')
