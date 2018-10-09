@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Oct 09, 2018 at 01:34 PM -0400
+# Last Change: Tue Oct 09, 2018 at 04:59 PM -0400
 
 import yaml
 
@@ -11,11 +11,11 @@ import sys
 sys.path.insert(0, '..')
 
 input_dir = Path('..') / Path('input')
+
 pt_yaml_filename = input_dir / Path('backplane_mapping_PT_true.yml')
 dcb_yaml_filename = input_dir / Path('backplane_mapping_DCB_true.yml')
 
-output_dir = Path('..') / Path('output')
-dot_filename = output_dir / Path('pt_dcb_connection_optimizer.dot')
+dot_filename = input_dir / Path('pt_dcb_connection_optimizer.dot')
 
 
 #########################
@@ -55,8 +55,37 @@ for pt in pt_dict.keys():
 
 with open(dot_filename, 'w') as dot_file:
     dot_file.write('graph G {\n')
-    dot_file.write('  {{rank=same {}}}\n'.format(' '.join(pt_connectors)))
-    dot_file.write('  {{rank=same {}}}\n'.format(' '.join(dcb_connectors)))
+    dot_file.write('  nodesep=0.5;\n')
+
+    dot_file.write('  subgraph JD_FIXED_LEFT {\n')
+    for c in dcb_connectors[2:4]:
+        dot_file.write('    {} [width=1, shape=box];\n'.format(c))
+    dot_file.write('  }\n\n')
+
+    dot_file.write('  subgraph JD_FIXED_RIGHT {\n')
+    for c in dcb_connectors[10:]:
+        dot_file.write('    {} [width=1, shape=box];\n'.format(c))
+    dot_file.write('  }\n\n')
+
+    dot_file.write('  subgraph JD_REST {\n')
+    for c in dcb_connectors[0:2] + dcb_connectors[4:10]:
+        dot_file.write('    {} [width=1, shape=box];\n'.format(c))
+    dot_file.write('  }\n\n')
+
+    dot_file.write('  subgraph JP {\n')
+    for c in pt_connectors:
+        dot_file.write('    {} [width=1, shape=box];\n'.format(c))
+    dot_file.write('  }\n\n')
+
+    dot_file.write('  {{ rank=same {} }}\n\n'.format(' '.join(dcb_connectors)))
+
+    dot_file.write('  {\n')
+    dot_file.write('    rank=same;\n')
+    dot_file.write('    {} [style=invis];\n'.format(' -- '.join(pt_connectors)))
+    dot_file.write('    rankdir=LR;\n')
+    dot_file.write('  }\n\n')
+
     for conn in connections:
-        dot_file.write('    {} -- {};\n'.format(*conn))
+        dot_file.write('  {} -- {};\n'.format(*reversed(conn)))
+
     dot_file.write('}\n')
