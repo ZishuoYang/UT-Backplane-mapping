@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Oct 09, 2018 at 12:04 PM -0400
+# Last Change: Tue Oct 09, 2018 at 12:25 PM -0400
 
 import re
 
@@ -211,11 +211,19 @@ def CONID(s, prefix=lambda x: 'JP'+str(int(x))):
 
 def make_entries(entries, entry, pin_id, connector_id, pins, connectors):
     if type(pins) == list and type(connectors) == list:
-        for p in pins:
-            for c in connectors:
+        mesh = list(zip(connectors, pins))
+        for item in mesh:
+            conn, pin = item
+            if type(pin) == list:
+                for p in pin:
+                    temp_entry = deepcopy(entry)
+                    temp_entry[pin_id] = p
+                    temp_entry[connector_id] = conn
+                    entries.append(temp_entry)
+            else:
                 temp_entry = deepcopy(entry)
-                temp_entry[pin_id] = p
-                temp_entry[connector_id] = c
+                temp_entry[pin_id] = pin
+                temp_entry[connector_id] = conn
                 entries.append(temp_entry)
 
     else:

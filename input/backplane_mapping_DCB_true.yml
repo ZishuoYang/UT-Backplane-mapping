@@ -3129,17 +3129,7 @@ JD0:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: &id001
-    - I27
-    - A5
-    Pigtail slot: JP0
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: *id001
+    Pigtail pin: A5
     Pigtail slot: JP1
     SEAM pin D: null
     SEAM slot: null
@@ -6340,9 +6330,7 @@ JD1:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: &id002
-    - I27
-    - A5
+    Pigtail pin: I27
     Pigtail slot: JP2
     SEAM pin D: null
     SEAM slot: null
@@ -6350,15 +6338,7 @@ JD1:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id002
-    Pigtail slot: JP3
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
+    Pigtail pin: A5
     Pigtail slot: JP2
     SEAM pin D: null
     SEAM slot: null
@@ -9567,10 +9547,7 @@ JD10:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: &id003
-    - A5
-    - E14
-    - B24
+    Pigtail pin: A5
     Pigtail slot: JP8
     SEAM pin D: null
     SEAM slot: null
@@ -9578,7 +9555,23 @@ JD10:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id003
+    Pigtail pin: E14
+    Pigtail slot: JP8
+    SEAM pin D: null
+    SEAM slot: null
+    Signal ID: AGND
+    ref: 56
+- H40:
+    GBTx ID: null
+    Pigtail pin: B24
+    Pigtail slot: JP8
+    SEAM pin D: null
+    SEAM slot: null
+    Signal ID: AGND
+    ref: 56
+- H40:
+    GBTx ID: null
+    Pigtail pin: I27
     Pigtail slot: JP9
     SEAM pin D: null
     SEAM slot: null
@@ -9586,18 +9579,15 @@ JD10:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: &id004
-    - I27
-    - A5
-    - E14
-    Pigtail slot: JP8
+    Pigtail pin: A5
+    Pigtail slot: JP9
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id004
+    Pigtail pin: E14
     Pigtail slot: JP9
     SEAM pin D: null
     SEAM slot: null
@@ -12798,10 +12788,7 @@ JD11:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: &id005
-    - I27
-    - A5
-    - E14
+    Pigtail pin: I27
     Pigtail slot: JP10
     SEAM pin D: null
     SEAM slot: null
@@ -12809,7 +12796,23 @@ JD11:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id005
+    Pigtail pin: A5
+    Pigtail slot: JP10
+    SEAM pin D: null
+    SEAM slot: null
+    Signal ID: AGND
+    ref: 56
+- H40:
+    GBTx ID: null
+    Pigtail pin: E14
+    Pigtail slot: JP10
+    SEAM pin D: null
+    SEAM slot: null
+    Signal ID: AGND
+    ref: 56
+- H40:
+    GBTx ID: null
+    Pigtail pin: A5
     Pigtail slot: JP11
     SEAM pin D: null
     SEAM slot: null
@@ -12817,18 +12820,15 @@ JD11:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: &id006
-    - A5
-    - E14
-    - B24
-    Pigtail slot: JP10
+    Pigtail pin: E14
+    Pigtail slot: JP11
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id006
+    Pigtail pin: B24
     Pigtail slot: JP11
     SEAM pin D: null
     SEAM slot: null
@@ -22431,10 +22431,7 @@ JD4:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: &id007
-    - A5
-    - E14
-    - B24
+    Pigtail pin: A5
     Pigtail slot: JP0
     SEAM pin D: null
     SEAM slot: null
@@ -22442,8 +22439,8 @@ JD4:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id007
-    Pigtail slot: JP1
+    Pigtail pin: E14
+    Pigtail slot: JP0
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
@@ -25659,9 +25656,7 @@ JD5:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: &id008
-    - E14
-    - B24
+    Pigtail pin: E14
     Pigtail slot: JP2
     SEAM pin D: null
     SEAM slot: null
@@ -25669,7 +25664,15 @@ JD5:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id008
+    Pigtail pin: B24
+    Pigtail slot: JP2
+    SEAM pin D: null
+    SEAM slot: null
+    Signal ID: AGND
+    ref: 56
+- H40:
+    GBTx ID: null
+    Pigtail pin: A5
     Pigtail slot: JP3
     SEAM pin D: null
     SEAM slot: null
@@ -25677,18 +25680,15 @@ JD5:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: &id009
-    - A5
-    - E14
-    - B24
-    Pigtail slot: JP2
+    Pigtail pin: E14
+    Pigtail slot: JP3
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id009
+    Pigtail pin: B24
     Pigtail slot: JP3
     SEAM pin D: null
     SEAM slot: null
@@ -28889,9 +28889,7 @@ JD6:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: &id010
-    - I27
-    - A5
+    Pigtail pin: I27
     Pigtail slot: JP4
     SEAM pin D: null
     SEAM slot: null
@@ -28899,15 +28897,7 @@ JD6:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id010
-    Pigtail slot: JP5
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
+    Pigtail pin: A5
     Pigtail slot: JP4
     SEAM pin D: null
     SEAM slot: null
@@ -32132,17 +32122,7 @@ JD7:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: &id011
-    - I27
-    - A5
-    Pigtail slot: JP6
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: *id011
+    Pigtail pin: A5
     Pigtail slot: JP7
     SEAM pin D: null
     SEAM slot: null
@@ -35343,9 +35323,7 @@ JD8:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: &id012
-    - E14
-    - B24
+    Pigtail pin: E14
     Pigtail slot: JP4
     SEAM pin D: null
     SEAM slot: null
@@ -35353,7 +35331,15 @@ JD8:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id012
+    Pigtail pin: B24
+    Pigtail slot: JP4
+    SEAM pin D: null
+    SEAM slot: null
+    Signal ID: AGND
+    ref: 56
+- H40:
+    GBTx ID: null
+    Pigtail pin: A5
     Pigtail slot: JP5
     SEAM pin D: null
     SEAM slot: null
@@ -35361,49 +35347,7 @@ JD8:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id012
-    Pigtail slot: JP8
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: &id013
-    - A5
-    - E14
-    Pigtail slot: JP4
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: *id013
-    Pigtail slot: JP5
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: *id013
-    Pigtail slot: JP8
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP4
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
+    Pigtail pin: E14
     Pigtail slot: JP5
     SEAM pin D: null
     SEAM slot: null
@@ -38612,9 +38556,7 @@ JD9:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: &id014
-    - A5
-    - E14
+    Pigtail pin: A5
     Pigtail slot: JP6
     SEAM pin D: null
     SEAM slot: null
@@ -38622,7 +38564,15 @@ JD9:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id014
+    Pigtail pin: E14
+    Pigtail slot: JP6
+    SEAM pin D: null
+    SEAM slot: null
+    Signal ID: AGND
+    ref: 56
+- H40:
+    GBTx ID: null
+    Pigtail pin: E14
     Pigtail slot: JP7
     SEAM pin D: null
     SEAM slot: null
@@ -38630,49 +38580,7 @@ JD9:
     ref: 56
 - H40:
     GBTx ID: null
-    Pigtail pin: *id014
-    Pigtail slot: JP11
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: &id015
-    - E14
-    - B24
-    Pigtail slot: JP6
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: *id015
-    Pigtail slot: JP7
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: *id015
-    Pigtail slot: JP11
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP6
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
+    Pigtail pin: B24
     Pigtail slot: JP7
     SEAM pin D: null
     SEAM slot: null
