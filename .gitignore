@@ -2,3 +2,4 @@
 .python-version
 *.log
 cache
+output
