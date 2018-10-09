@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Oct 09, 2018 at 12:15 PM -0400
+# Last Change: Tue Oct 09, 2018 at 12:58 PM -0400
 
 import yaml
 
 from pathlib import Path
+from collections import OrderedDict
 
 import sys
 sys.path.insert(0, '..')
@@ -43,6 +44,14 @@ def str_presenter(dumper, data):
 # Configure yaml so that ExcelCell is dumped as regular string
 yaml.add_representer(ExcelCell, str_presenter)
 
+# Configure yaml so that OrderedDict is dumped as regular dict
+yaml.add_representer(
+    OrderedDict,
+    lambda self, data:  self.represent_mapping(
+        'tag:yaml.org,2002:map', data.items()
+    )
+)
+
 
 #######################
 # Read from DCB Excel #
@@ -57,7 +66,7 @@ dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
 # Reformat entries #
 ####################
 
-dcb_yaml_dict = {}
+dcb_yaml_dict = OrderedDict()
 for idx in range(0, len(dcb_descr)):
     connector = 'JD' + str(idx)
     tmp_entries = []

@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Oct 09, 2018 at 12:05 PM -0400
+# Last Change: Tue Oct 09, 2018 at 12:56 PM -0400
 
 import yaml
 
 from pathlib import Path
+from collections import OrderedDict
 
 import sys
 sys.path.insert(0, '..')
@@ -28,7 +29,7 @@ pt_yaml_filename = input_dir / Path('backplane_mapping_PT_true.yml')
 # Helpers #
 ###########
 
-def str_presenter(dumper, data):
+def str_representer(dumper, data):
     # check for multiline strings
     if len(data.splitlines()) == 1 and data[-1] == '\n':
         return dumper.represent_scalar(
@@ -41,7 +42,15 @@ def str_presenter(dumper, data):
 
 
 # Configure yaml so that ExcelCell is dumped as regular string
-yaml.add_representer(ExcelCell, str_presenter)
+yaml.add_representer(ExcelCell, str_representer)
+
+# Configure yaml so that OrderedDict is dumped as regular dict
+yaml.add_representer(
+    OrderedDict,
+    lambda self, data:  self.represent_mapping(
+        'tag:yaml.org,2002:map', data.items()
+    )
+)
 
 
 def note_generator(s):
@@ -65,7 +74,7 @@ pt_descr = PtReader.read(range(0, 12), 'B5:K405',
 # Reformat entries #
 ####################
 
-pt_yaml_dict = {}
+pt_yaml_dict = OrderedDict()
 for idx in range(0, len(pt_descr)):
     connector = 'JP' + str(idx)
     tmp_entries = []
