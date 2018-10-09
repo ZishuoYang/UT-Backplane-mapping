@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Oct 04, 2018 at 11:24 AM -0400
+# Last Change: Tue Oct 09, 2018 at 12:05 PM -0400
 
 import yaml
 
@@ -15,6 +15,7 @@ from pyUTM.io import XLReader
 from pyUTM.io import unflatten
 from pyUTM.legacy import PADDING, DEPADDING
 from pyUTM.legacy import PINID, CONID
+from pyUTM.legacy import make_entries
 
 input_dir = Path('..') / Path('input')
 
@@ -67,23 +68,27 @@ pt_descr = PtReader.read(range(0, 12), 'B5:K405',
 pt_yaml_dict = {}
 for idx in range(0, len(pt_descr)):
     connector = 'JP' + str(idx)
+    tmp_entries = []
 
     for entry in pt_descr[idx]:
         # Make sure there's no padding for the pins.
         entry['Pigtail pin'] = DEPADDING(entry['Pigtail pin'])
-        entry['SEAM pin'] = PINID(entry['SEAM pin'])
 
         # Make sure 'ref' is stored as a number
         entry['ref'] = int(entry['ref'])
 
-        # Replace 'DCB slot' with its connector name
-        # entry['DCB slot'] = CONID(entry['DCB slot'])
-
         # See if the pin is unused, or alpha only, based on color
         entry['Note'] = note_generator(entry['Signal ID'])
 
+        entries = make_entries(
+            tmp_entries, entry,
+            'SEAM pin', 'DCB slot',
+            PINID(entry['SEAM pin']),
+            CONID(entry['DCB slot'], lambda x: 'JD'+str(int(x)))
+        )
+
     # Now unflatten the list
-    pt_yaml_dict[connector] = unflatten(pt_descr[idx], 'Pigtail pin')
+    pt_yaml_dict[connector] = unflatten(tmp_entries, 'Pigtail pin')
 
 
 #################

@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Oct 04, 2018 at 12:03 PM -0400
+# Last Change: Tue Oct 09, 2018 at 12:04 PM -0400
 
 import re
+
+from copy import deepcopy
 
 from pyUTM.datatype import NetNode
 from pyUTM.selection import RulePD
@@ -205,3 +207,18 @@ def CONID(s, prefix=lambda x: 'JP'+str(int(x))):
         connectors, _, _  = s.split(' ', 2)
         connectors = prefix(connectors)
     return connectors
+
+
+def make_entries(entries, entry, pin_id, connector_id, pins, connectors):
+    if type(pins) == list and type(connectors) == list:
+        for p in pins:
+            for c in connectors:
+                temp_entry = deepcopy(entry)
+                temp_entry[pin_id] = p
+                temp_entry[connector_id] = c
+                entries.append(temp_entry)
+
+    else:
+        entry[pin_id] = pins
+        entry[connector_id] = connectors
+        entries.append(entry)
