@@ -165,47 +165,39 @@ fiber_asic_descr = {}
 # Loop over the gbtx_descr list
 for dcb_idx in range(0, len(gbtx_descr)):
     for elk in gbtx_descr[dcb_idx]:
-#        # Get active control signals
-#        if i['SEAM pin'] is not None and \
-#                ('_CLK_' in i['Signal ID'] or
-#                 '_I2C_' in i['Signal ID'] or
-#                 '_RESET_' in i['Signal ID'] or
-#                 '_TFC_' in i['Signal ID']):
-#            if i['Signal ID'].font_color is not None and \
-#                    i['Signal ID'].font_color.rgb == 'FF3366FF':
-#                        i['Attr'] = 'DEPOPULATED'
-#            elif i['Signal ID'].font_color is not None and \
-#                    i['Signal ID'].font_color.tint != 0.0:
-#                        i['Attr'] = 'INVALID'
-#            else:
-#                i['Attr'] = 'REGULAR'
-#            single_pt.append(i)
-#    control_pt_descr.append(single_pt)
         if elk['PT Attr'] is not None and \
            elk['PT Signal ID'][-1:] == 'P':
             flex = elk['Pigtail slot'][-5:]
             hybrid, _, asic_idx, asic_ch, _ = elk['PT Signal ID'].split('_')
             gbtx_idx, _, gbtx_ch, _ = elk['Signal ID'].split('_')
-            hybrid_global_id = flex + '_' + hybrid
-            fiber_asic_descr[hybrid_global_id] = {'flex':flex,
-                                                  'hybrid':hybrid,
-                                                  'asic_idx':asic_idx,
-                                                  'asic_ch':asic_ch,
-                                                  'dcb_idx':dcb_idx,
-                                                  'gbtx_idx':gbtx_idx,
-                                                  'gbtx_ch':gbtx_ch
-                                                  }
+            # 8-ASIC is seperated into WEST/EAST
+            if hybrid in ['P1', 'P2']:
+                if int(asic_idx) <= 3:
+                    asic_global_id = flex + '_' + hybrid + 'WEST' + '_ASIC_' + asic_idx
+                else:
+                    asic_global_id = flex + '_' + hybrid + 'EAST' + '_ASIC_' + asic_idx
+            else:
+                    asic_global_id = flex + '_' + hybrid + '_ASIC_' + asic_idx
 
-
-
-
-
-
-
-
-
-
-
+            if asic_global_id not in fiber_asic_descr.keys():
+                fiber_asic_descr[asic_global_id] = {'flex': flex,
+                                                    'hybrid': hybrid,
+                                                    'asic_idx': asic_idx,
+                                                    'channels': [[int(asic_ch[2:]),
+                                                                  dcb_idx,
+                                                                  int(gbtx_idx[2:]),
+                                                                  int(gbtx_ch[2:])
+                                                                  ]]
+                                                    }
+            else:
+                fiber_asic_descr[asic_global_id]['channels'].append([int(asic_ch[2:]),
+                                                                     dcb_idx,
+                                                                     int(gbtx_idx[2:]),
+                                                                     int(gbtx_ch[2:])
+                                                                     ])
+# Sort the channels by asic_ch number
+for asic_id in fiber_asic_descr:
+    fiber_asic_descr[asic_id]['channels'].sort(key=lambda d: d[0])
 
 
 
