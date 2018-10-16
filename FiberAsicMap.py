@@ -170,6 +170,17 @@ for dcb_idx in range(0, len(gbtx_descr)):
             flex = elk['Pigtail slot'][-5:]
             hybrid, _, asic_idx, asic_ch, _ = elk['PT Signal ID'].split('_')
             gbtx_idx, _, gbtx_ch, _ = elk['Signal ID'].split('_')
+            isInner, isMiddle, isOuter = True, True, True
+
+            if elk['PT Attr'] == 'DEPOPULATED':
+                # Depopulated signals not on Middle/Outer
+                isMiddle = False
+                isOuter = False
+            else:
+                # UTa-Outer does not have 8/9/10/11 (Stave-2)
+                if int(elk['Pigtail slot'][:2]) >= 8:
+                    isOuter = False
+
             # 8-ASIC is seperated into WEST/EAST
             if hybrid in ['P1', 'P2']:
                 if int(asic_idx) <= 3:
@@ -186,19 +197,26 @@ for dcb_idx in range(0, len(gbtx_descr)):
                                                     'channels': [[int(asic_ch[2:]),
                                                                   dcb_idx,
                                                                   int(gbtx_idx[2:]),
-                                                                  int(gbtx_ch[2:])
-                                                                  ]]
+                                                                  int(gbtx_ch[2:]),
+                                                                  isInner,
+                                                                  isMiddle,
+                                                                  isOuter
+                                                                  ]],
                                                     }
             else:
                 fiber_asic_descr[asic_global_id]['channels'].append([int(asic_ch[2:]),
                                                                      dcb_idx,
                                                                      int(gbtx_idx[2:]),
-                                                                     int(gbtx_ch[2:])
+                                                                     int(gbtx_ch[2:]),
+                                                                     isInner,
+                                                                     isMiddle,
+                                                                     isOuter
                                                                      ])
+
 # Sort the channels by asic_ch number
 for asic_id in fiber_asic_descr:
     fiber_asic_descr[asic_id]['channels'].sort(key=lambda d: d[0])
 
-
+# Now extend to 1 PEPI system (alpha/beta/gamma backplanes)
 
 
