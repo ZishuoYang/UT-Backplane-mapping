@@ -140,30 +140,61 @@ for dcb_idx in range(0, len(dcb_descr)):
 # Do ASIC-Fiber mapping and control-DCB mapping #
 #################################################
 
-# Table: PT slot #  | Plane/Stave/Flex
-#           0       | X-0-M
-#           1       | X-0-S
-#           2       | S-0-S
-#           3       | S-0-M
-#           4       | X-1-M
-#           5       | X-1-S
-#           6       | S-1-S
-#           7       | S-1-M
-#           8       | X-2-M
-#           9       | X-2-S
-#           10      | S-2-S
-#           11      | S-2-M
+#  PT slot #  | Plane/Stave/Flex
+#     0       | X-0-M
+#     1       | X-0-S
+#     2       | S-0-S
+#     3       | S-0-M
+#     4       | X-1-M
+#     5       | X-1-S
+#     6       | S-1-S
+#     7       | S-1-M
+#     8       | X-2-M
+#     9       | X-2-S
+#     10      | S-2-S
+#     11      | S-2-M
 #
 # X/S for vertical/stereo;
 # 0/1/2 for Stave index;
-# M/S for DataFlex Medium/Short* (*except for Stave-0 where S is Long)
+# M/S for DataFlex Medium/Short*
+# (*except for Stave-0 where S is Long)
 
+# Initialize the dict to store fiber-asic map
+fiber_asic_descr = {}
 
-
-
-
-
-
+# Loop over the gbtx_descr list
+for dcb_idx in range(0, len(gbtx_descr)):
+    for elk in gbtx_descr[dcb_idx]:
+#        # Get active control signals
+#        if i['SEAM pin'] is not None and \
+#                ('_CLK_' in i['Signal ID'] or
+#                 '_I2C_' in i['Signal ID'] or
+#                 '_RESET_' in i['Signal ID'] or
+#                 '_TFC_' in i['Signal ID']):
+#            if i['Signal ID'].font_color is not None and \
+#                    i['Signal ID'].font_color.rgb == 'FF3366FF':
+#                        i['Attr'] = 'DEPOPULATED'
+#            elif i['Signal ID'].font_color is not None and \
+#                    i['Signal ID'].font_color.tint != 0.0:
+#                        i['Attr'] = 'INVALID'
+#            else:
+#                i['Attr'] = 'REGULAR'
+#            single_pt.append(i)
+#    control_pt_descr.append(single_pt)
+        if elk['PT Attr'] is not None and \
+           elk['PT Signal ID'][-1:] == 'P':
+            flex = elk['Pigtail slot'][-5:]
+            hybrid, _, asic_idx, asic_ch, _ = elk['PT Signal ID'].split('_')
+            gbtx_idx, _, gbtx_ch, _ = elk['Signal ID'].split('_')
+            hybrid_global_id = flex + '_' + hybrid
+            fiber_asic_descr[hybrid_global_id] = {'flex':flex,
+                                                  'hybrid':hybrid,
+                                                  'asic_idx':asic_idx,
+                                                  'asic_ch':asic_ch,
+                                                  'dcb_idx':dcb_idx,
+                                                  'gbtx_idx':gbtx_idx,
+                                                  'gbtx_ch':gbtx_ch
+                                                  }
 
 
 
