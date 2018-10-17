@@ -192,31 +192,32 @@ for dcb_idx in range(0, len(gbtx_descr)):
 
             if asic_bp_id not in fiber_asic_descr.keys():
                 fiber_asic_descr[asic_bp_id] = {'flex': flex,
-                                                    'hybrid': hybrid,
-                                                    'asic_idx': asic_idx,
-                                                    'channels': [[int(asic_ch[2:]),
-                                                                  dcb_idx,
-                                                                  int(gbtx_idx[2:]),
-                                                                  int(gbtx_ch[2:]),
-                                                                  isInner,
-                                                                  isMiddle,
-                                                                  isOuter
-                                                                  ]],
+                                                'hybrid': hybrid,
+                                                'asic_idx': asic_idx,
+                                                'channels': {
+                                                    int(asic_ch[2:]): {
+                                                     'dcb_idx': dcb_idx,
+                                                     'gbtx_idx': int(gbtx_idx[2:]),
+                                                     'gbtx_ch': int(gbtx_ch[2:]),
+                                                     'isInner': isInner,
+                                                     'isMiddle': isMiddle,
+                                                     'isOuter': isOuter}
                                                     }
+                                                }
             else:
-                fiber_asic_descr[asic_bp_id]['channels'].append([int(asic_ch[2:]),
-                                                                     dcb_idx,
-                                                                     int(gbtx_idx[2:]),
-                                                                     int(gbtx_ch[2:]),
-                                                                     isInner,
-                                                                     isMiddle,
-                                                                     isOuter
-                                                                     ])
+                fiber_asic_descr[asic_bp_id]['channels'][int(asic_ch[2:])] = \
+                                                    {'dcb_idx': dcb_idx,
+                                                     'gbtx_idx': int(gbtx_idx[2:]),
+                                                     'gbtx_ch': int(gbtx_ch[2:]),
+                                                     'isInner': isInner,
+                                                     'isMiddle': isMiddle,
+                                                     'isOuter': isOuter}
 
 # Sort the channels by asic_ch number
-for asic_id in fiber_asic_descr:
-    fiber_asic_descr[asic_id]['channels'].sort(key=lambda d: d[0])
+# for asic_id in fiber_asic_descr:
+#    fiber_asic_descr[asic_id]['channels'].sort(key=lambda d: d[0])
 
-# Now extend to 1 PEPI system (alpha/beta/gamma backplanes)
+# Now extend to 1 PEPI system (alpha+beta+gamma backplanes)
 
+# For True PEPI, magnet-side:
 
