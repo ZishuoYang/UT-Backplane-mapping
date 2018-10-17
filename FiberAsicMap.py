@@ -184,14 +184,14 @@ for dcb_idx in range(0, len(gbtx_descr)):
             # 8-ASIC is seperated into WEST/EAST
             if hybrid in ['P1', 'P2']:
                 if int(asic_idx) <= 3:
-                    asic_global_id = flex + '_' + hybrid + 'WEST' + '_ASIC_' + asic_idx
+                    asic_bp_id = flex + '_' + hybrid + 'WEST' + '_ASIC_' + asic_idx
                 else:
-                    asic_global_id = flex + '_' + hybrid + 'EAST' + '_ASIC_' + asic_idx
+                    asic_bp_id = flex + '_' + hybrid + 'EAST' + '_ASIC_' + asic_idx
             else:
-                    asic_global_id = flex + '_' + hybrid + '_ASIC_' + asic_idx
+                    asic_bp_id = flex + '_' + hybrid + '_ASIC_' + asic_idx
 
-            if asic_global_id not in fiber_asic_descr.keys():
-                fiber_asic_descr[asic_global_id] = {'flex': flex,
+            if asic_bp_id not in fiber_asic_descr.keys():
+                fiber_asic_descr[asic_bp_id] = {'flex': flex,
                                                     'hybrid': hybrid,
                                                     'asic_idx': asic_idx,
                                                     'channels': [[int(asic_ch[2:]),
@@ -204,7 +204,7 @@ for dcb_idx in range(0, len(gbtx_descr)):
                                                                   ]],
                                                     }
             else:
-                fiber_asic_descr[asic_global_id]['channels'].append([int(asic_ch[2:]),
+                fiber_asic_descr[asic_bp_id]['channels'].append([int(asic_ch[2:]),
                                                                      dcb_idx,
                                                                      int(gbtx_idx[2:]),
                                                                      int(gbtx_ch[2:]),
