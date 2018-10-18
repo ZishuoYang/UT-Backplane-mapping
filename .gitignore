@@ -1,5 +1,4 @@
 *.pyc
 .python-version
-*.csv
 *.log
 cache
