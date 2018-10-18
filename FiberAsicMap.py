@@ -238,16 +238,25 @@ for i in fiber_asic_descr:
 asic_bp_id_list = sorted(fiber_asic_descr)
 pepi_magnet_top_c = []
 
+
+def get_dcb_info(asic, is_inner=False, is_middle=False, is_outer=False):
+    chan_keys = list(asic['channels'].keys())
+    dcb_idx = asic['channels'][chan_keys[0]]['dcb_idx']
+    gbtx_idx = asic['channels'][chan_keys[0]]['gbtx_idx']
+    gbtx_ch = []
+    for i in chan_keys:
+        if asic['channels'][i]['is_inner'] == is_inner or \
+                asic['channels'][i]['is_middle'] == is_middle or \
+                asic['channels'][i]['is_outer'] == is_outer:
+                    gbtx_ch.append(asic['channels'][i]['gbtx_ch'])
+    gbtx_ch.sort(reverse=True)
+    return dcb_idx, gbtx_idx, gbtx_ch
+
+
 for asic_bp_id in asic_bp_id_list:
     if 'X-0-' in asic_bp_id:
         asic = fiber_asic_descr[asic_bp_id]
-        chan_keys = list(asic['channels'].keys())
-        dcb_idx = asic['channels'][chan_keys[0]]['dcb_idx']
-        gbtx_idx = asic['channels'][chan_keys[0]]['gbtx_idx']
-        gbtx_ch = []
-        for i in chan_keys:
-            gbtx_ch.append(asic['channels'][i]['gbtx_ch'])
-        gbtx_ch.sort(reverse=True)
+        dcb_idx, gbtx_idx, gbtx_ch = get_dcb_info(asic, is_inner=True)
         print('UTbX_1C',
               asic['flex'],
               asic['hybrid'],
