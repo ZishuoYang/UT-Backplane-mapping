@@ -252,48 +252,122 @@ def get_dcb_info(asic, is_inner=False, is_middle=False, is_outer=False):
     return dcb_idx, gbtx_idx, gbtx_ch
 
 
-# For True PEPI, magnet-side:
+# For True PEPI's:
+true_PEPIs = {
+    'Magnet-Top-C': [
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
+
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
+
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_7C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_7C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_8C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_8C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_9C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_9C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        ]
+    ,
+    'Magnet-Bottom-A': [
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_1A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_1A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_2A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_2A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_3A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_3A', 'bp_variant': 'inner', 'bp_type': 'true'},
+
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_4A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_4A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_5A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_5A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_6A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_6A', 'bp_variant': 'middle', 'bp_type': 'true'},
+
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_7A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_7A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_8A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_8A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_9A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_9A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        ]
+    ,
+    'IP-Top-A': [
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_1A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaV_1A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_2A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaV_2A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_3A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaV_3A', 'bp_variant': 'inner', 'bp_type': 'true'},
+
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_4A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaV_4A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_5A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaV_5A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_6A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaV_6A', 'bp_variant': 'middle', 'bp_type': 'true'},
+
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_7A', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaV_7A', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_8A', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaV_8A', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_9A', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaV_9A', 'bp_variant': 'outer', 'bp_type': 'true'},
+        ]
+    ,
+    'IP-Bottom-C': [
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaV_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaV_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaV_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
+
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaV_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaV_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaV_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
+
+        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_7C', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaV_7C', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_8C', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaV_8C', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_9C', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaV_9C', 'bp_variant': 'outer', 'bp_type': 'true'}
+        ]
+    }
+
 asic_bp_id_list = sorted(fiber_asic_descr)
-pepi_magnet_top_c = [
-    {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
-    {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
-    {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
-    {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
-    {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
-    {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
-
-    {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
-    {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
-    {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
-    {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
-    {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
-    {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
-
-    {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_7C', 'bp_variant': 'middle', 'bp_type': 'true'},
-    {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_7C', 'bp_variant': 'middle', 'bp_type': 'true'},
-    {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_8C', 'bp_variant': 'middle', 'bp_type': 'true'},
-    {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_8C', 'bp_variant': 'middle', 'bp_type': 'true'},
-    {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_9C', 'bp_variant': 'middle', 'bp_type': 'true'},
-    {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_9C', 'bp_variant': 'middle', 'bp_type': 'true'},
-                    ]
-for stave in pepi_magnet_top_c:
-    is_inner, is_middle, is_outer = (stave['bp_variant'] == 'inner'), \
-                                    (stave['bp_variant'] == 'middle'), \
-                                    (stave['bp_variant'] == 'outer')
-    for asic_bp_id in asic_bp_id_list:
-        if stave['stave_bp'] in asic_bp_id:
-            asic = fiber_asic_descr[asic_bp_id]
-            dcb_idx, gbtx_idx, gbtx_ch = get_dcb_info(asic, is_inner, is_middle, is_outer)
-            if len(gbtx_ch) == 0:
-                continue
-            print(stave['stave_pepi'],
-                  asic['flex'],
-                  asic['hybrid'],
-                  asic['asic_idx'],
-                  dcb_idx,
-                  gbtx_idx,
-                  gbtx_ch
-                  )
+for pepi in true_PEPIs:
+    for stave in true_PEPIs[pepi]:
+        is_inner, is_middle, is_outer = (stave['bp_variant'] == 'inner'), \
+                                        (stave['bp_variant'] == 'middle'), \
+                                        (stave['bp_variant'] == 'outer')
+        for asic_bp_id in asic_bp_id_list:
+            if stave['stave_bp'] in asic_bp_id:
+                asic = fiber_asic_descr[asic_bp_id]
+                dcb_idx, gbtx_idx, gbtx_ch = get_dcb_info(asic, is_inner, is_middle, is_outer)
+                if len(gbtx_ch) == 0:
+                    continue
+                print(pepi,
+                      stave['stave_pepi'],
+                      asic['flex'],
+                      asic['hybrid'],
+                      asic['asic_idx'],
+                      dcb_idx,
+                      gbtx_idx,
+                      gbtx_ch
+                      )
 
 
 
