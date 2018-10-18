@@ -170,7 +170,7 @@ for dcb_idx in range(0, len(gbtx_descr)):
             flex = elk['Pigtail slot'][-5:]
             hybrid, _, asic_idx, asic_ch, _ = elk['PT Signal ID'].split('_')
             gbtx_idx, _, gbtx_ch, _ = elk['Signal ID'].split('_')
-            isInner, isMiddle, isOuter = True, True, True
+            is_inner, is_middle, is_outer = True, True, True
 
             if elk['PT Attr'] == 'DEPOPULATED':
                 # Depopulated signals not on Middle/Outer
@@ -199,9 +199,9 @@ for dcb_idx in range(0, len(gbtx_descr)):
                                                      'dcb_idx': dcb_idx,
                                                      'gbtx_idx': int(gbtx_idx[2:]),
                                                      'gbtx_ch': int(gbtx_ch[2:]),
-                                                     'isInner': isInner,
-                                                     'isMiddle': isMiddle,
-                                                     'isOuter': isOuter}
+                                                     'is_inner': is_inner,
+                                                     'is_middle': is_middle,
+                                                     'is_outer': is_outer}
                                                     }
                                                 }
             else:
@@ -209,15 +209,72 @@ for dcb_idx in range(0, len(gbtx_descr)):
                                                     {'dcb_idx': dcb_idx,
                                                      'gbtx_idx': int(gbtx_idx[2:]),
                                                      'gbtx_ch': int(gbtx_ch[2:]),
-                                                     'isInner': isInner,
-                                                     'isMiddle': isMiddle,
-                                                     'isOuter': isOuter}
+                                                     'is_inner': is_inner,
+                                                     'is_middle': is_middle,
+                                                     'is_outer': is_outer}
 
-# Sort the channels by asic_ch number
-# for asic_id in fiber_asic_descr:
-#    fiber_asic_descr[asic_id]['channels'].sort(key=lambda d: d[0])
+# Check that dcb_idx and gbtx_idx do not change for single ASIC
+for i in fiber_asic_descr:
+    channel_dict = fiber_asic_descr[i]['channels']
+    keys = list(channel_dict.keys())
+    dcb = channel_dict[keys[0]]['dcb_idx']
+    for ii in keys:
+        if channel_dict[ii]['dcb_idx'] != dcb:
+            print('ERROR: more than 1 dcb_idx', i)
+
+for i in fiber_asic_descr:
+    channel_dict = fiber_asic_descr[i]['channels']
+    keys = list(channel_dict.keys())
+    dcb = channel_dict[keys[0]]['gbtx_idx']
+    for ii in keys:
+        if channel_dict[ii]['gbtx_idx'] != dcb:
+            print('ERROR: more than 1 gbtx_idx', i)
+# End of check
+
 
 # Now extend to 1 PEPI system (alpha+beta+gamma backplanes)
 
 # For True PEPI, magnet-side:
+asic_bp_id_list = sorted(fiber_asic_descr)
+pepi_magnet_top_c = []
+
+for asic_bp_id in asic_bp_id_list:
+    if 'X-0-' in asic_bp_id:
+        asic = fiber_asic_descr[asic_bp_id]
+        chan_keys = list(asic['channels'].keys())
+        dcb_idx = asic['channels'][chan_keys[0]]['dcb_idx']
+        gbtx_idx = asic['channels'][chan_keys[0]]['gbtx_idx']
+        gbtx_ch = []
+        for i in chan_keys:
+            gbtx_ch.append(asic['channels'][i]['gbtx_ch'])
+        gbtx_ch.sort(reverse=True)
+        print('UTbX_1C',
+              asic['flex'],
+              asic['hybrid'],
+              asic['asic_idx'],
+              dcb_idx,
+              gbtx_idx,
+              gbtx_ch
+              )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
