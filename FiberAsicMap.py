@@ -174,12 +174,12 @@ for dcb_idx in range(0, len(gbtx_descr)):
 
             if elk['PT Attr'] == 'DEPOPULATED':
                 # Depopulated signals not on Middle/Outer
-                isMiddle = False
-                isOuter = False
+                is_middle = False
+                is_outer = False
             else:
                 # UTa-Outer does not have 8/9/10/11 (Stave-2)
                 if int(elk['Pigtail slot'][:2]) >= 8:
-                    isOuter = False
+                    is_outer = False
 
             # 8-ASIC is seperated into WEST/EAST
             if hybrid in ['P1', 'P2']:
@@ -191,27 +191,30 @@ for dcb_idx in range(0, len(gbtx_descr)):
                     asic_bp_id = flex + '_' + hybrid + '_ASIC_' + asic_idx
 
             if asic_bp_id not in fiber_asic_descr.keys():
-                fiber_asic_descr[asic_bp_id] = {'flex': flex,
-                                                'hybrid': hybrid,
-                                                'asic_idx': asic_idx,
-                                                'channels': {
-                                                    int(asic_ch[2:]): {
-                                                     'dcb_idx': dcb_idx,
-                                                     'gbtx_idx': int(gbtx_idx[2:]),
-                                                     'gbtx_ch': int(gbtx_ch[2:]),
-                                                     'is_inner': is_inner,
-                                                     'is_middle': is_middle,
-                                                     'is_outer': is_outer}
-                                                    }
+                fiber_asic_descr[asic_bp_id] = {
+                    'flex': flex,
+                    'hybrid': hybrid,
+                    'asic_idx': asic_idx,
+                    'channels': {
+                        int(asic_ch[2:]): {
+                            'dcb_idx': dcb_idx,
+                            'gbtx_idx': int(gbtx_idx[2:]),
+                            'gbtx_ch': int(gbtx_ch[2:]),
+                            'is_inner': is_inner,
+                            'is_middle': is_middle,
+                            'is_outer': is_outer
+                            }
+                        }
                                                 }
             else:
-                fiber_asic_descr[asic_bp_id]['channels'][int(asic_ch[2:])] = \
-                                                    {'dcb_idx': dcb_idx,
-                                                     'gbtx_idx': int(gbtx_idx[2:]),
-                                                     'gbtx_ch': int(gbtx_ch[2:]),
-                                                     'is_inner': is_inner,
-                                                     'is_middle': is_middle,
-                                                     'is_outer': is_outer}
+                fiber_asic_descr[asic_bp_id]['channels'][int(asic_ch[2:])] = {
+                        'dcb_idx': dcb_idx,
+                        'gbtx_idx': int(gbtx_idx[2:]),
+                        'gbtx_ch': int(gbtx_ch[2:]),
+                        'is_inner': is_inner,
+                        'is_middle': is_middle,
+                        'is_outer': is_outer
+                        }
 
 # Check that dcb_idx and gbtx_idx do not change for single ASIC
 for i in fiber_asic_descr:
@@ -234,10 +237,6 @@ for i in fiber_asic_descr:
 
 # Now extend to 1 PEPI system (alpha+beta+gamma backplanes)
 
-# For True PEPI, magnet-side:
-asic_bp_id_list = sorted(fiber_asic_descr)
-pepi_magnet_top_c = []
-
 
 def get_dcb_info(asic, is_inner=False, is_middle=False, is_outer=False):
     chan_keys = list(asic['channels'].keys())
@@ -245,26 +244,56 @@ def get_dcb_info(asic, is_inner=False, is_middle=False, is_outer=False):
     gbtx_idx = asic['channels'][chan_keys[0]]['gbtx_idx']
     gbtx_ch = []
     for i in chan_keys:
-        if asic['channels'][i]['is_inner'] == is_inner or \
-                asic['channels'][i]['is_middle'] == is_middle or \
-                asic['channels'][i]['is_outer'] == is_outer:
+        if (asic['channels'][i]['is_inner'] and is_inner) or \
+                (asic['channels'][i]['is_middle'] and is_middle) or \
+                (asic['channels'][i]['is_outer'] and is_outer):
                     gbtx_ch.append(asic['channels'][i]['gbtx_ch'])
     gbtx_ch.sort(reverse=True)
     return dcb_idx, gbtx_idx, gbtx_ch
 
 
-for asic_bp_id in asic_bp_id_list:
-    if 'X-0-' in asic_bp_id:
-        asic = fiber_asic_descr[asic_bp_id]
-        dcb_idx, gbtx_idx, gbtx_ch = get_dcb_info(asic, is_inner=True)
-        print('UTbX_1C',
-              asic['flex'],
-              asic['hybrid'],
-              asic['asic_idx'],
-              dcb_idx,
-              gbtx_idx,
-              gbtx_ch
-              )
+# For True PEPI, magnet-side:
+asic_bp_id_list = sorted(fiber_asic_descr)
+pepi_magnet_top_c = [
+    {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
+    {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
+    {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
+    {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
+    {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
+    {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
+
+    {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
+    {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
+    {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
+    {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
+    {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
+    {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
+
+    {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_7C', 'bp_variant': 'middle', 'bp_type': 'true'},
+    {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_7C', 'bp_variant': 'middle', 'bp_type': 'true'},
+    {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_8C', 'bp_variant': 'middle', 'bp_type': 'true'},
+    {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_8C', 'bp_variant': 'middle', 'bp_type': 'true'},
+    {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_9C', 'bp_variant': 'middle', 'bp_type': 'true'},
+    {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_9C', 'bp_variant': 'middle', 'bp_type': 'true'},
+                    ]
+for stave in pepi_magnet_top_c:
+    is_inner, is_middle, is_outer = (stave['bp_variant'] == 'inner'), \
+                                    (stave['bp_variant'] == 'middle'), \
+                                    (stave['bp_variant'] == 'outer')
+    for asic_bp_id in asic_bp_id_list:
+        if stave['stave_bp'] in asic_bp_id:
+            asic = fiber_asic_descr[asic_bp_id]
+            dcb_idx, gbtx_idx, gbtx_ch = get_dcb_info(asic, is_inner, is_middle, is_outer)
+            if len(gbtx_ch) == 0:
+                continue
+            print(stave['stave_pepi'],
+                  asic['flex'],
+                  asic['hybrid'],
+                  asic['asic_idx'],
+                  dcb_idx,
+                  gbtx_idx,
+                  gbtx_ch
+                  )
 
 
 
