@@ -441,47 +441,34 @@ all_PEPIs = {
         ]
     }
 
-# Generate list of ASICs for all PEPIs
+########################################
+# Generate list of ASICs for all PEPIs #
+########################################
+
 asic_bp_id_list = sorted(fiber_asic_descr)
-for pepi in all_PEPIs:
-    for stave in all_PEPIs[pepi]:
-        is_inner, is_middle, is_outer = (stave['bp_variant'] == 'inner'), \
-                                        (stave['bp_variant'] == 'middle'), \
-                                        (stave['bp_variant'] == 'outer')
-        for asic_bp_id in asic_bp_id_list:
-            if stave['stave_bp'] in asic_bp_id:
-                asic = fiber_asic_descr[asic_bp_id]
-                dcb_idx, gbtx_idx, gbtx_ch = get_dcb_info(asic, is_inner, is_middle, is_outer)
-                if len(gbtx_ch) == 0:
-                    continue
-                print(pepi,
-                      stave['stave_pepi'],
-                      asic['flex'],
-                      asic['hybrid'],
-                      asic['asic_idx'],
-                      dcb_idx,
-                      gbtx_idx,
-                      gbtx_ch
-                      )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Write to CSV file
+with open('test.csv', 'w') as f:
+    # Header here
+    f.write('PEPI,Stave,Flex,Hybrid,ASIC_index,DCB_index,GBTx_index,' +
+            'GBTx_channels(GBT frame bytes)' + '\n')
+    # Loop over all ASICs
+    for pepi in all_PEPIs:
+        for stave in all_PEPIs[pepi]:
+            is_inner, is_middle, is_outer = (stave['bp_variant'] == 'inner'), \
+                                            (stave['bp_variant'] == 'middle'), \
+                                            (stave['bp_variant'] == 'outer')
+            for asic_bp_id in asic_bp_id_list:
+                if stave['stave_bp'] in asic_bp_id:
+                    asic = fiber_asic_descr[asic_bp_id]
+                    dcb_idx, gbtx_idx, gbtx_ch = get_dcb_info(asic, is_inner, is_middle, is_outer)
+                    if len(gbtx_ch) == 0: continue
+                    f.write(pepi + ',' +
+                            stave['stave_pepi'] + ',' +
+                            asic['flex'] + ',' +
+                            asic['hybrid'] + ',' +
+                            asic['asic_idx'] + ',' +
+                            str(dcb_idx) + ',' +
+                            str(gbtx_idx) + ',' +
+                            '-'.join(list(map(str, gbtx_ch))) + '\n'
+                            )
