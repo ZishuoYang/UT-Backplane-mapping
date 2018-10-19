@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Oct 09, 2018 at 12:58 PM -0400
+# Last Change: Fri Oct 19, 2018 at 03:29 PM -0400
 
 import yaml
 
@@ -22,7 +22,7 @@ input_dir = Path('..') / Path('input')
 
 dcb_filename = input_dir / Path(
     'backplaneMapping_SEAMPins_trueType_v5.2.xlsm')
-dcb_yaml_filename = input_dir / Path('backplane_mapping_DCB_true.yml')
+dcb_yaml_filename = input_dir / Path('backplane_mapping_DCB.yml')
 
 
 ###########
