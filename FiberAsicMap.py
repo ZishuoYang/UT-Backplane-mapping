@@ -256,188 +256,188 @@ def get_dcb_info(asic, is_inner=False, is_middle=False, is_outer=False):
 all_PEPIs = {
     # For true-type PEPIs
     'Magnet-Top-C': [
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_7C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_7C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_8C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_8C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_9C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_9C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_7C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_7C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_8C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_8C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_9C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_9C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
         ]
     ,
     'Magnet-Bottom-A': [
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_1A', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_1A', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_2A', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_2A', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_3A', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_3A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_4A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_4A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_5A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_5A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_6A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_6A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_7A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_7A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_8A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_8A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_9A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_9A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_7A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_7A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_8A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_8A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_9A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_9A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
         ]
     ,
     'IP-Top-A': [
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_1A', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_1A', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_2A', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_2A', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_3A', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_3A', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_4A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_4A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_5A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_5A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_6A', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_6A', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_7A', 'bp_variant': 'outer', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_7A', 'bp_variant': 'outer', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_8A', 'bp_variant': 'outer', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_8A', 'bp_variant': 'outer', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_9A', 'bp_variant': 'outer', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_9A', 'bp_variant': 'outer', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_7A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_7A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_8A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_8A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_9A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_9A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
         ]
     ,
     'IP-Bottom-C': [
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_1C', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_2C', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_3C', 'bp_variant': 'inner', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_4C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_5C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_6C', 'bp_variant': 'middle', 'bp_type': 'true'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_7C', 'bp_variant': 'outer', 'bp_type': 'true'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_7C', 'bp_variant': 'outer', 'bp_type': 'true'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_8C', 'bp_variant': 'outer', 'bp_type': 'true'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_8C', 'bp_variant': 'outer', 'bp_type': 'true'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_9C', 'bp_variant': 'outer', 'bp_type': 'true'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_9C', 'bp_variant': 'outer', 'bp_type': 'true'}
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_7C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_7C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_8C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_8C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_9C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_9C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'}
         ]
     ,
-    # Now for mirror-type PEPIs
+    # Now for mirror-tye PEPIs
     'Magnet-Bottom-C': [
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_1C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_1C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_2C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_2C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_3C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_3C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_4C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_4C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_5C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_5C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_6C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_6C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_7C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_7C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_8C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_8C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_9C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_9C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_7C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_7C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_8C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_8C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_9C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_9C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
         ]
     ,
     'Magnet-Top-A': [
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_1A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_1A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_2A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_2A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_3A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_3A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_4A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_4A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_5A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_5A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_6A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_6A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTbX_7A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTbV_7A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTbX_8A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTbV_8A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTbX_9A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTbV_9A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTbX_7A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTbV_7A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTbX_8A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTbV_8A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTbX_9A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTbV_9A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
         ]
     ,
     'IP-Bottom-A': [
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_1A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_1A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_2A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_2A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_3A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_3A', 'bp_variant': 'inner', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_4A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_4A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_5A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_5A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_6A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_6A', 'bp_variant': 'middle', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_7A', 'bp_variant': 'outer', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_7A', 'bp_variant': 'outer', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_8A', 'bp_variant': 'outer', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_8A', 'bp_variant': 'outer', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_9A', 'bp_variant': 'outer', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_9A', 'bp_variant': 'outer', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_7A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_7A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_8A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_8A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_9A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_9A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
         ]
     ,
     'IP-Top-C': [
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_1C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_1C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_2C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_2C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_3C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_3C', 'bp_variant': 'inner', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_4C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_4C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_5C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_5C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_6C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_6C', 'bp_variant': 'middle', 'bp_type': 'mirror'},
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
 
-        {'stave_bp': 'X-0-', 'stave_pepi': 'UTaX_7C', 'bp_variant': 'outer', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-0-', 'stave_pepi': 'UTaU_7C', 'bp_variant': 'outer', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-1-', 'stave_pepi': 'UTaX_8C', 'bp_variant': 'outer', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-1-', 'stave_pepi': 'UTaU_8C', 'bp_variant': 'outer', 'bp_type': 'mirror'},
-        {'stave_bp': 'X-2-', 'stave_pepi': 'UTaX_9C', 'bp_variant': 'outer', 'bp_type': 'mirror'},
-        {'stave_bp': 'S-2-', 'stave_pepi': 'UTaU_9C', 'bp_variant': 'outer', 'bp_type': 'mirror'}
+        {'stv_bp': 'X-0', 'stv_ut': 'UTaX_7C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-0', 'stv_ut': 'UTaU_7C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'X-1', 'stv_ut': 'UTaX_8C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-1', 'stv_ut': 'UTaU_8C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'X-2', 'stv_ut': 'UTaX_9C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
+        {'stv_bp': 'S-2', 'stv_ut': 'UTaU_9C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'}
         ]
     }
 
@@ -448,26 +448,29 @@ all_PEPIs = {
 asic_bp_id_list = sorted(fiber_asic_descr)
 
 # Write to CSV file
-with open('test.csv', 'w') as f:
+with open('asic_map.csv', 'w') as f:
     # Header here
-    f.write('PEPI,Stave,Flex,Hybrid,ASIC_index,DCB_index,GBTx_index,' +
+    f.write('PEPI,Stave,Flex,Hybrid,ASIC_index,BP_index(alpha/beta/gamma),' +
+            'BP_type(true/mirrored),' + 'DCB_index,GBTx_index,' +
             'GBTx_channels(GBT frame bytes)' + '\n')
     # Loop over all ASICs
     for pepi in all_PEPIs:
         for stave in all_PEPIs[pepi]:
-            is_inner, is_middle, is_outer = (stave['bp_variant'] == 'inner'), \
-                                            (stave['bp_variant'] == 'middle'), \
-                                            (stave['bp_variant'] == 'outer')
+            is_inner, is_middle, is_outer = (stave['bp_var'] == 'inner'), \
+                                            (stave['bp_var'] == 'middle'), \
+                                            (stave['bp_var'] == 'outer')
             for asic_bp_id in asic_bp_id_list:
-                if stave['stave_bp'] in asic_bp_id:
+                if stave['stv_bp'] in asic_bp_id:
                     asic = fiber_asic_descr[asic_bp_id]
                     dcb_idx, gbtx_idx, gbtx_ch = get_dcb_info(asic, is_inner, is_middle, is_outer)
                     if len(gbtx_ch) == 0: continue
                     f.write(pepi + ',' +
-                            stave['stave_pepi'] + ',' +
+                            stave['stv_ut'] + ',' +
                             asic['flex'] + ',' +
                             asic['hybrid'] + ',' +
                             asic['asic_idx'] + ',' +
+                            stave['bp_abg'] + ',' +
+                            stave['bp_type'] + ',' +
                             str(dcb_idx) + ',' +
                             str(gbtx_idx) + ',' +
                             '-'.join(list(map(str, gbtx_ch))) + '\n'
