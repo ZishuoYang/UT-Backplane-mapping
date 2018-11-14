@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 14, 2018 at 12:09 PM -0500
+# Last Change: Wed Nov 14, 2018 at 12:39 PM -0500
 
 import yaml
 
@@ -82,6 +82,8 @@ with open(strategy_tex_filename, 'w') as tex_file:
     jp_dict = collect_terms(strategy_dict, 'JP')
 
     for jp in jp_dict.keys():
+    # for jp in ['JP2', 'JP3', 'JP0', 'JP1', 'JP6', 'JP7', 'JP4', 'JP5', 'JP10',
+               # 'JP11', 'JP8', 'JP9']:
         jp_descr = jp_dict[jp]
         tex_file.write('    ')
 

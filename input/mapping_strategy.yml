@@ -43,12 +43,13 @@ JP0:
             - 1
             - 2
             - 3
+        JD3:
+            - 3
     specialConn:
         JD0:
             - 3
         JD3:
             - 2
-            - 3
     depopConn:
         JD3:
             - 2
@@ -140,12 +141,12 @@ JP4:
             - 1
             - 2
             - 3
+        JD8:
+            - 3
     specialConn:
         JD7:
             - 4
             - 5
-        JD8:
-            - 3
     depopConn:
         JD7:
             - 4
@@ -206,7 +207,6 @@ JP8:
             - 1
             - 2
             - 3
-    specialConn:
         JD11:
             - 3
 
