@@ -1,0 +1,55 @@
+JD0:
+    depopulation: false
+
+JD1:
+    depopulation: false
+
+JD2:
+    depopulation: true
+
+JD3:
+    depopulation: true
+
+JD4:
+    depopulation: false
+
+JD5:
+    depopulation: false
+
+JD6:
+    depopulation: false
+
+JD7:
+    depopulation: false
+
+JD8:
+    depopulation: false
+
+JD9:
+    depopulation: false
+
+JD10:
+    depopulation: true
+
+JD11:
+    depopulation: true
+
+JP0:
+    type: M
+    typeDepop: M''
+    commonConn:
+        JD1:
+            - 6
+            - 1
+            - 2
+            - 3
+    specialConn:
+        JD0:
+            - 3
+        JD3:
+            - 2
+            - 3
+    depopConn:
+        JD3:
+            - 2
+            - 3
