@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 14, 2018 at 11:36 AM -0500
+# Last Change: Wed Nov 14, 2018 at 11:40 AM -0500
 
 import yaml
 
@@ -128,9 +128,9 @@ with open(strategy_tex_filename, 'w') as tex_file:
                 for gbtx in gbtxs_special:
                     # Check if there's depopulation within these pins
                     if gbtx in gbtxs_depop:
-                        tex_file.write('\\color{{red}}{{\\underline{{{}}}}}'.format(gbtx))
+                        tex_file.write('\\textcolor{{red}}{{\\underline{{{}}}}}'.format(gbtx))
                     else:
-                        tex_file.write('\\color{{red}}{{{}}}'.format(gbtx))
+                        tex_file.write('\\textcolor{{red}}{{{}}}'.format(gbtx))
 
         tex_file.write(table_line_end)
 
