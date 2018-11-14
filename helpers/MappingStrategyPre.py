@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 14, 2018 at 10:51 AM -0500
+# Last Change: Wed Nov 14, 2018 at 10:52 AM -0500
 
 import yaml
 
@@ -25,7 +25,7 @@ header = '''\\documentclass[12pt]{article}
 
 \\usepackage[margin=0.5in,landscape]{geometry}
 
-\\usepackage{tabularx,booktab,diagbox}
+\\usepackage{tabularx,diagbox}
 
 \\usepackage{bigstrut}
 \\setlength\\bigstrutjot{3pt}
