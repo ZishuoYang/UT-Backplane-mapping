@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 14, 2018 at 10:52 AM -0500
+# Last Change: Wed Nov 14, 2018 at 11:36 AM -0500
 
 import yaml
 
@@ -25,7 +25,7 @@ header = '''\\documentclass[12pt]{article}
 
 \\usepackage[margin=0.5in,landscape]{geometry}
 
-\\usepackage{tabularx,diagbox}
+\\usepackage{tabularx,diagbox,xcolor}
 
 \\usepackage{bigstrut}
 \\setlength\\bigstrutjot{3pt}
@@ -36,7 +36,7 @@ header = '''\\documentclass[12pt]{article}
 
 \\thispagestyle{empty}
 \\begin{table}[ht]
-\\begin{tabularx}{\\textwidth}{X|X|X|X|X|X|X|X|X|X|X|X}
+\\begin{tabularx}{\\textwidth}{X|X|X|X|X|X|X|X|X|X|X|X|X}
     \\hline
     \\diagbox[innerwidth=3.64em]{PT}{DCB}
 '''
@@ -46,11 +46,11 @@ footer = '''\\end{tabularx}
 
 \\end{document}'''
 
-table_line_end = ' \\bigstrut \\\\ \\hline \n'
+table_line_end = '\\bigstrut \\\\ \\hline\n'
 
 
-def collect_JD_terms(d):
-    return {k: d[k] for k in d.keys() if 'JD' in k}
+def collect_terms(d, kw):
+    return {k: d[k] for k in d.keys() if kw in k}
 
 
 ###################################
@@ -69,16 +69,69 @@ with open(strategy_tex_filename, 'w') as tex_file:
     tex_file.write(header)
 
     # Fill out the remainder of the header
-    jd_dict = collect_JD_terms(strategy_dict)
+    jd_dict = collect_terms(strategy_dict, 'JD')
     tex_file.write('    ')
 
     for jd in jd_dict.keys():
         tex_file.write('& ')
-        tex_file.write(jd)
+        tex_file.write(jd[2:])
         if jd_dict[jd]['depopulation']:
             tex_file.write('$^{depop}$')
         tex_file.write(' ')
 
     tex_file.write(table_line_end)
+
+    # Generate the rest rows
+    jp_dict = collect_terms(strategy_dict, 'JP')
+
+    for jp in jp_dict.keys():
+        jp_descr = jp_dict[jp]
+        tex_file.write('    ')
+
+        # Write the row title first
+        tex_file.write(jp[2:])
+        tex_file.write('$^{{{}'.format(jp_descr['type']))
+        if jp_descr['typeDepop'] != jp_descr['type']:
+            tex_file.write('/{}}}$'.format(jp_descr['typeDepop']))
+        else:
+            tex_file.write('}}$')
+
+        # Now loop through all DCB connectors
+        num_of_jd_connectors = len(jd_dict)
+        for jd in jd_dict.keys():
+            tex_file.write(' & ')
+
+            try:
+                gbtxs_common = jp_descr['commonConn'][jd]
+            except Exception:
+                gbtxs_common = []
+            try:
+                gbtxs_special = jp_descr['specialConn'][jd]
+            except Exception:
+                gbtxs_special = []
+            try:
+                gbtxs_depop = jp_descr['depopConn'][jd]
+            except Exception:
+                gbtxs_depop = []
+
+            # Common connectors are black
+            if gbtxs_common:
+                for gbtx in gbtxs_common:
+                    # Check if there's depopulation within these pins
+                    if gbtx in gbtxs_depop:
+                        tex_file.write('\\underline{{{}}}'.format(gbtx))
+                    else:
+                        tex_file.write(str(gbtx))
+
+            # Special connectors are red
+            if gbtxs_special:
+                for gbtx in gbtxs_special:
+                    # Check if there's depopulation within these pins
+                    if gbtx in gbtxs_depop:
+                        tex_file.write('\\color{{red}}{{\\underline{{{}}}}}'.format(gbtx))
+                    else:
+                        tex_file.write('\\color{{red}}{{{}}}'.format(gbtx))
+
+        tex_file.write(table_line_end)
 
     tex_file.write(footer)
