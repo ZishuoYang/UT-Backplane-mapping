@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 14, 2018 at 11:54 AM -0500
+# Last Change: Wed Nov 14, 2018 at 12:09 PM -0500
 
 import yaml
 
@@ -27,10 +27,7 @@ header = '''\\documentclass[12pt]{article}
 
 \\usepackage{tabularx,diagbox,xcolor,soul}
 
-\\usepackage{bigstrut}
-\\setlength\\bigstrutjot{3pt}
-
-\\renewcommand{\\arraystretch}{1.2}
+\\renewcommand{\\arraystretch}{2.4}
 
 \\begin{document}
 
@@ -46,7 +43,7 @@ footer = '''\\end{tabularx}
 
 \\end{document}'''
 
-table_line_end = '\\bigstrut \\\\ \\hline\n'
+table_line_end = '\\\\ \\hline\n'
 
 
 def collect_terms(d, kw):
