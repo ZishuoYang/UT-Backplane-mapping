@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Oct 03, 2018 at 12:53 AM -0400
+# Last Change: Tue Nov 13, 2018 at 07:00 PM -0500
 
 import yaml
 
@@ -16,9 +16,9 @@ from pyUTM.io import XLReader
 
 input_dir = Path('..') / Path('input')
 
-brkoutbrd_filename = input_dir / Path(
+brkoutbrd_excel_filename = input_dir / Path(
     'BrkOutBrd_Pin_Assignments_20180917.xlsx')
-brkoutbrd_yaml_filename = input_dir / Path('brkoutbrd_pin_assignments.yml')
+brkoutbrd_yaml_filename  = input_dir / Path('brkoutbrd_pin_assignments.yml')
 
 # Configure yaml so that defaultdict is dumped as regular dict
 yaml.add_representer(defaultdict, Representer.represent_dict)
@@ -43,8 +43,7 @@ def sep_connector_pin(s):
 # Read from Breakout board pin assignment Excel #
 #################################################
 
-
-BrkReader = XLReader(brkoutbrd_filename)
+BrkReader = XLReader(brkoutbrd_excel_filename)
 cell_range_read_spec = {
     'A4:B18':  {'A': 'Signal ID', 'B': 'Connector & Pin'},
     'C4:D18':  {'D': 'Signal ID', 'C': 'Connector & Pin'},
