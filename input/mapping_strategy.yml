@@ -53,3 +53,112 @@ JP0:
         JD3:
             - 2
             - 3
+
+JP1:
+    type: L
+    typeDepop: S
+    commonConn:
+        JD1:
+            - 4
+        JD2:
+            - 6
+            - 1
+            - 4
+            - 5
+    specialConn:
+        JD0:
+            - 6
+            - 1
+            - 2
+            - 4
+            - 5
+    depopConn:
+        JD1:
+            - 4
+        JD2:
+            - 6
+            - 1
+            - 4
+            - 5
+
+JP2:
+    type: L
+    typeDepop: S
+    commonConn:
+        JD1:
+            - 5
+        JD2:
+            - 2
+            - 3
+    specialConn:
+        JD3:
+            - 4
+            - 5
+        JD4:
+            - 6
+            - 1
+            - 2
+            - 4
+            - 5
+    depopConn:
+        JD1:
+            - 5
+        JD2:
+            - 2
+            - 3
+        JD3:
+            - 4
+            - 5
+
+JP3:
+    type: M
+    typeDepop: M''
+    commonConn:
+        JD3:
+            - 6
+            - 1
+    specialConn:
+        JD4:
+            - 3
+        JD5:
+            - 6
+            - 1
+            - 2
+            - 3
+    depopConn:
+        JD3:
+            - 6
+            - 1
+
+JP4:
+    type: M
+    typeDepop: M''
+    commonConn:
+        JD6:
+            - 6
+            - 1
+            - 2
+            - 3
+        JD7:
+            - 4
+            - 5
+    specialConn:
+        JD8:
+            - 3
+    depopConn:
+        JD7:
+            - 4
+            - 5
+
+JP5:
+    type: S'
+    typeDepop: S'
+    commonConn:
+        JD6:
+            - 4
+        JD7:
+            - 6
+            - 1
+    specialConn:
+        JD5:
+            - 4

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 14, 2018 at 11:44 AM -0500
+# Last Change: Wed Nov 14, 2018 at 11:54 AM -0500
 
 import yaml
 
@@ -94,7 +94,7 @@ with open(strategy_tex_filename, 'w') as tex_file:
         if jp_descr['typeDepop'] != jp_descr['type']:
             tex_file.write('/{}}}$'.format(jp_descr['typeDepop']))
         else:
-            tex_file.write('}}$')
+            tex_file.write('}$')
 
         # Now loop through all DCB connectors
         num_of_jd_connectors = len(jd_dict)
