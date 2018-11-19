@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Nov 19, 2018 at 03:40 PM -0500
+# Last Change: Mon Nov 19, 2018 at 03:43 PM -0500
 
 import re
 import abc
@@ -88,50 +88,9 @@ class Selector(metaclass=abc.ABCMeta):
         return self.dataset
 
 
-class SelectorOneLoopNoChain(Selector):
-    def __init__(self, dataset: Union[list, dict], rules: List[Rule]) -> None:
-        super().__init__(dataset,
-                         loops=[rules], configurators=[{'Chained': False}])
-
-
 ###################################
 # Selection rules for PigTail/DCB #
 ###################################
-
-
-class LoopPD(Loop):
-    def loop(self, dataset, rules):
-        processed_dataset = {}
-
-        for connector_idx in range(0, len(dataset)):
-            for entry in dataset[connector_idx]:
-                for rule in rules:
-                    result = rule.filter((entry, connector_idx))
-                    if result is not None:
-                        node_spec, prop = result
-
-                        # Generate a 'NetNode' if 'node_spec' is a dictionary,
-                        # otherwise use it as-is as a dictionary key, assume it
-                        # is hashable.
-                        if isinstance(node_spec, dict):
-                            key = NetNode(**node_spec)
-                        else:
-                            key = node_spec
-
-                        # NOTE: The insertion-order is preserved starting in
-                        # Python 3.7.0.
-                        processed_dataset[key] = prop
-                        break
-
-        return processed_dataset
-
-
-class SelectorPD(Selector):
-    def __init__(self, dataset: Union[list, dict], rules: List[Rule]) -> None:
-        super().__init__(dataset,
-                         loop_rules=[rules],
-                         loop_implementations=[LoopPD()])
-
 
 class RulePD(Rule):
     PT_PREFIX = 'JP'
@@ -175,34 +134,43 @@ class RulePD(Rule):
         return str(int(pt_idx))
 
 
-##########################################
-# Selection rules for schematic checking #
-##########################################
-
-class LoopNet(Loop):
+class LoopPD(Loop):
     def loop(self, dataset, rules):
-        processed_dataset = defaultdict(list)
+        processed_dataset = {}
 
-        for node in dataset.keys():
-            for rule in rules:
-                result = rule.filter(node)
-                if result is False:
-                    break
+        for connector_idx in range(0, len(dataset)):
+            for entry in dataset[connector_idx]:
+                for rule in rules:
+                    result = rule.filter((entry, connector_idx))
+                    if result is not None:
+                        node_spec, prop = result
 
-                elif result is not None:
-                    section, entry = result
-                    processed_dataset[section].append(entry)
-                    break
+                        # Generate a 'NetNode' if 'node_spec' is a dictionary,
+                        # otherwise use it as-is as a dictionary key, assume it
+                        # is hashable.
+                        if isinstance(node_spec, dict):
+                            key = NetNode(**node_spec)
+                        else:
+                            key = node_spec
+
+                        # NOTE: The insertion-order is preserved starting in
+                        # Python 3.7.0.
+                        processed_dataset[key] = prop
+                        break
 
         return processed_dataset
 
 
-class SelectorNet(Selector):
+class SelectorPD(Selector):
     def __init__(self, dataset: Union[list, dict], rules: List[Rule]) -> None:
         super().__init__(dataset,
                          loop_rules=[rules],
-                         loop_implementations=[LoopNet()])
+                         loop_implementations=[LoopPD()])
 
+
+##########################################
+# Selection rules for schematic checking #
+##########################################
 
 class RuleNet(Rule):
     def __init__(self, node_dict, node_list, reference):
@@ -235,3 +203,28 @@ class RuleNet(Rule):
     def node_data_properties(node):
         candidate = [attr for attr in dir(node) if not attr.startswith('_')]
         return [attr for attr in candidate if attr not in ['count', 'index']]
+
+
+class LoopNet(Loop):
+    def loop(self, dataset, rules):
+        processed_dataset = defaultdict(list)
+
+        for node in dataset.keys():
+            for rule in rules:
+                result = rule.filter(node)
+                if result is False:
+                    break
+
+                elif result is not None:
+                    section, entry = result
+                    processed_dataset[section].append(entry)
+                    break
+
+        return processed_dataset
+
+
+class SelectorNet(Selector):
+    def __init__(self, dataset: Union[list, dict], rules: List[Rule]) -> None:
+        super().__init__(dataset,
+                         loop_rules=[rules],
+                         loop_implementations=[LoopNet()])
