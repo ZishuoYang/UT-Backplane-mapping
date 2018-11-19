@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Nov 19, 2018 at 12:51 AM -0500
+# Last Change: Mon Nov 19, 2018 at 12:53 AM -0500
 
 import re
 import abc
@@ -70,7 +70,7 @@ class Selector(metaclass=abc.ABCMeta):
         '''
         Loop through all loops.
         '''
-        for rules, configurator in zip(self.rules, self.configurators):
+        for rules, configurator in zip(self.loops, self.configurators):
             self.dataset = self.loop(self.dataset, rules, configurator)
         return self.dataset
 
@@ -95,6 +95,7 @@ class SelectorOneLoopNoChain(Selector):
 ###################################
 
 class SelectorPD(SelectorOneLoopNoChain):
+    @staticmethod
     def loop(dataset, rules, configurator):
         processed_dataset = {}
 
@@ -168,6 +169,7 @@ class RulePD(Rule):
 ##########################################
 
 class SelectorNet(SelectorOneLoopNoChain):
+    @staticmethod
     def loop(dataset, rules, configurator):
         processed_dataset = defaultdict(list)
 
