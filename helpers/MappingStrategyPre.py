@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 14, 2018 at 12:39 PM -0500
+# Last Change: Mon Nov 19, 2018 at 02:24 PM -0500
 
 import yaml
 
@@ -9,6 +9,8 @@ from pathlib import Path
 
 import sys
 sys.path.insert(0, '..')
+
+from pyUTM.selection import Selector, Rule
 
 input_dir  = Path('..') / Path('input')
 output_dir = Path('..') / Path('output')
@@ -48,6 +50,27 @@ table_line_end = '\\\\ \\hline\n'
 
 def collect_terms(d, kw):
     return {k: d[k] for k in d.keys() if kw in k}
+
+
+class SelectorMS(Selector):
+    @staticmethod
+    def loop(dataset, rules, configurator):
+        # Always chained.
+        for connector in dataset.keys():
+            for rule in rules:
+                dataset[connector] = rules.filter(dataset[connector])
+
+        return dataset
+
+
+###########################
+# Rules for outer JP loop #
+###########################
+
+
+###########################
+# Rules for inner JD loop #
+###########################
 
 
 ###################################

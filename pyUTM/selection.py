@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Nov 19, 2018 at 12:53 AM -0500
+# Last Change: Mon Nov 19, 2018 at 03:38 PM -0500
 
 import re
 import abc
@@ -50,38 +50,41 @@ class Rule(metaclass=abc.ABCMeta):
             return False
 
 
+class Loop(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def loop(self,
+             input_dataset: Union[list, dict],
+             rules: List[Rule]) -> Union[list, dict]:
+        '''
+        Implement loop logic.
+        '''
+
+
 class Selector(metaclass=abc.ABCMeta):
     def __init__(self,
                  dataset: Union[list, dict],
-                 loops: List[List[Rule]],
-                 configurators: List[dict]) -> None:
-        if len(loops) != len(configurators):
+                 loop_rules: List[List[Rule]],
+                 loop_implementations: List[Loop]) -> None:
+        if len(loop_rules) != len(loop_implementations):
             raise ValueError(
-                "number of loops: {} doesn't match number of configurators {}".format(
-                    len(loops), len(configurators)
+                "number of loop rules: {} doesn't match number of loop loop implementations {}".format(
+                    len(loop_rules), len(loop_implementations)
                 )
             )
         else:
             self.dataset = dataset
-            self.loops = loops  # nested loops allowed
-            self.configurators = configurators  # 1 configurator dict per loop
+
+            # We do allow nested loops
+            self.loop_rules = loop_rules
+            self.loop_implementations = loop_implementations
 
     def do(self) -> Union[list, dict]:
         '''
         Loop through all loops.
         '''
-        for rules, configurator in zip(self.loops, self.configurators):
-            self.dataset = self.loop(self.dataset, rules, configurator)
+        for rules, implementation in zip(self.loops, self.configurators):
+            self.dataset = implementation.loop(self.dataset, rules)
         return self.dataset
-
-    @staticmethod
-    @abc.abstractmethod
-    def loop(dataset: Union[list, dict],
-             rules: List[Rule], configurator: dict) -> Union[list, dict]:
-        '''
-        Implement generic loop logic---every loop will reuse this function.
-        '''
-        # Naming is hard.
 
 
 class SelectorOneLoopNoChain(Selector):
@@ -94,9 +97,9 @@ class SelectorOneLoopNoChain(Selector):
 # Selection rules for PigTail/DCB #
 ###################################
 
-class SelectorPD(SelectorOneLoopNoChain):
-    @staticmethod
-    def loop(dataset, rules, configurator):
+
+class LoopPD(Loop):
+    def loop(self, dataset, rules):
         processed_dataset = {}
 
         for connector_idx in range(0, len(dataset)):
@@ -120,6 +123,13 @@ class SelectorPD(SelectorOneLoopNoChain):
                         break
 
         return processed_dataset
+
+
+class SelectorPD(Selector):
+    def __init__(self, dataset: Union[list, dict], rules: List[Rule]) -> None:
+        super().__init__(dataset,
+                         loop_rules=[rules],
+                         loop_implementations=[LoopPD()])
 
 
 class RulePD(Rule):
@@ -168,9 +178,8 @@ class RulePD(Rule):
 # Selection rules for schematic checking #
 ##########################################
 
-class SelectorNet(SelectorOneLoopNoChain):
-    @staticmethod
-    def loop(dataset, rules, configurator):
+class LoopNet(Loop):
+    def loop(self, dataset, rules):
         processed_dataset = defaultdict(list)
 
         for node in dataset.keys():
@@ -185,6 +194,13 @@ class SelectorNet(SelectorOneLoopNoChain):
                     break
 
         return processed_dataset
+
+
+class SelectorNet(Selector):
+    def __init__(self, dataset: Union[list, dict], rules: List[Rule]) -> None:
+        super().__init__(dataset,
+                         loop_rules=[rules],
+                         loop_implementations=[LoopNet()])
 
 
 class RuleNet(Rule):
