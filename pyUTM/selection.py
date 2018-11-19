@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Nov 19, 2018 at 03:38 PM -0500
+# Last Change: Mon Nov 19, 2018 at 03:40 PM -0500
 
 import re
 import abc
@@ -82,7 +82,8 @@ class Selector(metaclass=abc.ABCMeta):
         '''
         Loop through all loops.
         '''
-        for rules, implementation in zip(self.loops, self.configurators):
+        for rules, implementation in zip(self.loop_rules,
+                                         self.loop_implementations):
             self.dataset = implementation.loop(self.dataset, rules)
         return self.dataset
 
