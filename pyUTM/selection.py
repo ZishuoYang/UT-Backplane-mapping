@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Sep 19, 2018 at 06:17 PM -0400
+# Last Change: Mon Nov 19, 2018 at 12:51 AM -0500
 
 import re
 import abc
 
 from collections import defaultdict
+from typing import Union, List
 
 from pyUTM.datatype import NetNode
 
@@ -14,20 +15,6 @@ from pyUTM.datatype import NetNode
 ########################
 # Abstract definitions #
 ########################
-
-class Selector(metaclass=abc.ABCMeta):
-    def __init__(self, full_dataset, rules):
-        self.full_dataset = full_dataset
-        # Note: the ORDER of the rules matters!
-        self.rules = rules
-
-    @abc.abstractmethod
-    def do(self):
-        '''
-        Loop through self.full_dataset by rules. Break out of the loop if a rule
-        is matched.
-        '''
-
 
 class Rule(metaclass=abc.ABCMeta):
     @abc.abstractmethod
@@ -37,7 +24,7 @@ class Rule(metaclass=abc.ABCMeta):
         '''
 
     @abc.abstractmethod
-    def match(self, *args):
+    def match(self, *args) -> bool:
         '''
         Test if data matches this rule. Must return a Boolean.
         '''
@@ -49,31 +36,71 @@ class Rule(metaclass=abc.ABCMeta):
         '''
 
     @staticmethod
-    def AND(l):
+    def AND(l: list) -> bool:
         if False in l:
             return False
         else:
             return True
 
     @staticmethod
-    def OR(l):
+    def OR(l: list) -> bool:
         if True in l:
             return True
         else:
             return False
 
 
+class Selector(metaclass=abc.ABCMeta):
+    def __init__(self,
+                 dataset: Union[list, dict],
+                 loops: List[List[Rule]],
+                 configurators: List[dict]) -> None:
+        if len(loops) != len(configurators):
+            raise ValueError(
+                "number of loops: {} doesn't match number of configurators {}".format(
+                    len(loops), len(configurators)
+                )
+            )
+        else:
+            self.dataset = dataset
+            self.loops = loops  # nested loops allowed
+            self.configurators = configurators  # 1 configurator dict per loop
+
+    def do(self) -> Union[list, dict]:
+        '''
+        Loop through all loops.
+        '''
+        for rules, configurator in zip(self.rules, self.configurators):
+            self.dataset = self.loop(self.dataset, rules, configurator)
+        return self.dataset
+
+    @staticmethod
+    @abc.abstractmethod
+    def loop(dataset: Union[list, dict],
+             rules: List[Rule], configurator: dict) -> Union[list, dict]:
+        '''
+        Implement generic loop logic---every loop will reuse this function.
+        '''
+        # Naming is hard.
+
+
+class SelectorOneLoopNoChain(Selector):
+    def __init__(self, dataset: Union[list, dict], rules: List[Rule]) -> None:
+        super().__init__(dataset,
+                         loops=[rules], configurators=[{'Chained': False}])
+
+
 ###################################
 # Selection rules for PigTail/DCB #
 ###################################
 
-class SelectorPD(Selector):
-    def do(self):
+class SelectorPD(SelectorOneLoopNoChain):
+    def loop(dataset, rules, configurator):
         processed_dataset = {}
 
-        for connector_idx in range(0, len(self.full_dataset)):
-            for entry in self.full_dataset[connector_idx]:
-                for rule in self.rules:
+        for connector_idx in range(0, len(dataset)):
+            for entry in dataset[connector_idx]:
+                for rule in rules:
                     result = rule.filter((entry, connector_idx))
                     if result is not None:
                         node_spec, prop = result
@@ -140,12 +167,12 @@ class RulePD(Rule):
 # Selection rules for schematic checking #
 ##########################################
 
-class SelectorNet(Selector):
-    def do(self):
+class SelectorNet(SelectorOneLoopNoChain):
+    def loop(dataset, rules, configurator):
         processed_dataset = defaultdict(list)
 
-        for node in self.full_dataset.keys():
-            for rule in self.rules:
+        for node in dataset.keys():
+            for rule in rules:
                 result = rule.filter(node)
                 if result is False:
                     break
