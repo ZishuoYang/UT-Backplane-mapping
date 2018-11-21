@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Nov 19, 2018 at 03:43 PM -0500
+# Last Change: Wed Nov 21, 2018 at 01:43 PM -0500
 
 import re
 import abc
@@ -53,7 +53,7 @@ class Rule(metaclass=abc.ABCMeta):
 class Loop(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def loop(self,
-             input_dataset: Union[list, dict],
+             dataset: Union[list, dict],
              rules: List[Rule]) -> Union[list, dict]:
         '''
         Implement loop logic.
