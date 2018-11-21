@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 21, 2018 at 12:58 PM -0500
+# Last Change: Wed Nov 21, 2018 at 01:36 PM -0500
 
 import openpyxl
 import re
@@ -277,17 +277,17 @@ class PcadReaderCached(PcadReader):
 # Take a list of dictionaries with the same dimensionality
 def transpose(l):
     result = defaultdict(list)
-    for i in l:
-        for k in i.keys():
-            result[k].append(i[k])
+    for d in l:
+        for k in d.keys():
+            result[k].append(d[k])
     return dict(result)
 
 
 # NOTE: This functions modify the 'l' in-place.
 def flatten(l, header='PlaceHolder'):
     result = []
-    for i in l:
-        key, value = tuple(i.items())[0]
+    for d in l:
+        key, value = tuple(d.items())[0]
         value[header] = key
         result.append(value)
     return result
@@ -296,10 +296,10 @@ def flatten(l, header='PlaceHolder'):
 # NOTE: This functions modify the 'l' in-place.
 def unflatten(l, header):
     result = []
-    for i in l:
-        key = i[header]
-        del i[header]
-        result.append({key: i})
+    for d in l:
+        key = d[header]
+        del d[header]
+        result.append({key: d})
     return result
 
 
