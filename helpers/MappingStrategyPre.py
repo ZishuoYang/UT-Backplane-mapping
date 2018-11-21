@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Nov 19, 2018 at 02:24 PM -0500
+# Last Change: Wed Nov 21, 2018 at 01:46 PM -0500
 
 import yaml
 
@@ -10,7 +10,8 @@ from pathlib import Path
 import sys
 sys.path.insert(0, '..')
 
-from pyUTM.selection import Selector, Rule
+from pyUTM.selection import Rule, Loop, Selector
+from pyUTM.io import collect_terms
 
 input_dir  = Path('..') / Path('input')
 output_dir = Path('..') / Path('output')
@@ -40,37 +41,34 @@ header = '''\\documentclass[12pt]{article}
     \\diagbox[innerwidth=3.64em]{PT}{DCB}
 '''
 
+
 footer = '''\\end{tabularx}
 \\end{table}
 
 \\end{document}'''
 
+
 table_line_end = '\\\\ \\hline\n'
-
-
-def collect_terms(d, kw):
-    return {k: d[k] for k in d.keys() if kw in k}
-
-
-class SelectorMS(Selector):
-    @staticmethod
-    def loop(dataset, rules, configurator):
-        # Always chained.
-        for connector in dataset.keys():
-            for rule in rules:
-                dataset[connector] = rules.filter(dataset[connector])
-
-        return dataset
 
 
 ###########################
 # Rules for outer JP loop #
 ###########################
 
+class LoopJP(Loop):
+    def __init__(self, loop_order):
+        self.loop_order = loop_order
+
+    def loop(self, dataset, rules):
+        pass
+
 
 ###########################
 # Rules for inner JD loop #
 ###########################
+
+class LoopJD(LoopJP):
+    pass
 
 
 ###################################
