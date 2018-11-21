@@ -1,27 +1,21 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Sep 21, 2018 at 01:15 PM -0400
+# Last Change: Mon Oct 01, 2018 at 01:48 PM -0400
 
 import unittest
 import re
-from pathlib import Path
 # from math import factorial
 
 import sys
 sys.path.insert(0, '..')
 
 from pyUTM.io import csv_line
-from pyUTM.io import parse_cell_range, XLReader
+from pyUTM.io import parse_cell_range
 from pyUTM.io import PcadReader
 from pyUTM.io import make_combinations
+from pyUTM.io import transpose, flatten, unflatten
 from pyUTM.datatype import NetNode
-
-input_dir = Path('..') / Path('input')
-pt_filename = input_dir / Path(
-    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.2.xlsm')
-brkoutbrd_filename = input_dir / Path(
-    'BrkOutBrd_Pin_Assignments_20180917.xlsx')
 
 
 class GenerateCsvLineTester(unittest.TestCase):
@@ -61,38 +55,6 @@ class ParseCellRangeTester(unittest.TestCase):
         self.assertEqual(initial_row, 12)
         self.assertEqual(str(final_col), 'CD')
         self.assertEqual(final_row, 345)
-
-
-class XLReaderTester(unittest.TestCase):
-    def test_read_single_spec(self):
-        reader = XLReader(pt_filename)
-        result = reader.read([0], 'B5:H6')
-        self.assertEqual(result[0][0]['ref'], '199')
-
-    def test_read_sort(self):
-        reader = XLReader(pt_filename)
-        result = reader.read([0], 'B5:H11',
-                             sortby=lambda item: item['SEAM pin'])
-        self.assertEqual(result[0][0]['ref'], '228')
-        self.assertEqual(result[0][2]['ref'], '207')
-        self.assertEqual(result[0][-1]['ref'], '200')
-
-    def test_read_with_headers_single_spec(self):
-        reader = XLReader(brkoutbrd_filename)
-        headers = {'A': 'Conn', 'D': 'Descr'}
-        result = reader.read(['PinAssignments'], 'A4:D18', headers=headers)
-        self.assertEqual(result[0][0]['Conn'], 'JD11_JPL2_1V5_M')
-        self.assertEqual(result[0][-1]['Descr'], 'GND')
-
-    def test_read_sort_with_headers_single_spec(self):
-        reader = XLReader(brkoutbrd_filename)
-        headers = {'A': 'Conn', 'D': 'Descr'}
-        result = reader.read(['PinAssignments'], 'A4:D18', headers=headers,
-                             sortby=lambda item: item['Conn'])
-        self.assertEqual(result[0][0]['Conn'], 'GND')
-        # FIXME: '9' will come after '11'
-        self.assertEqual(result[0][3]['Conn'], 'JD10_JPL2_1V5_S')
-        self.assertEqual(result[0][-1]['Conn'], 'JP8_JPL2_P4_LV_SOURCE')
 
 
 class PcadReaderTester(unittest.TestCase):
@@ -140,6 +102,53 @@ class PcadReaderTester(unittest.TestCase):
         # cap = 1000
         # result = make_combinations([i for i in range(1, cap+1)])
         # self.assertTrue(len(result) == factorial(cap))
+
+
+class YamlHelper(unittest.TestCase):
+    def test_transpose(self):
+        test_list = [
+            {'Tom': 1, 'Tim': 2}, {'Tom': 3, 'Tim': 4}, {'Tom': 5, 'Tim': 6}]
+        self.assertEqual(transpose(test_list),
+                         {'Tom': [1, 3, 5], 'Tim': [2, 4, 6]})
+
+    def test_flatten_default_header(self):
+        test_list_dict = [
+            {'Some':  {'A': 1, 'B': 2}},
+            {'Stuff': {'A': 3, 'B': 4}},
+        ]
+        self.assertEqual(
+            flatten(test_list_dict),
+            [
+                {'PlaceHolder': 'Some', 'A': 1, 'B': 2},
+                {'PlaceHolder': 'Stuff', 'A': 3, 'B': 4},
+            ]
+        )
+
+    def test_flatten_custom_header(self):
+        test_list_dict = [
+            {'Some':  {'A': 1, 'B': 2}},
+            {'Stuff': {'A': 3, 'B': 4}},
+        ]
+        self.assertEqual(
+            flatten(test_list_dict, header='Custom'),
+            [
+                {'Custom': 'Some', 'A': 1, 'B': 2},
+                {'Custom': 'Stuff', 'A': 3, 'B': 4},
+            ]
+        )
+
+    def test_unflatten(self):
+        test_list_dict = [
+            {'Custom': 'Some', 'A': 1, 'B': 2},
+            {'Custom': 'Stuff', 'A': 3, 'B': 4},
+        ]
+        self.assertEqual(
+            unflatten(test_list_dict, 'Custom'),
+            [
+                {'Some':  {'A': 1, 'B': 2}},
+                {'Stuff': {'A': 3, 'B': 4}},
+            ]
+        )
 
 
 if __name__ == '__main__':

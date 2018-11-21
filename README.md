@@ -16,6 +16,12 @@ openpyxl: >= 2.5.3
 pyparsing
 tco
 joblib
+pyyaml
+```
+
+These `Python` libraries can be installed via:
+```
+pip install -r requirements.txt
 ```
 
 
@@ -28,7 +34,7 @@ python ./AltiumNetlistGen.py > WARNINGS.log
 If additional error checking is required (note that this script would also
 generate `.csv` files):
 ```
-python ./SchematicCheck.py > ERRORS.log
+python ./NetlistCheck.py > ERRORS.log
 ```
 
 All generated `.csv` files are located under `output/`.

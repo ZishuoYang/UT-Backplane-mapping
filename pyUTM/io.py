@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 05:33 PM -0400
+# Last Change: Mon Oct 01, 2018 at 01:49 PM -0400
 
 import openpyxl
 import re
 
 from pyparsing import nestedExpr
+from collections import defaultdict
 from tco import with_continuations  # Make Python do tail recursion elimination
 from joblib import Memory  # For persistent cache
 
@@ -267,3 +268,36 @@ class PcadReaderCached(PcadReader):
 
         self.read = self.mem.cache(super().read)
         self.readnets = self.mem.cache(super().readnets)
+
+
+#############################
+# For YAML/Excel conversion #
+#############################
+
+# Take a list of dictionaries with the same dimensionality
+def transpose(l):
+    result = defaultdict(list)
+    for i in l:
+        for k in i.keys():
+            result[k].append(i[k])
+    return dict(result)
+
+
+# NOTE: This functions modify the 'l' in-place.
+def flatten(l, header='PlaceHolder'):
+    result = []
+    for i in l:
+        key, value = tuple(i.items())[0]
+        value[header] = key
+        result.append(value)
+    return result
+
+
+# NOTE: This functions modify the 'l' in-place.
+def unflatten(l, header):
+    result = []
+    for i in l:
+        key = i[header]
+        del i[header]
+        result.append({key: i})
+    return result

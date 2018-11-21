@@ -1,11 +1,18 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 17, 2018 at 04:05 PM -0400
+# Last Change: Tue Oct 09, 2018 at 12:25 PM -0400
+
+import re
+
+from copy import deepcopy
 
 from pyUTM.datatype import NetNode
 from pyUTM.selection import RulePD
 
+##############
+# Formatters #
+##############
 
 def legacy_csv_line_dcb(node, prop):
     s = ''
@@ -155,3 +162,71 @@ def legacy_csv_line_pt(node, prop):
     s += ','
 
     return s
+
+
+##################
+# Data regulator #
+##################
+
+def PADDING(s):
+    letter, num = filter(None, re.split(r'(\d+)', s))
+    num = '0'+num if len(num) == 1 else num
+    return letter+num
+
+
+def DEPADDING(s):
+    letter, num = filter(None, re.split(r'(\d+)', s))
+    return letter+str(int(num))
+
+
+def PINID(s, padder=DEPADDING):
+    if s is None:
+        return s
+
+    if '|' in s:
+        pins = s.split('|')
+        for idx in range(0, len(pins)):
+            if '/' in pins[idx]:
+                pins[idx] = list(map(padder, pins[idx].split('/')))
+            else:
+                pins[idx] = padder(pins[idx])
+
+    else:
+        pins = padder(s)
+
+    return pins
+
+
+def CONID(s, prefix=lambda x: 'JP'+str(int(x))):
+    if s is None:
+        return s
+
+    if '|' in s:
+        connectors = list(map(prefix, s.split('|')))
+    else:
+        connectors, _, _  = s.split(' ', 2)
+        connectors = prefix(connectors)
+    return connectors
+
+
+def make_entries(entries, entry, pin_id, connector_id, pins, connectors):
+    if type(pins) == list and type(connectors) == list:
+        mesh = list(zip(connectors, pins))
+        for item in mesh:
+            conn, pin = item
+            if type(pin) == list:
+                for p in pin:
+                    temp_entry = deepcopy(entry)
+                    temp_entry[pin_id] = p
+                    temp_entry[connector_id] = conn
+                    entries.append(temp_entry)
+            else:
+                temp_entry = deepcopy(entry)
+                temp_entry[pin_id] = pin
+                temp_entry[connector_id] = conn
+                entries.append(temp_entry)
+
+    else:
+        entry[pin_id] = pins
+        entry[connector_id] = connectors
+        entries.append(entry)

@@ -1,0 +1,244 @@
+JD0:
+    depopulation: false
+
+JD1:
+    depopulation: false
+
+JD2:
+    depopulation: true
+
+JD3:
+    depopulation: true
+
+JD4:
+    depopulation: false
+
+JD5:
+    depopulation: false
+
+JD6:
+    depopulation: false
+
+JD7:
+    depopulation: false
+
+JD8:
+    depopulation: false
+
+JD9:
+    depopulation: false
+
+JD10:
+    depopulation: true
+
+JD11:
+    depopulation: true
+
+JP0:
+    type: M
+    typeDepop: M''
+    commonConn:
+        JD1:
+            - 6
+            - 1
+            - 2
+            - 3
+        JD3:
+            - 3
+    specialConn:
+        JD0:
+            - 3
+        JD3:
+            - 2
+    depopConn:
+        JD3:
+            - 2
+            - 3
+
+JP1:
+    type: L
+    typeDepop: S
+    commonConn:
+        JD1:
+            - 4
+        JD2:
+            - 6
+            - 1
+    specialConn:
+        JD0:
+            - 6
+            - 1
+            - 2
+            - 4
+            - 5
+        JD2:
+            - 4
+            - 5
+    depopConn:
+        JD1:
+            - 4
+        JD2:
+            - 6
+            - 1
+            - 4
+            - 5
+
+JP2:
+    type: L
+    typeDepop: S
+    commonConn:
+        JD1:
+            - 5
+        JD2:
+            - 2
+            - 3
+    specialConn:
+        JD3:
+            - 4
+            - 5
+        JD4:
+            - 6
+            - 1
+            - 2
+            - 4
+            - 5
+    depopConn:
+        JD1:
+            - 5
+        JD2:
+            - 2
+            - 3
+        JD3:
+            - 4
+            - 5
+
+JP3:
+    type: M
+    typeDepop: M''
+    commonConn:
+        JD3:
+            - 6
+            - 1
+    specialConn:
+        JD4:
+            - 3
+        JD5:
+            - 6
+            - 1
+            - 2
+            - 3
+    depopConn:
+        JD3:
+            - 6
+            - 1
+
+JP4:
+    type: M
+    typeDepop: M''
+    commonConn:
+        JD6:
+            - 6
+            - 1
+            - 2
+            - 3
+        JD8:
+            - 3
+    specialConn:
+        JD7:
+            - 4
+            - 5
+    depopConn:
+        JD7:
+            - 4
+            - 5
+
+JP5:
+    type: S'
+    typeDepop: S'
+    commonConn:
+        JD6:
+            - 4
+        JD7:
+            - 6
+            - 1
+    specialConn:
+        JD5:
+            - 4
+
+JP6:
+    type: S'
+    typeDepop: S'
+    commonConn:
+        JD6:
+            - 5
+        JD7:
+            - 2
+            - 3
+    specialConn:
+        JD5:
+            - 5
+
+JP7:
+    type: M
+    typeDepop: M''
+    commonConn:
+        JD8:
+            - 6
+            - 1
+    specialConn:
+        JD8:
+            - 2
+            - 4
+            - 5
+        JD10:
+            - 4
+            - 5
+    depopConn:
+        JD10:
+            - 4
+            - 5
+
+JP8:
+    type: M''
+    typeDepop: O
+    commonConn:
+        JD9:
+            - 6
+            - 1
+            - 2
+            - 3
+        JD11:
+            - 3
+
+JP9:
+    type: S''
+    typeDepop: O
+    commonConn:
+        JD9:
+            - 4
+        JD10:
+            - 6
+            - 1
+
+JP10:
+    type: S''
+    typeDepop: O
+    commonConn:
+        JD9:
+            - 5
+        JD10:
+            - 2
+            - 3
+
+JP11:
+    type: M''
+    typeDepop: O
+    commonConn:
+        JD11:
+            - 6
+            - 1
+    specialConn:
+        JD11:
+            - 2
+            - 4
+            - 5
