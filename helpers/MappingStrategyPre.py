@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 21, 2018 at 01:46 PM -0500
+# Last Change: Mon Nov 26, 2018 at 04:04 PM -0500
 
 import yaml
 
@@ -51,16 +51,51 @@ footer = '''\\end{tabularx}
 table_line_end = '\\\\ \\hline\n'
 
 
+class RuleMapping(Rule):
+    def match(self, *args):
+        pass
+
+    def process(self, *args):
+        pass
+
+
+class RuleMappingTester(RuleMapping):
+    def filter(self, connector, spec):
+        print('connector is: {}'.format(connector))
+        print('spec is: {}'.format(spec))
+
+
 ###########################
 # Rules for outer JP loop #
 ###########################
 
+class RuleJP_Header(RuleMapping):
+    def filter(self, connector, spec):
+        return (self.header_gen(connector, spec['type'], spec['typeDepop']),
+                spec['commonConn'])
+        pass
+
+    @staticmethod
+    def header_gen(connector, type1, type2):
+        header = connector[2:]
+        header += '$^{{{}'.format(type1)
+        if type1 != type2:
+            header += '/{}}}$'.format(type2)
+        else:
+            header += '}$'
+        return header
+
+
 class LoopJP(Loop):
-    def __init__(self, loop_order):
+    def __init__(self, loop_order=lambda x:
+                 filter(lambda y: True if 'JP' in y else False, x.keys())):
         self.loop_order = loop_order
 
     def loop(self, dataset, rules):
-        pass
+        for connector in self.loop_order(dataset):
+            for rule in rules:
+                dataset[connector] = rule.filter(connector, dataset[connector])
+        return dataset
 
 
 ###########################
@@ -79,79 +114,87 @@ with open(strategy_yaml_filename) as yaml_file:
     strategy_dict = yaml.safe_load(yaml_file)
 
 
-#####################
-# Generate tex file #
-#####################
+##############################
+# Generate tex for true-type #
+##############################
 
-with open(strategy_tex_filename, 'w') as tex_file:
-    tex_file.write(header)
+selectorMap = Selector(strategy_dict,
+                       [
+                           [RuleJP_Header()]
+                       ],
+                       [
+                           LoopJP()
+                       ])
 
-    # Fill out the remainder of the header
-    jd_dict = collect_terms(strategy_dict, 'JD')
-    tex_file.write('    ')
+# with open(strategy_tex_filename, 'w') as tex_file:
+    # tex_file.write(header)
 
-    for jd in jd_dict.keys():
-        tex_file.write('& ')
-        tex_file.write(jd[2:])
-        if jd_dict[jd]['depopulation']:
-            tex_file.write('$^{depop}$')
-        tex_file.write(' ')
+    # # Fill out the remainder of the header
+    # jd_dict = collect_terms(strategy_dict, 'JD')
+    # tex_file.write('    ')
 
-    tex_file.write(table_line_end)
+    # for jd in jd_dict.keys():
+        # tex_file.write('& ')
+        # tex_file.write(jd[2:])
+        # if jd_dict[jd]['depopulation']:
+            # tex_file.write('$^{depop}$')
+        # tex_file.write(' ')
 
-    # Generate the rest rows
-    jp_dict = collect_terms(strategy_dict, 'JP')
+    # tex_file.write(table_line_end)
 
-    for jp in jp_dict.keys():
+    # # Generate the rest rows
+    # jp_dict = collect_terms(strategy_dict, 'JP')
+
+    # # for jp in jp_dict.keys():
     # for jp in ['JP2', 'JP3', 'JP0', 'JP1', 'JP6', 'JP7', 'JP4', 'JP5', 'JP10',
                # 'JP11', 'JP8', 'JP9']:
-        jp_descr = jp_dict[jp]
-        tex_file.write('    ')
+        # jp_descr = jp_dict[jp]
+        # tex_file.write('    ')
 
-        # Write the row title first
-        tex_file.write(jp[2:])
-        tex_file.write('$^{{{}'.format(jp_descr['type']))
-        if jp_descr['typeDepop'] != jp_descr['type']:
-            tex_file.write('/{}}}$'.format(jp_descr['typeDepop']))
-        else:
-            tex_file.write('}$')
+        # # Write the row title first
+        # tex_file.write(jp[2:])
+        # tex_file.write('$^{{{}'.format(jp_descr['type']))
+        # if jp_descr['typeDepop'] != jp_descr['type']:
+            # tex_file.write('/{}}}$'.format(jp_descr['typeDepop']))
+        # else:
+            # tex_file.write('}$')
 
-        # Now loop through all DCB connectors
-        num_of_jd_connectors = len(jd_dict)
-        for jd in jd_dict.keys():
-            tex_file.write(' & ')
+        # # Now loop through all DCB connectors
+        # num_of_jd_connectors = len(jd_dict)
+        # for jd in jd_dict.keys():
+            # tex_file.write(' & ')
 
-            try:
-                gbtxs_common = jp_descr['commonConn'][jd]
-            except Exception:
-                gbtxs_common = []
-            try:
-                gbtxs_special = jp_descr['specialConn'][jd]
-            except Exception:
-                gbtxs_special = []
-            try:
-                gbtxs_depop = jp_descr['depopConn'][jd]
-            except Exception:
-                gbtxs_depop = []
+            # try:
+                # gbtxs_common = jp_descr['commonConn'][jd]
+            # except Exception:
+                # gbtxs_common = []
+            # try:
+                # gbtxs_special = jp_descr['specialConn'][jd]
+            # except Exception:
+                # gbtxs_special = []
+            # try:
+                # gbtxs_depop = jp_descr['depopConn'][jd]
+            # except Exception:
+                # gbtxs_depop = []
 
-            # Common connectors are black
-            if gbtxs_common:
-                for gbtx in gbtxs_common:
-                    # Check if there's depopulation within these pins
-                    if gbtx in gbtxs_depop:
-                        tex_file.write('\\ul{{{}}}'.format(gbtx))
-                    else:
-                        tex_file.write(str(gbtx))
+            # # Common connectors are black
+            # if gbtxs_common:
+                # for gbtx in gbtxs_common:
+                    # # Check if there's depopulation within these pins
+                    # if gbtx in gbtxs_depop:
+                        # tex_file.write('\\ul{{{}}}'.format(gbtx))
+                    # else:
+                        # tex_file.write(str(gbtx))
 
-            # Special connectors are red
-            if gbtxs_special:
-                for gbtx in gbtxs_special:
-                    # Check if there's depopulation within these pins
-                    if gbtx in gbtxs_depop:
-                        tex_file.write('\\textcolor{{red}}{{\\ul{{{}}}}}'.format(gbtx))
-                    else:
-                        tex_file.write('\\textcolor{{red}}{{{}}}'.format(gbtx))
+            # # Special connectors are red
+            # if gbtxs_special:
+                # for gbtx in gbtxs_special:
+                    # # Check if there's depopulation within these pins
+                    # if gbtx in gbtxs_depop:
+                        # tex_file.write('\\textcolor{{red}}{{\\ul{{{}}}}}'.format(gbtx))
+                    # else:
+                        # tex_file.write('\\textcolor{{red}}{{{}}}'.format(gbtx))
 
-        tex_file.write(table_line_end)
+        # tex_file.write(table_line_end)
 
-    tex_file.write(footer)
+    # tex_file.write(footer)
