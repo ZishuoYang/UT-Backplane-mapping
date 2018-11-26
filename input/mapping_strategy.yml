@@ -135,6 +135,8 @@ JP4:
         JD6:
             - 6
             - 1
+            - 4
+            - 5  
     specialConn:
         JD8:
             - 6
@@ -178,6 +180,8 @@ JP7:
         JD7:
             - 6
             - 1
+            - 4
+            - 5  
     specialConn:
         JD9:
             - 6
