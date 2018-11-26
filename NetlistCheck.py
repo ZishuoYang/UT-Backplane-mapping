@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 12:00 PM -0400
+# Last Change: Mon Nov 19, 2018 at 03:39 PM -0500
 
 from pathlib import Path
 from os import environ
@@ -9,7 +9,7 @@ from os import environ
 from pyUTM.io import PcadReader, PcadReaderCached
 from pyUTM.selection import SelectorNet, RuleNet
 from pyUTM.datatype import GenericNetNode
-from AltiumNetlistGen import input_dir, pt_result, dcb_result
+from AltiumNetlistGen import input_dir, pt_result
 
 netlist = input_dir / Path("backplane_netlists") / Path('Aug21_2018.net')
 cache_dir = 'cache'
