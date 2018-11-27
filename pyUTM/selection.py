@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Nov 27, 2018 at 03:17 PM -0500
+# Last Change: Tue Nov 27, 2018 at 03:42 PM -0500
 
 import re
 import abc
@@ -10,21 +10,6 @@ from collections import defaultdict
 from typing import Union, List
 
 from pyUTM.datatype import NetNode
-
-
-##############
-# Decorators #
-##############
-
-def idempotent(func):
-    return_value = []
-
-    def wrapper(*args, **kwargs):
-        if not return_value:
-            return_value.append(func(*args, **kwargs))
-        return return_value[0]
-
-    return wrapper
 
 
 ########################

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Nov 27, 2018 at 03:19 PM -0500
+# Last Change: Tue Nov 27, 2018 at 03:42 PM -0500
 
 import unittest
 
@@ -9,7 +9,6 @@ import sys
 sys.path.insert(0, '..')
 
 from pyUTM.selection import RulePD, SelectorPD
-from pyUTM.selection import idempotent
 from pyUTM.datatype import NetNode
 
 
@@ -73,23 +72,6 @@ class SelectorPDTester(unittest.TestCase):
             NetNode('B', 'B', 'B', 'B'): {'NETNAME': 'B', 'ATTR': None},
             NetNode('C', 'C', 'C', 'C'): {'NETNAME': 'C', 'ATTR': None},
         })
-
-
-class IdempontencyTester(unittest.TestCase):
-    @staticmethod
-    @idempotent
-    def dict_in_place_mod(d, key, handle):
-        for i in d[key]:
-            handle.append(i)
-        d[key] = 0
-
-    def test_dict_in_place_mod(self):
-        d = {'test': [1, 2, 3]}
-        handle = []
-        self.dict_in_place_mod(d, 'test', handle)
-        self.dict_in_place_mod(d, 'test', handle)
-        self.assertEqual(d, {'test': 0})
-        self.assertEqual(handle, [1, 2, 3])
 
 
 if __name__ == '__main__':
