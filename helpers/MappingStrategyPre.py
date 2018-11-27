@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Nov 26, 2018 at 04:04 PM -0500
+# Last Change: Tue Nov 27, 2018 at 03:44 PM -0500
 
 import yaml
 
@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0, '..')
 
 from pyUTM.selection import Rule, Loop, Selector
+from pyUTM.selection import idempotent
 from pyUTM.io import collect_terms
 
 input_dir  = Path('..') / Path('input')
@@ -70,10 +71,10 @@ class RuleMappingTester(RuleMapping):
 ###########################
 
 class RuleJP_Header(RuleMapping):
-    def filter(self, connector, spec):
-        return (self.header_gen(connector, spec['type'], spec['typeDepop']),
-                spec['commonConn'])
-        pass
+    def filter(self, connector, spec, full_spec):
+        spec['header'] = self.header_gen(
+            connector, spec['type'], spec['typeDepop'])
+        return spec
 
     @staticmethod
     def header_gen(connector, type1, type2):
@@ -86,15 +87,41 @@ class RuleJP_Header(RuleMapping):
         return header
 
 
+class RuleJP_BaseInit(RuleMapping):
+    # Non-idempotent. Which means that our selector can only run once.
+    def filter(self, connector, spec, full_spec):
+        spec['base'] = self.base_concretify(
+            connector, spec['base'], full_spec[spec['base']])
+        return spec
+
+    @staticmethod
+    def base_concretify(connector, base_connector, base_connector_map):
+        connector_idx = int(connector[2:])
+        base_connector_idx = int(base_connector[6:])
+        idx_shift = connector_idx - base_connector_idx
+
+        connector_map = dict()
+        for base_connector in base_connector_map.keys():
+            # Chop off 'Base'
+            connector = base_connector[4:]
+            # Account for the index shift
+            connector = connector[:2] + str(int(connector[2:])+idx_shift)
+            connector_map[connector] = base_connector_map[base_connector]
+
+        return connector_map
+
+
 class LoopJP(Loop):
     def __init__(self, loop_order=lambda x:
-                 filter(lambda y: True if 'JP' in y else False, x.keys())):
+                 filter(lambda y: y.startswith('JP'), x.keys())):
         self.loop_order = loop_order
 
     def loop(self, dataset, rules):
         for connector in self.loop_order(dataset):
             for rule in rules:
-                dataset[connector] = rule.filter(connector, dataset[connector])
+                dataset[connector] = rule.filter(connector,
+                                                 dataset[connector],
+                                                 dataset)
         return dataset
 
 
@@ -120,11 +147,23 @@ with open(strategy_yaml_filename) as yaml_file:
 
 selectorMap = Selector(strategy_dict,
                        [
-                           [RuleJP_Header()]
+                           [RuleJP_Header(), RuleJP_BaseInit()]
                        ],
                        [
                            LoopJP()
                        ])
+
+# Generate the rest of the header
+jd_dict = collect_terms(strategy_dict, lambda x: filter(lambda y: 'JD' in y, x))
+header_true = ''
+for jd in jd_dict.keys():
+    header_true += '&'
+    header_true += jd[2:]
+    if jd_dict[jd]['depopulation']:
+        header_true += '$^{depop}$'
+    header_true += ' '
+header_true += table_line_end
+
 
 # with open(strategy_tex_filename, 'w') as tex_file:
     # tex_file.write(header)
