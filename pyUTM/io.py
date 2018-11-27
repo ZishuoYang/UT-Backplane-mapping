@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 21, 2018 at 01:36 PM -0500
+# Last Change: Tue Nov 27, 2018 at 12:44 PM -0500
 
 import openpyxl
 import re
@@ -303,5 +303,5 @@ def unflatten(l, header):
     return result
 
 
-def collect_terms(d, kw):
-    return {k: d[k] for k in d.keys() if kw in k}
+def collect_terms(d, filter_function):
+    return {k: d[k] for k in filter_function(d)}
