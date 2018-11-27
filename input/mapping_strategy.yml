@@ -45,11 +45,47 @@ JD11:
 
 BaseJP0:
     BaseJD0:
+        - 6
         - 1
-        - 2
     BaseJD2:
+        - 6
         - 1
+        - 4
+        - 5  
+
+BaseJP1:
+    BaseJD0:
         - 2
+        - 3
+        - 4  
+        - 5 
+    BaseJD2:
+        - 2
+        - 3
+        - 4
+        - 5  
+
+BaseJP2:
+    BaseJD1:
+        - 2
+        - 3
+        - 4  
+        - 5 
+    BaseJD3:
+        - 2
+        - 3
+        - 4
+        - 5
+
+BaseJP3:
+    BaseJD1:
+        - 6
+        - 1
+    BaseJD3:
+        - 6
+        - 1
+        - 4
+        - 5  
 
 
 ######
@@ -64,29 +100,20 @@ JP0:
         JD2:
             - 6
             - 1
+    subConn:
+        JD2:
+            - 4
+            - 5  
     addOnConn:
         JD4:
+            - 6
             - 1
             - 2
 
 JP1:
     type: L
     typeDepop: S
-    commonConn:
-        JD0:
-            - 5
-        JD2:
-            - 2
-            - 3
-            - 4
-            - 5
-    specialConn:
-        JD0:
-            - 2
-            - 3
-        JD4:
-            - 3
-            - 4
+    base: BaseJP1
     depopConn:
         JD2:
             - 2
@@ -95,25 +122,16 @@ JP1:
             - 5
         JD4:
             - 4
+    addOnConn:
+        JD4:
+            - 3
+            - 4  
+
 
 JP2:
     type: L
     typeDepop: S
-    commonConn:
-        JD1:
-            - 5
-        JD3:
-            - 2
-            - 3
-            - 4
-            - 5
-    specialConn:
-        JD1:
-            - 2
-            - 3
-        JD5:
-            - 3
-            - 4
+    base: BaseJP2
     depopConn:
         JD3:
             - 2
@@ -122,133 +140,161 @@ JP2:
             - 5
         JD5:
             - 4
+    addOnConn:
+        JD5:
+            - 3
+            - 4  
 
 JP3:
     type: M
     typeDepop: M''
-    commonConn:
+    base: BaseJP3
+    depopConn:
         JD3:
             - 6
             - 1
+    subConn:
+        JD3:
+            - 4
+            - 5
+    addOnConn:
         JD5:
             - 6
             - 1
             - 2
-    specialConn:
-        JD1:
-            - 6
-            - 1
-    depopConn:
-        JD3:
-            - 6
-            - 1
 
 JP4:
     type: M
     typeDepop: M''
-    commonConn:
-        JD6:
-            - 6
-            - 1
-            - 4
-            - 5  
-    specialConn:
-        JD8:
-            - 6
-            - 1
-            - 2
+    base: BaseJP0
     depopConn:
         JD6:
+            - 4
+            - 5
+    subConn:
+        JD4:
+            - 6
+            - 1
+    addOnConn:
+        JD8:
+            - 2
             - 4
             - 5
 
 JP5:
     type: S'
     typeDepop: S'
-    commonConn:
+    base: BaseJP1
+    depopConn:
         JD4:
             - 5
-        JD6:
+    subConn:
+        JD4:
             - 2
             - 3
-    specialConn:
+            - 4
+        JD6:
+            - 4
+            - 5  
+    addOnConn:
         JD8:
             - 3
 
 JP6:
     type: S'
     typeDepop: S'
-    commonConn:
+    base: BaseJP2
+    depopConn:
         JD5:
             - 5
-        JD7:
+    subConn:
+        JD5:
             - 2
             - 3
-    specialConn:
+            - 4
+        JD7:
+            - 4
+            - 5  
+    addOnConn:
         JD9:
             - 3
 
 JP7:
     type: M
     typeDepop: M''
-    commonConn:
-        JD7:
-            - 6
-            - 1
-            - 4
-            - 5  
-    specialConn:
-        JD9:
-            - 6
-            - 1
-            - 2
+    base: BaseJP3
     depopConn:
         JD7:
+            - 4
+            - 5
+    subConn:
+        JD4:
+            - 6
+            - 1
+    addOnConn:
+        JD9:
+            - 2
             - 4
             - 5
 
 JP8:
     type: M''
     typeDepop: O
-    commonConn:
+    base: BaseJP0
+    depopConn:
         JD10:
             - 6
             - 1
-    specialConn:
-        JD8:
             - 4
-            - 5
+    subConn:
         JD10:
-            - 2
+            - 5
 
 JP9:
     type: S''
     typeDepop: O
-    commonConn:
+    base: BaseJP1
+    depopConn:
         JD10:
+            - 2
+            - 3
+            - 5  
+    subConn:
+        JD8:
+            - 2
             - 3
             - 4
-            - 5
+            - 5 
+        JD10:
+            - 4  
 
 JP10:
     type: S''
     typeDepop: O
-    commonConn:
+    base: BaseJP2
+    depopConn:
         JD11:
+            - 2
+            - 3
+            - 5  
+    subConn:
+        JD9:
+            - 2
             - 3
             - 4
-            - 5
+            - 5 
+        JD11:
+            - 4  
 
 JP11:
     type: M''
     typeDepop: O
-    commonConn:
+    base: BaseJP3
+    depopConn:
         JD11:
             - 6
             - 1
-    specialConn:
-        JD9:
             - 4
-            - 5
+    subConn:
         JD11:
-            - 2
+            - 5
