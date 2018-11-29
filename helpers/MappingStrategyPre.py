@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Nov 27, 2018 at 03:44 PM -0500
+# Last Change: Tue Nov 27, 2018 at 03:58 PM -0500
 
 import yaml
 
@@ -11,7 +11,6 @@ import sys
 sys.path.insert(0, '..')
 
 from pyUTM.selection import Rule, Loop, Selector
-from pyUTM.selection import idempotent
 from pyUTM.io import collect_terms
 
 input_dir  = Path('..') / Path('input')
@@ -61,7 +60,7 @@ class RuleMapping(Rule):
 
 
 class RuleMappingTester(RuleMapping):
-    def filter(self, connector, spec):
+    def filter(self, connector, spec, *args):
         print('connector is: {}'.format(connector))
         print('spec is: {}'.format(spec))
 
@@ -147,10 +146,11 @@ with open(strategy_yaml_filename) as yaml_file:
 
 selectorMap = Selector(strategy_dict,
                        [
-                           [RuleJP_Header(), RuleJP_BaseInit()]
+                           [RuleJP_Header(), RuleJP_BaseInit()],
+                           [RuleMappingTester()]
                        ],
                        [
-                           LoopJP()
+                           LoopJP(), LoopJD()
                        ])
 
 # Generate the rest of the header
