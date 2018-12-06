@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Nov 29, 2018 at 02:29 PM -0500
+# Last Change: Thu Dec 06, 2018 at 11:34 AM -0500
 
 from __future__ import annotations
 
@@ -56,7 +56,7 @@ class Selector(metaclass=abc.ABCMeta):
     def __init__(self,
                  dataset: Union[list, dict],
                  rules: List[Rule],
-                 nested: Optional[Selector]=None) -> None:
+                 nested: Optional[Selector] = None) -> None:
             self.dataset = dataset
             self.rules = rules
 
@@ -64,7 +64,7 @@ class Selector(metaclass=abc.ABCMeta):
             self.nested = nested
 
     @abc.abstractmethod
-    def do(self) -> Union[list, dict]:
+    def do(self, data: Optional[Union[list, dict]] = None) -> Union[list, dict]:
         '''
         Implement loop logic for current selector. Handle nested selector here.
         '''
