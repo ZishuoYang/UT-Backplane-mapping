@@ -1,9 +1,28 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 12:01 PM -0500
+# Last Change: Thu Dec 06, 2018 at 01:25 PM -0500
 
 from collections import defaultdict
+
+#############
+# Constants #
+#############
+
+JD_SWAPPING_TRUE = {
+    'JD0': 'JD0',
+    'JD1': 'JD4',
+    'JD2': 'JD2',
+    'JD3': 'JD3',
+    'JD4': 'JD1',
+    'JD5': 'JD5',
+    'JD6': 'JD6',
+    'JD7': 'JD8',
+    'JD8': 'JD7',
+    'JD9': 'JD9',
+    'JD10': 'JD10',
+    'JD11': 'JD11'
+}
 
 
 #############################
