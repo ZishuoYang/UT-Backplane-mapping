@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Oct 01, 2018 at 01:48 PM -0400
+# Last Change: Thu Dec 06, 2018 at 12:07 PM -0500
 
 import unittest
 import re
@@ -14,7 +14,6 @@ from pyUTM.io import csv_line
 from pyUTM.io import parse_cell_range
 from pyUTM.io import PcadReader
 from pyUTM.io import make_combinations
-from pyUTM.io import transpose, flatten, unflatten
 from pyUTM.datatype import NetNode
 
 
@@ -102,53 +101,6 @@ class PcadReaderTester(unittest.TestCase):
         # cap = 1000
         # result = make_combinations([i for i in range(1, cap+1)])
         # self.assertTrue(len(result) == factorial(cap))
-
-
-class YamlHelper(unittest.TestCase):
-    def test_transpose(self):
-        test_list = [
-            {'Tom': 1, 'Tim': 2}, {'Tom': 3, 'Tim': 4}, {'Tom': 5, 'Tim': 6}]
-        self.assertEqual(transpose(test_list),
-                         {'Tom': [1, 3, 5], 'Tim': [2, 4, 6]})
-
-    def test_flatten_default_header(self):
-        test_list_dict = [
-            {'Some':  {'A': 1, 'B': 2}},
-            {'Stuff': {'A': 3, 'B': 4}},
-        ]
-        self.assertEqual(
-            flatten(test_list_dict),
-            [
-                {'PlaceHolder': 'Some', 'A': 1, 'B': 2},
-                {'PlaceHolder': 'Stuff', 'A': 3, 'B': 4},
-            ]
-        )
-
-    def test_flatten_custom_header(self):
-        test_list_dict = [
-            {'Some':  {'A': 1, 'B': 2}},
-            {'Stuff': {'A': 3, 'B': 4}},
-        ]
-        self.assertEqual(
-            flatten(test_list_dict, header='Custom'),
-            [
-                {'Custom': 'Some', 'A': 1, 'B': 2},
-                {'Custom': 'Stuff', 'A': 3, 'B': 4},
-            ]
-        )
-
-    def test_unflatten(self):
-        test_list_dict = [
-            {'Custom': 'Some', 'A': 1, 'B': 2},
-            {'Custom': 'Stuff', 'A': 3, 'B': 4},
-        ]
-        self.assertEqual(
-            unflatten(test_list_dict, 'Custom'),
-            [
-                {'Some':  {'A': 1, 'B': 2}},
-                {'Stuff': {'A': 3, 'B': 4}},
-            ]
-        )
 
 
 if __name__ == '__main__':

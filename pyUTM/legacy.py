@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Oct 09, 2018 at 12:25 PM -0400
+# Last Change: Thu Dec 06, 2018 at 04:53 PM -0500
 
 import re
 
 from copy import deepcopy
 
-from pyUTM.datatype import NetNode
-from pyUTM.selection import RulePD
+from .datatype import NetNode
+from .selection import RulePD
+from .common import split_netname
 
 ##############
 # Formatters #
@@ -230,3 +231,20 @@ def make_entries(entries, entry, pin_id, connector_id, pins, connectors):
         entry[pin_id] = pins
         entry[connector_id] = connectors
         entries.append(entry)
+
+
+#############
+# Datatypes #
+#############
+
+class BrkStr(str):
+    def __new__(cls, s):
+        self = super(BrkStr, cls).__new__(cls, s)
+        self.value = s
+        return self
+
+    def __contains__(self, key):
+        if key in split_netname(self.value):
+            return True
+        else:
+            return False

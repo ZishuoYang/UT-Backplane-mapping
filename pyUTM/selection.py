@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 21, 2018 at 01:43 PM -0500
+# Last Change: Thu Dec 06, 2018 at 04:54 PM -0500
+
+from __future__ import annotations
 
 import re
 import abc
 
 from collections import defaultdict
-from typing import Union, List
+from typing import Union, List, Optional
 
-from pyUTM.datatype import NetNode
+from .datatype import NetNode
 
 
 ########################
@@ -50,42 +52,22 @@ class Rule(metaclass=abc.ABCMeta):
             return False
 
 
-class Loop(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def loop(self,
-             dataset: Union[list, dict],
-             rules: List[Rule]) -> Union[list, dict]:
-        '''
-        Implement loop logic.
-        '''
-
-
 class Selector(metaclass=abc.ABCMeta):
     def __init__(self,
                  dataset: Union[list, dict],
-                 loop_rules: List[List[Rule]],
-                 loop_implementations: List[Loop]) -> None:
-        if len(loop_rules) != len(loop_implementations):
-            raise ValueError(
-                "number of loop rules: {} doesn't match number of loop loop implementations {}".format(
-                    len(loop_rules), len(loop_implementations)
-                )
-            )
-        else:
+                 rules: List[Rule],
+                 nested: Optional[Selector] = None) -> None:
             self.dataset = dataset
+            self.rules = rules
 
-            # We do allow nested loops
-            self.loop_rules = loop_rules
-            self.loop_implementations = loop_implementations
+            # We do allow nested selectors.
+            self.nested = nested
 
-    def do(self) -> Union[list, dict]:
+    @abc.abstractmethod
+    def do(self, data: Optional[Union[list, dict]] = None) -> Union[list, dict]:
         '''
-        Loop through all loops.
+        Implement loop logic for current selector. Handle nested selector here.
         '''
-        for rules, implementation in zip(self.loop_rules,
-                                         self.loop_implementations):
-            self.dataset = implementation.loop(self.dataset, rules)
-        return self.dataset
 
 
 ###################################
@@ -134,24 +116,18 @@ class RulePD(Rule):
         return str(int(pt_idx))
 
 
-class LoopPD(Loop):
-    def loop(self, dataset, rules):
+class SelectorPD(Selector):
+    def do(self):
         processed_dataset = {}
 
-        for connector_idx in range(0, len(dataset)):
-            for entry in dataset[connector_idx]:
-                for rule in rules:
+        for connector_idx in range(0, len(self.dataset)):
+            for entry in self.dataset[connector_idx]:
+                for rule in self.rules:
                     result = rule.filter((entry, connector_idx))
                     if result is not None:
                         node_spec, prop = result
-
-                        # Generate a 'NetNode' if 'node_spec' is a dictionary,
-                        # otherwise use it as-is as a dictionary key, assume it
-                        # is hashable.
-                        if isinstance(node_spec, dict):
-                            key = NetNode(**node_spec)
-                        else:
-                            key = node_spec
+                        key = self.node_generate(node_spec)
+                        prop = self.prop_mod(prop)
 
                         # NOTE: The insertion-order is preserved starting in
                         # Python 3.7.0.
@@ -160,12 +136,20 @@ class LoopPD(Loop):
 
         return processed_dataset
 
+    @staticmethod
+    def node_generate(node_spec):
+        # Generate a 'NetNode' if 'node_spec' is a dictionary,
+        # otherwise use it as-is as a dictionary key, assume it
+        # is hashable.
+        if isinstance(node_spec, dict):
+            key = NetNode(**node_spec)
+        else:
+            key = node_spec
+        return key
 
-class SelectorPD(Selector):
-    def __init__(self, dataset: Union[list, dict], rules: List[Rule]) -> None:
-        super().__init__(dataset,
-                         loop_rules=[rules],
-                         loop_implementations=[LoopPD()])
+    @staticmethod
+    def prop_mod(prop):
+        return prop  # By default, don't do any modification
 
 
 ##########################################
@@ -183,10 +167,11 @@ class RuleNet(Rule):
             return self.process(node)
 
     def process(self, node):
-        return False
+        return False  # This is just a sane default value
 
-    def node_to_str(self, node):
-        attrs = self.node_data_properties(node)
+    @classmethod
+    def node_to_str(cls, node):
+        attrs = cls.node_data_properties(node)
 
         s = ''
         for a in attrs:
@@ -205,12 +190,12 @@ class RuleNet(Rule):
         return [attr for attr in candidate if attr not in ['count', 'index']]
 
 
-class LoopNet(Loop):
-    def loop(self, dataset, rules):
+class SelectorNet(Selector):
+    def do(self):
         processed_dataset = defaultdict(list)
 
-        for node in dataset.keys():
-            for rule in rules:
+        for node in self.dataset.keys():
+            for rule in self.rules:
                 result = rule.filter(node)
                 if result is False:
                     break
@@ -221,10 +206,3 @@ class LoopNet(Loop):
                     break
 
         return processed_dataset
-
-
-class SelectorNet(Selector):
-    def __init__(self, dataset: Union[list, dict], rules: List[Rule]) -> None:
-        super().__init__(dataset,
-                         loop_rules=[rules],
-                         loop_implementations=[LoopNet()])

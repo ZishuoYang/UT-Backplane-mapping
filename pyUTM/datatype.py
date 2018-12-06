@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 05:28 PM -0400
+# Last Change: Thu Dec 06, 2018 at 04:46 PM -0500
 
 import builtins
 import typing
@@ -81,24 +81,6 @@ class ColNum(int):
 
     def __rsub__(self, other):
         return self.__sub__(other)
-
-
-class BrkStr(str):
-    def __new__(cls, s):
-        self = super(BrkStr, cls).__new__(cls, s)
-        self.value = s
-        return self
-
-    def __contains__(self, key):
-        if key in self.split_signal_id_into_three(self.value):
-            return True
-        else:
-            return False
-
-    @staticmethod
-    def split_signal_id_into_three(id):
-        src_pin, dest_pin, signal_id = id.split('_', 2)
-        return [src_pin, dest_pin, signal_id]
 
 
 class ExcelCell(str):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Oct 04, 2018 at 12:04 PM -0400
+# Last Change: Thu Dec 06, 2018 at 04:51 PM -0500
 
 import unittest
 
@@ -11,6 +11,7 @@ sys.path.insert(0, '..')
 from pyUTM.legacy import PADDING, DEPADDING
 from pyUTM.legacy import PINID
 from pyUTM.legacy import CONID
+from pyUTM.legacy import BrkStr
 
 
 class PadderTester(unittest.TestCase):
@@ -59,6 +60,38 @@ class ConIdTester(unittest.TestCase):
     def test_dcb_multiple(self):
         self.assertEqual(CONID('00|01', lambda x: 'JD'+str(int(x))),
                          ['JD0', 'JD1'])
+
+
+class BrkStrTester(unittest.TestCase):
+    def test_str_basic_function(self):
+        name = BrkStr('name')
+        self.assertEqual(name, 'name')
+        self.assertEqual(name + '_something', 'name_something')
+
+    def test_iteration(self):
+        name = BrkStr('name')
+        self.assertEqual(list(name), ['n', 'a', 'm', 'e'])
+
+    def test_lack_of_representation(self):
+        name = BrkStr('name')
+        name_processed = list(name)
+        self.assertEqual(isinstance(name_processed[0], str), True)
+        self.assertEqual(isinstance(name_processed[0], BrkStr), False)
+
+    def test_overloaded_contain(self):
+        name1 = BrkStr('JP1_JD12_SOME_SOME_ELSE')
+        name2 = BrkStr('JP11_JP12_SOME_SOME_ELSE')
+        name3 = BrkStr('JD11_JPL2_1V5_M')
+
+        self.assertTrue('JP1' in name1)
+        self.assertFalse('JP1' in name2)
+        self.assertTrue('JP11' in name2)
+        self.assertTrue('JP12' in name2)
+        self.assertTrue('SOME_SOME_ELSE' in name1)
+        self.assertTrue('SOME_SOME_ELSE' in name2)
+        self.assertTrue('JD11' in name3)
+        self.assertTrue('JPL2' in name3)
+        self.assertFalse('JPL3' in name3)
 
 
 if __name__ == '__main__':

@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Oct 01, 2018 at 01:18 PM -0400
+# Last Change: Thu Dec 06, 2018 at 05:09 PM -0500
 
 import yaml
 
 from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
-from pyUTM.io import flatten, transpose
 from pyUTM.selection import SelectorPD, RulePD
-from pyUTM.datatype import GenericNetNode
+from pyUTM.datatype import GenericNetNode, NetNode
 from pyUTM.datatype import ExcelCell
-from pyUTM.legacy import legacy_csv_line_dcb
+from pyUTM.common import flatten, transpose, split_netname
+from pyUTM.common import jd_swapping_true
 
 input_dir = Path('input')
 output_dir = Path('output')
@@ -25,7 +25,6 @@ dcb_filename = input_dir / Path(
 
 pt_result_output_filename = output_dir / Path('AltiumNetlist_PT_Full_TrueType.csv')
 dcb_result_output_filename = output_dir / Path('AltiumNetlist_DCB_Full_TrueType.csv')
-
 
 ############################################
 # Read pin assignments from breakout board #
@@ -608,14 +607,14 @@ dcb_rules = [
     RuleDCB_1V5(brkoutbrd_pin_assignments),
     RuleDCB_2V5(brkoutbrd_pin_assignments),
     RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-#    RuleDCB_DCB(),
+    # RuleDCB_DCB(),
     RuleDCB_Default()
 ]
 
 
-####################################
-# Generate Altium list for PigTail #
-####################################
+###########################
+# Apply rules for PigTail #
+###########################
 
 # First, deal with differential pairs.
 for pt_id in range(0, len(pt_descr)):
@@ -663,17 +662,43 @@ PtSelector = SelectorPD(pt_descr, pt_rules)
 print('====WARNINGS for PigTail====')
 pt_result = PtSelector.do()
 
-# Finally, write to csv file
-write_to_csv(pt_result_output_filename, pt_result)
 
-
-################################
-# Generate Altium list for DCB #
-################################
+#######################
+# Apply rules for DCB #
+#######################
 
 DcbSelector = SelectorPD(dcb_descr, dcb_rules)
 print('====WARNINGS for DCB====')
 dcb_result = DcbSelector.do()
 
-write_to_csv(dcb_result_output_filename, dcb_result)
-#             formatter=legacy_csv_line_dcb)
+
+############################################
+# Generate True-type backplane Altium list #
+############################################
+
+pt_result_true = dict()
+dcb_result_true = dict()
+
+# Swap JD connectors according to definition on JP side
+for node in pt_result.keys():
+    prop = pt_result[node]
+    netname = prop['NETNAME']
+
+    if node.DCB is not None:
+        node = NetNode(jd_swapping_true[node.DCB],
+                       node.DCB_PIN, node.PT, node.PT_PIN)
+
+        jd, jp, signal_id = split_netname(netname)
+        jd = jd_swapping_true[jd]
+        prop['NETNAME'] = jd + '_' + jp + '_' + signal_id
+
+    pt_result_true[node] = prop
+
+# Swap JD connectors according to definition on JP side
+for node in dcb_result.keys():
+    prop = dcb_result[node]
+    netname = prop['NETNAME']
+    dcb_result_true[node] = prop
+
+write_to_csv(pt_result_output_filename, pt_result_true)
+write_to_csv(dcb_result_output_filename, dcb_result_true)

@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Nov 21, 2018 at 01:36 PM -0500
+# Last Change: Thu Dec 06, 2018 at 04:53 PM -0500
 
 import openpyxl
 import re
 
 from pyparsing import nestedExpr
-from collections import defaultdict
 from tco import with_continuations  # Make Python do tail recursion elimination
 from joblib import Memory  # For persistent cache
 
-from pyUTM.datatype import range, ColNum, NetNode, GenericNetNode, ExcelCell
+from .datatype import range, ColNum, NetNode, GenericNetNode, ExcelCell
 
 
 ##################
@@ -268,40 +267,3 @@ class PcadReaderCached(PcadReader):
 
         self.read = self.mem.cache(super().read)
         self.readnets = self.mem.cache(super().readnets)
-
-
-#############################
-# For YAML/Excel conversion #
-#############################
-
-# Take a list of dictionaries with the same dimensionality
-def transpose(l):
-    result = defaultdict(list)
-    for d in l:
-        for k in d.keys():
-            result[k].append(d[k])
-    return dict(result)
-
-
-# NOTE: This functions modify the 'l' in-place.
-def flatten(l, header='PlaceHolder'):
-    result = []
-    for d in l:
-        key, value = tuple(d.items())[0]
-        value[header] = key
-        result.append(value)
-    return result
-
-
-# NOTE: This functions modify the 'l' in-place.
-def unflatten(l, header):
-    result = []
-    for d in l:
-        key = d[header]
-        del d[header]
-        result.append({key: d})
-    return result
-
-
-def collect_terms(d, kw):
-    return {k: d[k] for k in d.keys() if kw in k}
