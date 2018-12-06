@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 03:19 PM -0500
+# Last Change: Thu Dec 06, 2018 at 03:22 PM -0500
 
 import yaml
 
@@ -11,7 +11,6 @@ from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import GenericNetNode, NetNode
 from pyUTM.datatype import ExcelCell
-from pyUTM.legacy import legacy_csv_line_dcb
 from pyUTM.common import flatten, transpose
 from pyUTM.common import JD_SWAPPING_TRUE
 
@@ -67,7 +66,9 @@ dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
 class SelectorPD_True(SelectorPD):
     @staticmethod
     def node_generate(node_spec):
-        node_spec['DCB'] = JD_SWAPPING_TRUE[node_spec['DCB']]
+        jd_name = node_spec['DCB']
+        if jd_name is not None:
+            node_spec['DCB'] = JD_SWAPPING_TRUE[jd_name]
         return NetNode(**node_spec)
 
 
@@ -619,7 +620,7 @@ dcb_rules = [
     RuleDCB_1V5(brkoutbrd_pin_assignments),
     RuleDCB_2V5(brkoutbrd_pin_assignments),
     RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-#    RuleDCB_DCB(),
+    # RuleDCB_DCB(),
     RuleDCB_Default()
 ]
 
