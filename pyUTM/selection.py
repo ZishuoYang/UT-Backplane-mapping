@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 03:27 PM -0500
+# Last Change: Thu Dec 06, 2018 at 04:54 PM -0500
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import abc
 from collections import defaultdict
 from typing import Union, List, Optional
 
-from pyUTM.datatype import NetNode
+from .datatype import NetNode
 
 
 ########################

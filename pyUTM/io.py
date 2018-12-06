@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 12:01 PM -0500
+# Last Change: Thu Dec 06, 2018 at 04:53 PM -0500
 
 import openpyxl
 import re
@@ -10,7 +10,7 @@ from pyparsing import nestedExpr
 from tco import with_continuations  # Make Python do tail recursion elimination
 from joblib import Memory  # For persistent cache
 
-from pyUTM.datatype import range, ColNum, NetNode, GenericNetNode, ExcelCell
+from .datatype import range, ColNum, NetNode, GenericNetNode, ExcelCell
 
 
 ##################

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 04:41 PM -0500
+# Last Change: Thu Dec 06, 2018 at 04:55 PM -0500
 
 import yaml
 
@@ -683,9 +683,13 @@ dcb_result_true = dict()
 for node in pt_result.keys():
     prop = pt_result[node]
     netname = prop['NETNAME']
+    pt_result_true[node] = prop
 
-    try:
-
+# Swap JD connectors according to definition on JP side
+for node in dcb_result.keys():
+    prop = dcb_result[node]
+    netname = prop['NETNAME']
+    dcb_result_true[node] = prop
 
 write_to_csv(pt_result_output_filename, pt_result_true)
 write_to_csv(dcb_result_output_filename, dcb_result_true)

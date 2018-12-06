@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 04:47 PM -0500
+# Last Change: Thu Dec 06, 2018 at 04:53 PM -0500
 
 import re
 
 from copy import deepcopy
 
-from pyUTM.datatype import NetNode
-from pyUTM.selection import RulePD
+from .datatype import NetNode
+from .selection import RulePD
 from .common import split_netname
 
 ##############
