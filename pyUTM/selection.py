@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 11:34 AM -0500
+# Last Change: Thu Dec 06, 2018 at 03:15 PM -0500
 
 from __future__ import annotations
 
@@ -126,14 +126,7 @@ class SelectorPD(Selector):
                     result = rule.filter((entry, connector_idx))
                     if result is not None:
                         node_spec, prop = result
-
-                        # Generate a 'NetNode' if 'node_spec' is a dictionary,
-                        # otherwise use it as-is as a dictionary key, assume it
-                        # is hashable.
-                        if isinstance(node_spec, dict):
-                            key = NetNode(**node_spec)
-                        else:
-                            key = node_spec
+                        key = self.node_generate(node_spec)
 
                         # NOTE: The insertion-order is preserved starting in
                         # Python 3.7.0.
@@ -141,6 +134,17 @@ class SelectorPD(Selector):
                         break
 
         return processed_dataset
+
+    @staticmethod
+    def node_generate(node_spec):
+        # Generate a 'NetNode' if 'node_spec' is a dictionary,
+        # otherwise use it as-is as a dictionary key, assume it
+        # is hashable.
+        if isinstance(node_spec, dict):
+            key = NetNode(**node_spec)
+        else:
+            key = node_spec
+        return key
 
 
 ##########################################
@@ -158,10 +162,11 @@ class RuleNet(Rule):
             return self.process(node)
 
     def process(self, node):
-        return False
+        return False  # This is just a sane default value
 
-    def node_to_str(self, node):
-        attrs = self.node_data_properties(node)
+    @classmethod
+    def node_to_str(cls, node):
+        attrs = cls.node_data_properties(node)
 
         s = ''
         for a in attrs:
@@ -181,7 +186,7 @@ class RuleNet(Rule):
 
 
 class SelectorNet(Selector):
-    def loop(self):
+    def do(self):
         processed_dataset = defaultdict(list)
 
         for node in self.dataset.keys():

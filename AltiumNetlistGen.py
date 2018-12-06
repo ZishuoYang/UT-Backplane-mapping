@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Oct 01, 2018 at 01:18 PM -0400
+# Last Change: Thu Dec 06, 2018 at 03:19 PM -0500
 
 import yaml
 
 from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
-from pyUTM.io import flatten, transpose
 from pyUTM.selection import SelectorPD, RulePD
-from pyUTM.datatype import GenericNetNode
+from pyUTM.datatype import GenericNetNode, NetNode
 from pyUTM.datatype import ExcelCell
 from pyUTM.legacy import legacy_csv_line_dcb
+from pyUTM.common import flatten, transpose
+from pyUTM.common import JD_SWAPPING_TRUE
 
 input_dir = Path('input')
 output_dir = Path('output')
@@ -25,7 +26,6 @@ dcb_filename = input_dir / Path(
 
 pt_result_output_filename = output_dir / Path('AltiumNetlist_PT_Full_TrueType.csv')
 dcb_result_output_filename = output_dir / Path('AltiumNetlist_DCB_Full_TrueType.csv')
-
 
 ############################################
 # Read pin assignments from breakout board #
@@ -58,6 +58,17 @@ pt_descr = PtReader.read(range(0, 12), 'B5:K405',
 DcbReader = XLReader(dcb_filename)
 dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
                            sortby=lambda d: RulePD.PADDING(d['SEAM pin']))
+
+
+####################################
+# Swap PT connectors, true version #
+####################################
+
+class SelectorPD_True(SelectorPD):
+    @staticmethod
+    def node_generate(node_spec):
+        node_spec['DCB'] = JD_SWAPPING_TRUE[node_spec['DCB']]
+        return NetNode(**node_spec)
 
 
 ########################################
@@ -659,7 +670,7 @@ for pt_id in range(0, len(pt_descr)):
                     break
 
 # Now apply all rules defined in the previous section
-PtSelector = SelectorPD(pt_descr, pt_rules)
+PtSelector = SelectorPD_True(pt_descr, pt_rules)
 print('====WARNINGS for PigTail====')
 pt_result = PtSelector.do()
 
@@ -671,7 +682,7 @@ write_to_csv(pt_result_output_filename, pt_result)
 # Generate Altium list for DCB #
 ################################
 
-DcbSelector = SelectorPD(dcb_descr, dcb_rules)
+DcbSelector = SelectorPD_True(dcb_descr, dcb_rules)
 print('====WARNINGS for DCB====')
 dcb_result = DcbSelector.do()
 
