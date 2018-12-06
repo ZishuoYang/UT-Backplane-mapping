@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 04:55 PM -0500
+# Last Change: Thu Dec 06, 2018 at 05:01 PM -0500
 
 import yaml
 
@@ -11,8 +11,8 @@ from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import GenericNetNode
 from pyUTM.datatype import ExcelCell
-from pyUTM.common import flatten, transpose
-from pyUTM.common import JD_SWAPPING_TRUE
+from pyUTM.common import flatten, transpose, split_netname
+from pyUTM.common import jd_swapping_true
 
 input_dir = Path('input')
 output_dir = Path('output')
@@ -683,6 +683,15 @@ dcb_result_true = dict()
 for node in pt_result.keys():
     prop = pt_result[node]
     netname = prop['NETNAME']
+
+    try:
+        conn1, conn2, signal_id = split_netname(netname)
+        if conn1 in jd_swapping_true.keys():
+            conn1 = jd_swapping_true[conn1]
+        prop['NETNAME'] = conn1 + '_' + conn2 + '_' + signal_id
+    except Exception:
+        pass
+
     pt_result_true[node] = prop
 
 # Swap JD connectors according to definition on JP side
