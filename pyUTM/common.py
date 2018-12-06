@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 01:25 PM -0500
+# Last Change: Thu Dec 06, 2018 at 04:43 PM -0500
 
 from collections import defaultdict
 
@@ -60,3 +60,12 @@ def unflatten(l, header):
 
 def collect_terms(d, filter_function):
     return {k: d[k] for k in filter_function(d)}
+
+
+###########
+# Helpers #
+###########
+
+def split_netname(netname):
+    conn1, conn2, signal_id = netname.split('_', 2)
+    return [conn1, conn2, signal_id]

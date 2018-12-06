@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 12:07 PM -0500
+# Last Change: Thu Dec 06, 2018 at 04:51 PM -0500
 
 import unittest
-import re
+# import re
 # from math import factorial
 
 import sys
 sys.path.insert(0, '..')
 
 from pyUTM.common import transpose, flatten, unflatten
+from pyUTM.common import split_netname
 
 
 class YamlHelper(unittest.TestCase):
@@ -57,6 +58,22 @@ class YamlHelper(unittest.TestCase):
                 {'Some':  {'A': 1, 'B': 2}},
                 {'Stuff': {'A': 3, 'B': 4}},
             ]
+        )
+
+
+class GenericHelper(unittest.TestCase):
+    def test_split_signal_id(self):
+        self.assertEqual(
+            split_netname('JP0_JT11_SOMETHING'),
+            ['JP0', 'JT11', 'SOMETHING']
+        )
+        self.assertEqual(
+            split_netname('JP0_JT11_SOMETHING_ELSE'),
+            ['JP0', 'JT11', 'SOMETHING_ELSE']
+        )
+        self.assertEqual(
+            split_netname('JP0_JT11_SOMETHING_ELSE_IF'),
+            ['JP0', 'JT11', 'SOMETHING_ELSE_IF']
         )
 
 

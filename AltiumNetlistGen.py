@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 03:37 PM -0500
+# Last Change: Thu Dec 06, 2018 at 04:41 PM -0500
 
 import yaml
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
-from pyUTM.datatype import GenericNetNode, NetNode
+from pyUTM.datatype import GenericNetNode
 from pyUTM.datatype import ExcelCell
 from pyUTM.common import flatten, transpose
 from pyUTM.common import JD_SWAPPING_TRUE
@@ -57,37 +57,6 @@ pt_descr = PtReader.read(range(0, 12), 'B5:K405',
 DcbReader = XLReader(dcb_filename)
 dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
                            sortby=lambda d: RulePD.PADDING(d['SEAM pin']))
-
-
-####################################
-# Swap PT connectors, true version #
-####################################
-
-class SelectorPD_True(SelectorPD):
-    @staticmethod
-    def node_generate(node_spec):
-        jd_name = node_spec['DCB']
-        if jd_name is not None:
-            node_spec['DCB'] = JD_SWAPPING_TRUE[jd_name]
-        return NetNode(**node_spec)
-
-    @staticmethod
-    def prop_mod(prop):
-        netname = prop['NETNAME']
-        if netname is not None:
-            try:
-                conn1, conn2, signal_id = netname.split('_', 2)
-
-                if conn1 in JD_SWAPPING_TRUE.keys():
-                    conn1 = JD_SWAPPING_TRUE[conn1]
-                if conn2 in JD_SWAPPING_TRUE.keys():
-                    conn2 = JD_SWAPPING_TRUE[conn2]
-
-                prop['NETNAME'] = conn1 + '_' + conn2 + '_' + signal_id
-
-            except Exception:
-                pass
-        return prop
 
 
 ########################################
@@ -643,9 +612,9 @@ dcb_rules = [
 ]
 
 
-####################################
-# Generate Altium list for PigTail #
-####################################
+###########################
+# Apply rules for PigTail #
+###########################
 
 # First, deal with differential pairs.
 for pt_id in range(0, len(pt_descr)):
@@ -689,21 +658,34 @@ for pt_id in range(0, len(pt_descr)):
                     break
 
 # Now apply all rules defined in the previous section
-PtSelector = SelectorPD_True(pt_descr, pt_rules)
+PtSelector = SelectorPD(pt_descr, pt_rules)
 print('====WARNINGS for PigTail====')
 pt_result = PtSelector.do()
 
-# Finally, write to csv file
-write_to_csv(pt_result_output_filename, pt_result)
 
+#######################
+# Apply rules for DCB #
+#######################
 
-################################
-# Generate Altium list for DCB #
-################################
-
-DcbSelector = SelectorPD_True(dcb_descr, dcb_rules)
+DcbSelector = SelectorPD(dcb_descr, dcb_rules)
 print('====WARNINGS for DCB====')
 dcb_result = DcbSelector.do()
 
-write_to_csv(dcb_result_output_filename, dcb_result)
-#             formatter=legacy_csv_line_dcb)
+
+############################################
+# Generate True-type backplane Altium list #
+############################################
+
+pt_result_true = dict()
+dcb_result_true = dict()
+
+# Swap JD connectors according to definition on JP side
+for node in pt_result.keys():
+    prop = pt_result[node]
+    netname = prop['NETNAME']
+
+    try:
+
+
+write_to_csv(pt_result_output_filename, pt_result_true)
+write_to_csv(dcb_result_output_filename, dcb_result_true)
