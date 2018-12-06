@@ -608,7 +608,7 @@ dcb_rules = [
     RuleDCB_1V5(brkoutbrd_pin_assignments),
     RuleDCB_2V5(brkoutbrd_pin_assignments),
     RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-    RuleDCB_DCB(),
+#    RuleDCB_DCB(),
     RuleDCB_Default()
 ]
 
@@ -675,5 +675,5 @@ DcbSelector = SelectorPD(dcb_descr, dcb_rules)
 print('====WARNINGS for DCB====')
 dcb_result = DcbSelector.do()
 
-write_to_csv(dcb_result_output_filename, dcb_result,
-             formatter=legacy_csv_line_dcb)
+write_to_csv(dcb_result_output_filename, dcb_result)
+#             formatter=legacy_csv_line_dcb)
