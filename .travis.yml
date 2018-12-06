@@ -27,7 +27,8 @@ deploy:
     file:
         - "./WARNINGS.log"
         - "./WARNINGS-lite.log"
-        - "./output/AltiumNetlist_PT.csv"
+        - "./output/AltiumNetlist_PT_Full_TrueType.csv"
+        - "./output/AltiumNetlist_DCB_Full_TrueType.csv"
     skip_cleanup: true
     on:
         tags: true
