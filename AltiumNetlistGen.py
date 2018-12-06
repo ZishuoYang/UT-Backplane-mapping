@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 05:01 PM -0500
+# Last Change: Thu Dec 06, 2018 at 05:09 PM -0500
 
 import yaml
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
-from pyUTM.datatype import GenericNetNode
+from pyUTM.datatype import GenericNetNode, NetNode
 from pyUTM.datatype import ExcelCell
 from pyUTM.common import flatten, transpose, split_netname
 from pyUTM.common import jd_swapping_true
@@ -684,13 +684,13 @@ for node in pt_result.keys():
     prop = pt_result[node]
     netname = prop['NETNAME']
 
-    try:
-        conn1, conn2, signal_id = split_netname(netname)
-        if conn1 in jd_swapping_true.keys():
-            conn1 = jd_swapping_true[conn1]
-        prop['NETNAME'] = conn1 + '_' + conn2 + '_' + signal_id
-    except Exception:
-        pass
+    if node.DCB is not None:
+        node = NetNode(jd_swapping_true[node.DCB],
+                       node.DCB_PIN, node.PT, node.PT_PIN)
+
+        jd, jp, signal_id = split_netname(netname)
+        jd = jd_swapping_true[jd]
+        prop['NETNAME'] = jd + '_' + jp + '_' + signal_id
 
     pt_result_true[node] = prop
 
