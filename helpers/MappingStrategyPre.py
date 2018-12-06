@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 03:56 AM -0500
+# Last Change: Thu Dec 06, 2018 at 11:08 AM -0500
 
 import yaml
 
@@ -17,7 +17,7 @@ input_dir  = Path('..') / Path('input')
 output_dir = Path('..') / Path('output')
 
 strategy_yaml_filename = input_dir / Path('mapping_strategy.yml')
-strategy_tex_filename  = output_dir / Path('mapping_strategy.tex')
+strategy_tex_true_filename  = output_dir / Path('Mapping_strategy-true.tex')
 
 
 ###########
@@ -63,6 +63,11 @@ class RuleMappingTester(RuleMapping):
     def filter(self, connector, spec, *args):
         print('connector is: {}'.format(connector))
         print('spec is: {}'.format(spec))
+
+
+class RuleMappingTesterStupid(RuleMapping):
+    def filter(self, connector, spec, *args):
+        print("I'm running.")
 
 
 ###########################
@@ -133,6 +138,11 @@ class SelectorJP(Selector):
 # Rules for inner JD loop #
 ###########################
 
+class SelectorJD(SelectorJP):
+    def __init__(self, *args, loop_order=lambda x:
+                 ['JD'+str(i) for i in range(0, 12)]):
+        super().__init__(*args, loop_order=loop_order)
+
 
 ###################################
 # Read from mapping strategy yaml #
@@ -146,8 +156,13 @@ with open(strategy_yaml_filename) as yaml_file:
 # Generate tex for true-type #
 ##############################
 
+selectorInner = SelectorJD(strategy_dict,
+                           [RuleMappingTesterStupid()]
+                           )
+
 selectorMap = SelectorJP(strategy_dict,
                          [RuleJP_Header(), RuleJP_BaseInit()],
+                         selectorInner
                          )
 
 # Generate the rest of the header
