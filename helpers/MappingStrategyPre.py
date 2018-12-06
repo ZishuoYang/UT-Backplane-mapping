@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Nov 27, 2018 at 03:58 PM -0500
+# Last Change: Thu Dec 06, 2018 at 03:56 AM -0500
 
 import yaml
 
@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 sys.path.insert(0, '..')
 
-from pyUTM.selection import Rule, Loop, Selector
+from pyUTM.selection import Rule, Selector
 from pyUTM.io import collect_terms
 
 input_dir  = Path('..') / Path('input')
@@ -110,26 +110,28 @@ class RuleJP_BaseInit(RuleMapping):
         return connector_map
 
 
-class LoopJP(Loop):
-    def __init__(self, loop_order=lambda x:
+class SelectorJP(Selector):
+    def __init__(self, *args,
+                 loop_order=lambda x:
                  filter(lambda y: y.startswith('JP'), x.keys())):
+        super().__init__(*args)
         self.loop_order = loop_order
 
-    def loop(self, dataset, rules):
-        for connector in self.loop_order(dataset):
-            for rule in rules:
-                dataset[connector] = rule.filter(connector,
-                                                 dataset[connector],
-                                                 dataset)
-        return dataset
+    def do(self):
+        processed_dataset = {}
+
+        for connector in self.loop_order(self.dataset):
+            for rule in self.rules:
+                processed_dataset[connector] = \
+                    rule.filter(connector,
+                                self.dataset[connector],
+                                self.dataset)
+        return processed_dataset
 
 
 ###########################
 # Rules for inner JD loop #
 ###########################
-
-class LoopJD(LoopJP):
-    pass
 
 
 ###################################
@@ -144,14 +146,9 @@ with open(strategy_yaml_filename) as yaml_file:
 # Generate tex for true-type #
 ##############################
 
-selectorMap = Selector(strategy_dict,
-                       [
-                           [RuleJP_Header(), RuleJP_BaseInit()],
-                           [RuleMappingTester()]
-                       ],
-                       [
-                           LoopJP(), LoopJD()
-                       ])
+selectorMap = SelectorJP(strategy_dict,
+                         [RuleJP_Header(), RuleJP_BaseInit()],
+                         )
 
 # Generate the rest of the header
 jd_dict = collect_terms(strategy_dict, lambda x: filter(lambda y: 'JD' in y, x))
