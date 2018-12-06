@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 11:08 AM -0500
+# Last Change: Thu Dec 06, 2018 at 01:24 PM -0500
 
 import yaml
 
@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0, '..')
 
 from pyUTM.selection import Rule, Selector
-from pyUTM.io import collect_terms
+from pyUTM.common import collect_terms
 
 input_dir  = Path('..') / Path('input')
 output_dir = Path('..') / Path('output')

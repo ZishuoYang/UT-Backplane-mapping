@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Oct 19, 2018 at 03:29 PM -0400
+# Last Change: Thu Dec 06, 2018 at 01:23 PM -0500
 
 import yaml
 
@@ -13,10 +13,10 @@ sys.path.insert(0, '..')
 
 from pyUTM.datatype import ExcelCell
 from pyUTM.io import XLReader
-from pyUTM.io import unflatten
 from pyUTM.legacy import PADDING, DEPADDING
 from pyUTM.legacy import PINID, CONID
 from pyUTM.legacy import make_entries
+from pyUTM.common import unflatten
 
 input_dir = Path('..') / Path('input')
 
