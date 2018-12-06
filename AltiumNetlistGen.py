@@ -23,8 +23,8 @@ pt_filename = input_dir / Path(
 dcb_filename = input_dir / Path(
     'backplaneMapping_SEAMPins_trueType_v5.2.xlsm')
 
-pt_result_output_filename = output_dir / Path('AltiumNetlist_PT.csv')
-dcb_result_output_filename = output_dir / Path('AltiumNetlist_DCB.csv')
+pt_result_output_filename = output_dir / Path('AltiumNetlist_PT_Full_TrueType.csv')
+dcb_result_output_filename = output_dir / Path('AltiumNetlist_DCB_Full_TrueType.csv')
 
 
 ############################################
@@ -322,11 +322,11 @@ class RulePT_UnusedToGND(RulePD):
 
 
 pt_rules = [
-    RulePT_PathFinder(),
+    # RulePT_PathFinder(),
     RulePT_PTSingleToDiffP(),
     RulePT_PTSingleToDiffN(),
     RulePT_UnusedToGND(),
-    RulePT_LVSenseGND(),
+    # RulePT_LVSenseGND(),
     RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),
