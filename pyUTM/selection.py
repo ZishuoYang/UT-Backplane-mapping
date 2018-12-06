@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 03:15 PM -0500
+# Last Change: Thu Dec 06, 2018 at 03:27 PM -0500
 
 from __future__ import annotations
 
@@ -127,6 +127,7 @@ class SelectorPD(Selector):
                     if result is not None:
                         node_spec, prop = result
                         key = self.node_generate(node_spec)
+                        prop = self.prop_mod(prop)
 
                         # NOTE: The insertion-order is preserved starting in
                         # Python 3.7.0.
@@ -145,6 +146,10 @@ class SelectorPD(Selector):
         else:
             key = node_spec
         return key
+
+    @staticmethod
+    def prop_mod(prop):
+        return prop  # By default, don't do any modification
 
 
 ##########################################

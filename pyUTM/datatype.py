@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Sep 20, 2018 at 05:28 PM -0400
+# Last Change: Thu Dec 06, 2018 at 03:31 PM -0500
 
 import builtins
 import typing
@@ -97,8 +97,8 @@ class BrkStr(str):
 
     @staticmethod
     def split_signal_id_into_three(id):
-        src_pin, dest_pin, signal_id = id.split('_', 2)
-        return [src_pin, dest_pin, signal_id]
+        conn1, conn2, signal_id = id.split('_', 2)
+        return [conn1, conn2, signal_id]
 
 
 class ExcelCell(str):

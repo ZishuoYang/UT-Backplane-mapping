@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 03:22 PM -0500
+# Last Change: Thu Dec 06, 2018 at 03:37 PM -0500
 
 import yaml
 
@@ -70,6 +70,24 @@ class SelectorPD_True(SelectorPD):
         if jd_name is not None:
             node_spec['DCB'] = JD_SWAPPING_TRUE[jd_name]
         return NetNode(**node_spec)
+
+    @staticmethod
+    def prop_mod(prop):
+        netname = prop['NETNAME']
+        if netname is not None:
+            try:
+                conn1, conn2, signal_id = netname.split('_', 2)
+
+                if conn1 in JD_SWAPPING_TRUE.keys():
+                    conn1 = JD_SWAPPING_TRUE[conn1]
+                if conn2 in JD_SWAPPING_TRUE.keys():
+                    conn2 = JD_SWAPPING_TRUE[conn2]
+
+                prop['NETNAME'] = conn1 + '_' + conn2 + '_' + signal_id
+
+            except Exception:
+                pass
+        return prop
 
 
 ########################################
