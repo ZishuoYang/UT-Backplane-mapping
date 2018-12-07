@@ -31,13 +31,13 @@ pip install -r requirements.txt
 ## Usage
 If only the copy-and-paste `.csv` are needed:
 ```
-python ./AltiumNetlistGen.py > WARNINGS.log
+python ./AltiumNetlistGen.py
 ```
 
 If additional error checking is required (note that this script would also
 generate `.csv` files):
 ```
-python ./NetlistCheck.py > ERRORS.log
+python ./NetlistCheck.py | tee ./WARNINGS.log
 ```
 
 All generated `.csv` files are located under `output/`.
