@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 02:03 AM -0500
+# Last Change: Fri Dec 07, 2018 at 11:49 AM -0500
 
 import yaml
 
@@ -684,8 +684,9 @@ dcb_aux = {
 }
 
 # These are power-related, after all.
-brkoutbrd_pin_assignments.append('GND')
-brkoutbrd_pin_assignments.append('AGND')
+for i in range(0, 12):
+    brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'GND')
+    brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'AGND')
 
 
 ############################################

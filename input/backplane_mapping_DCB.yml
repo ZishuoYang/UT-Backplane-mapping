@@ -2419,16 +2419,16 @@ JD0:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -2451,16 +2451,16 @@ JD0:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -2483,16 +2483,16 @@ JD0:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -2515,16 +2515,16 @@ JD0:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -2547,16 +2547,16 @@ JD0:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -2579,16 +2579,16 @@ JD0:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -3113,24 +3113,8 @@ JD0:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP0
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP1
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP1
+    Pigtail pin: null
+    Pigtail slot: null
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
@@ -5636,16 +5620,16 @@ JD1:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -5668,16 +5652,16 @@ JD1:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -5700,16 +5684,16 @@ JD1:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -5732,16 +5716,16 @@ JD1:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -5764,16 +5748,16 @@ JD1:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -5796,16 +5780,16 @@ JD1:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -6330,24 +6314,8 @@ JD1:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP2
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP2
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP3
+    Pigtail pin: null
+    Pigtail slot: null
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
@@ -8853,16 +8821,16 @@ JD2:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 03 / S -1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 03 / S -1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -8885,16 +8853,16 @@ JD2:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 03 / S - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 03 / S - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -8917,16 +8885,16 @@ JD2:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 03 / S -1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 03 / S -1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -8949,16 +8917,16 @@ JD2:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 03 / S - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 03 / S - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -8981,16 +8949,16 @@ JD2:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 03 / S -1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 03 / S -1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -9013,16 +8981,16 @@ JD2:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 03 / S - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 03 / S - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -12054,16 +12022,16 @@ JD3:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -12086,16 +12054,16 @@ JD3:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -12118,16 +12086,16 @@ JD3:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -12150,16 +12118,16 @@ JD3:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -12182,16 +12150,16 @@ JD3:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -12214,16 +12182,16 @@ JD3:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 02 / X - 1
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -15255,16 +15223,16 @@ JD4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -15287,16 +15255,16 @@ JD4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -15319,16 +15287,16 @@ JD4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -15351,16 +15319,16 @@ JD4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -15383,16 +15351,16 @@ JD4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -15415,16 +15383,16 @@ JD4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 01 / S - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -15949,32 +15917,8 @@ JD4:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP0
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP0
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: B24
-    Pigtail slot: JP0
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: B24
-    Pigtail slot: JP1
+    Pigtail pin: null
+    Pigtail slot: null
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
@@ -18480,16 +18424,16 @@ JD5:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -18512,16 +18456,16 @@ JD5:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -18544,16 +18488,16 @@ JD5:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -18576,16 +18520,16 @@ JD5:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -18608,16 +18552,16 @@ JD5:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -18640,16 +18584,16 @@ JD5:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 04 / X - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -19174,40 +19118,8 @@ JD5:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP2
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: B24
-    Pigtail slot: JP2
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP3
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP3
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: B24
-    Pigtail slot: JP3
+    Pigtail pin: null
+    Pigtail slot: null
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
@@ -21713,16 +21625,16 @@ JD6:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -21745,16 +21657,16 @@ JD6:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -21777,16 +21689,16 @@ JD6:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -21809,16 +21721,16 @@ JD6:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -21841,16 +21753,16 @@ JD6:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -21873,16 +21785,16 @@ JD6:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 05 / S - 2
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -22407,24 +22319,8 @@ JD6:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP4
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP4
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP5
+    Pigtail pin: null
+    Pigtail slot: null
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
@@ -24930,16 +24826,16 @@ JD7:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -24962,16 +24858,16 @@ JD7:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -24994,16 +24890,16 @@ JD7:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -25026,16 +24922,16 @@ JD7:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -25058,16 +24954,16 @@ JD7:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -25090,16 +24986,16 @@ JD7:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 06 / X - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -25624,24 +25520,8 @@ JD7:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP6
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP7
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP7
+    Pigtail pin: null
+    Pigtail slot: null
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
@@ -28147,16 +28027,16 @@ JD8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -28179,16 +28059,16 @@ JD8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -28211,16 +28091,16 @@ JD8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -28243,16 +28123,16 @@ JD8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -28275,16 +28155,16 @@ JD8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 09 / S - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -28307,16 +28187,16 @@ JD8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 07 / S - 3
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -28841,40 +28721,8 @@ JD8:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP4
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: B24
-    Pigtail slot: JP4
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP5
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP5
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP8
+    Pigtail pin: null
+    Pigtail slot: null
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
@@ -31380,16 +31228,16 @@ JD9:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -31412,16 +31260,16 @@ JD9:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -31444,16 +31292,16 @@ JD9:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -31476,16 +31324,16 @@ JD9:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -31508,16 +31356,16 @@ JD9:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 00 / X - 0
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -31540,16 +31388,16 @@ JD9:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 08 / X - 4
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -32074,40 +31922,8 @@ JD9:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP6
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP6
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP7
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: B24
-    Pigtail slot: JP7
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP11
+    Pigtail pin: null
+    Pigtail slot: null
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
@@ -34613,16 +34429,16 @@ JD10:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -34645,16 +34461,16 @@ JD10:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -34677,16 +34493,16 @@ JD10:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -34709,16 +34525,16 @@ JD10:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -34741,16 +34557,16 @@ JD10:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -34773,16 +34589,16 @@ JD10:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 11 / S - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -35307,48 +35123,8 @@ JD10:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP8
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP8
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: B24
-    Pigtail slot: JP8
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP9
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP9
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP9
+    Pigtail pin: null
+    Pigtail slot: null
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
@@ -37854,16 +37630,16 @@ JD11:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G7
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_N
     ref: 387
 - G4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G8
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DOUT_ELK_P
     ref: 388
 - G5:
@@ -37886,16 +37662,16 @@ JD11:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G3
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_N
     ref: 246
 - G8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G4
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DOUT_ELK_P
     ref: 247
 - G9:
@@ -37918,16 +37694,16 @@ JD11:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G15
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_N
     ref: 385
 - G12:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G16
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_DIN_ELK_P
     ref: 386
 - G13:
@@ -37950,16 +37726,16 @@ JD11:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G11
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_N
     ref: 244
 - G16:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G12
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_DIN_ELK_P
     ref: 245
 - G17:
@@ -37982,16 +37758,16 @@ JD11:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G23
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_N
     ref: 383
 - G20:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G24
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: MC_SEC_CLK_ELK_P
     ref: 384
 - G21:
@@ -38014,16 +37790,16 @@ JD11:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G19
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_N
     ref: 242
 - G24:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    SEAM pin D: G20
-    SEAM slot: 10 / X - 5
+    SEAM pin D: null
+    SEAM slot: null
     Signal ID: EC_SEC_CLK_ELK_P
     ref: 243
 - G25:
@@ -38548,48 +38324,8 @@ JD11:
     ref: 55
 - H40:
     GBTx ID: null
-    Pigtail pin: I27
-    Pigtail slot: JP10
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP10
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP10
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: A5
-    Pigtail slot: JP11
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: E14
-    Pigtail slot: JP11
-    SEAM pin D: null
-    SEAM slot: null
-    Signal ID: AGND
-    ref: 56
-- H40:
-    GBTx ID: null
-    Pigtail pin: B24
-    Pigtail slot: JP11
+    Pigtail pin: null
+    Pigtail slot: null
     SEAM pin D: null
     SEAM slot: null
     Signal ID: AGND
