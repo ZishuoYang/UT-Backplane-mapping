@@ -514,9 +514,7 @@ class RuleDCB_GND(RulePD):
             return False
 
     def process(self, data, dcb_idx):
-        net_name = \
-            self.DCB_PREFIX + str(dcb_idx) + '_' + \
-            data['Signal ID']
+        net_name = data['Signal ID']
         return (
             {
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
