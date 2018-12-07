@@ -13,9 +13,11 @@ install:
 
 script:
     - cd ./test
+    - python ./common.unittest.py
     - python ./datatype.unittest.py
     - python ./io.unittest.py
     - python ./selection.unittest.py
+    - python ./legacy.unittest.py
     - cd ../ && mkdir output
     - travis_wait 30 python ./NetlistCheck.py | tee ./WARNINGS.log
     - sed '/inconsistent/d' ./WARNINGS.log > WARNINGS-lite.log
