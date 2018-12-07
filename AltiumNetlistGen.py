@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 12:05 PM -0500
+# Last Change: Fri Dec 07, 2018 at 12:07 PM -0500
 
 import yaml
 
@@ -217,7 +217,7 @@ class RulePT_PTThermistor(RulePT_PTLvSource):
             return False
 
 
-# Put PTSingleToDiff rule above the general PTDCB rule
+# Put PTSingleToDiff rule above the general PT-DCB rule
 class RulePT_PTSingleToDiffP(RulePD):
     def match(self, data, pt_idx):
         if not data['Signal ID'].endswith('_N') and \
@@ -377,7 +377,7 @@ class RuleDCB_PT(RulePD):
         )
 
 
-# Put PTSingleToDiff rule above the general PTDCB rule
+# Put PTSingleToDiff rule above the general PT-DCB rule
 class RuleDCB_PTSingleToDiff(RulePD):
     def match(self, data, dcb_idx):
         if data['Pigtail slot'] is not None and \
