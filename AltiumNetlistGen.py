@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 11:54 AM -0500
+# Last Change: Fri Dec 07, 2018 at 11:58 AM -0500
 
 import yaml
 
@@ -666,7 +666,6 @@ for pt_id in range(0, len(pt_descr)):
 
 # Now apply all rules defined in the previous section
 PtSelector = SelectorPD(pt_descr, pt_rules)
-print('====WARNINGS for PigTail====')
 pt_result = PtSelector.do()
 
 
@@ -675,7 +674,6 @@ pt_result = PtSelector.do()
 #######################
 
 DcbSelector = SelectorPD(dcb_descr, dcb_rules)
-print('====WARNINGS for DCB====')
 dcb_result = DcbSelector.do()
 
 
