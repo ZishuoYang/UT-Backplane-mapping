@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 11:58 AM -0500
+# Last Change: Fri Dec 07, 2018 at 12:05 PM -0500
 
 import yaml
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
-from pyUTM.datatype import GenericNetNode, NetNode
+from pyUTM.datatype import NetNode
 from pyUTM.datatype import ExcelCell
 from pyUTM.common import flatten, transpose, split_netname
 from pyUTM.common import jd_swapping_true
@@ -217,31 +217,6 @@ class RulePT_PTThermistor(RulePT_PTLvSource):
             return False
 
 
-# This rule is a last resort if Tom cannot correct his netnames.
-# Should NOT be used normally.
-class RulePT_LVSenseGND(RulePD):
-    def match(self, data, pt_idx):
-        if 'LV_SENSE_GND' in data['Signal ID']:
-            return True
-        else:
-            return False
-
-    def process(self, data, pt_idx):
-        net_name = \
-            self.PT_PREFIX + str(pt_idx) + \
-            data['Pigtail pin'] + '_' + \
-            data['Signal ID']
-        return (
-            {
-                'DCB': None,
-                'DCB_PIN': None,
-                'PT': self.PT_PREFIX + str(pt_idx),
-                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
-
-
 # Put PTSingleToDiff rule above the general PTDCB rule
 class RulePT_PTSingleToDiffP(RulePD):
     def match(self, data, pt_idx):
@@ -327,7 +302,6 @@ pt_rules = [
     RulePT_PTSingleToDiffP(),
     RulePT_PTSingleToDiffN(),
     RulePT_UnusedToGND(),
-    # RulePT_LVSenseGND(),
     RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),
@@ -436,30 +410,6 @@ class RuleDCB_PTSingleToDiff(RulePD):
                 'PT': self.PT_PREFIX + self.PTID(data['Pigtail slot']),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
-
-
-class RuleDCB_DCB(RulePD):
-    def match(self, data, dcb_idx):
-        if data['SEAM pin D'] is not None:
-            # Which means that this DCB pin is connected to a DCB pin.
-            return True
-        else:
-            return False
-
-    def process(self, data, dcb_idx):
-        net_name = \
-            self.DCB_PREFIX + str(dcb_idx) + '_' + \
-            self.DCB_PREFIX + self.DCBID(data['SEAM slot']) + '_' + \
-            data['Signal ID']
-        return (
-            GenericNetNode(
-                self.DCB_PREFIX + str(dcb_idx),
-                data['SEAM pin'],
-                self.DCB_PREFIX + self.DCBID(data['SEAM slot']),
-                self.DEPADDING(data['SEAM pin D'])
-            ),
             {'NETNAME': net_name, 'ATTR': None}
         )
 
@@ -614,7 +564,6 @@ dcb_rules = [
     RuleDCB_1V5(brkoutbrd_pin_assignments),
     RuleDCB_2V5(brkoutbrd_pin_assignments),
     RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-    # RuleDCB_DCB(),
     RuleDCB_Default()
 ]
 
