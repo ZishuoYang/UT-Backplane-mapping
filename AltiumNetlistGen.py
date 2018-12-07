@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 01:22 AM -0500
+# Last Change: Fri Dec 07, 2018 at 02:03 AM -0500
 
 import yaml
 
@@ -719,6 +719,9 @@ for node in dcb_result.keys():
             pass
 
         dcb_result_true[key] = target_prop
+
+    else:
+        dcb_result_true[node] = dcb_result[node]
 
 # Now do DCB slot swapping on PT side.
 for node in pt_result.keys():
