@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 02:11 PM -0500
+# Last Change: Fri Dec 07, 2018 at 02:27 PM -0500
 
 import yaml
 
@@ -393,16 +393,13 @@ class RuleDCB_PTSingleToDiff(RulePD):
             # Becuase EC_ADC connects to Thermistor, add prefix THERM
             net_name = \
                 self.DCB_PREFIX + str(dcb_idx) + '_' + \
-                self.PT_PREFIX + str(dcb_idx) + '_THERM_' + \
-                data['Signal ID'] + '_P'
+                self.PT_PREFIX + self.PTID(data['Pigtail slot']) + \
+                '_THERM_' + data['Signal ID'] + '_P'
         else:
-            try:
-                net_name = \
-                    self.DCB_PREFIX + str(dcb_idx) + '_' + \
-                    self.PT_PREFIX + str(dcb_idx) + '_' + \
-                    data['Signal ID'] + '_P'
-            except Exception:
-                print(data)
+            net_name = \
+                self.DCB_PREFIX + str(dcb_idx) + '_' + \
+                self.PT_PREFIX + self.PTID(data['Pigtail slot']) + '_' + \
+                data['Signal ID'] + '_P'
         return (
             {
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
@@ -661,12 +658,9 @@ for node in dcb_result.keys():
     if target_prop['NETNAME'] not in brkoutbrd_pin_assignments:
         key = NetNode(node.DCB, node.DCB_PIN,
                       target_node.PT, target_node.PT_PIN)
-
         try:
             jd, some_conn, signal = split_netname(target_prop['NETNAME'])
-            netname = node.DCB + '_' + some_conn + '_' + signal
-            target_prop['NETNAME'] = netname
-
+            target_prop['NETNAME'] = node.DCB + '_' + some_conn + '_' + signal
             # Fill up the additional auxiliary dict, for True-type.
             pt_aux_true_type[(target_node.PT, target_node.PT_PIN)] = \
                 (key, target_prop)
@@ -683,6 +677,7 @@ for node in pt_result.keys():
     if (node.PT, node.PT_PIN) in pt_aux_true_type.keys():
         key, target_prop = pt_aux_true_type[(node.PT, node.PT_PIN)]
         pt_result_true[key] = target_prop
+
     else:
         try:
             prop = pt_result[node]
