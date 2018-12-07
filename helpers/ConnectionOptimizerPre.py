@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Nov 13, 2018 at 06:56 PM -0500
+# Last Change: Fri Dec 07, 2018 at 01:21 AM -0500
 
 import yaml
 
@@ -13,8 +13,8 @@ sys.path.insert(0, '..')
 input_dir  = Path('..') / Path('input')
 output_dir = Path('..') / Path('output')
 
-pt_yaml_filename  = input_dir / Path('backplane_mapping_PT_true.yml')
-dcb_yaml_filename = input_dir / Path('backplane_mapping_DCB_true.yml')
+pt_yaml_filename  = input_dir / Path('backplane_mapping_PT.yml')
+dcb_yaml_filename = input_dir / Path('backplane_mapping_DCB.yml')
 dot_filename      = output_dir / Path('pt_dcb_connection_optimizer.dot')
 
 

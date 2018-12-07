@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 04:54 PM -0500
+# Last Change: Fri Dec 07, 2018 at 12:38 AM -0500
 
 from __future__ import annotations
 
@@ -126,6 +126,7 @@ class SelectorPD(Selector):
                     result = rule.filter((entry, connector_idx))
                     if result is not None:
                         node_spec, prop = result
+
                         key = self.node_generate(node_spec)
                         prop = self.prop_mod(prop)
 
