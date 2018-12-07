@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 05:01 PM -0500
+# Last Change: Fri Dec 07, 2018 at 01:55 PM -0500
 
 from collections import defaultdict
 
@@ -66,6 +66,6 @@ def collect_terms(d, filter_function):
 # Helpers #
 ###########
 
-def split_netname(netname):
-    conn1, conn2, signal_id = netname.split('_', 2)
+def split_netname(netname, num_of_split=2):
+    conn1, conn2, signal_id = netname.split('_', num_of_split)
     return [conn1, conn2, signal_id]

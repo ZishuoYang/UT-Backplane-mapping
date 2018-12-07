@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 11:49 AM -0500
+# Last Change: Fri Dec 07, 2018 at 02:11 PM -0500
 
 import yaml
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import SelectorPD, RulePD
-from pyUTM.datatype import GenericNetNode, NetNode
+from pyUTM.datatype import NetNode
 from pyUTM.datatype import ExcelCell
 from pyUTM.common import flatten, transpose, split_netname
 from pyUTM.common import jd_swapping_true
@@ -217,32 +217,7 @@ class RulePT_PTThermistor(RulePT_PTLvSource):
             return False
 
 
-# This rule is a last resort if Tom cannot correct his netnames.
-# Should NOT be used normally.
-class RulePT_LVSenseGND(RulePD):
-    def match(self, data, pt_idx):
-        if 'LV_SENSE_GND' in data['Signal ID']:
-            return True
-        else:
-            return False
-
-    def process(self, data, pt_idx):
-        net_name = \
-            self.PT_PREFIX + str(pt_idx) + \
-            data['Pigtail pin'] + '_' + \
-            data['Signal ID']
-        return (
-            {
-                'DCB': None,
-                'DCB_PIN': None,
-                'PT': self.PT_PREFIX + str(pt_idx),
-                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
-
-
-# Put PTSingleToDiff rule above the general PTDCB rule
+# Put PTSingleToDiff rule above the general PT-DCB rule
 class RulePT_PTSingleToDiffP(RulePD):
     def match(self, data, pt_idx):
         if not data['Signal ID'].endswith('_N') and \
@@ -327,7 +302,6 @@ pt_rules = [
     RulePT_PTSingleToDiffP(),
     RulePT_PTSingleToDiffN(),
     RulePT_UnusedToGND(),
-    # RulePT_LVSenseGND(),
     RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),
@@ -403,7 +377,7 @@ class RuleDCB_PT(RulePD):
         )
 
 
-# Put PTSingleToDiff rule above the general PTDCB rule
+# Put PTSingleToDiff rule above the general PT-DCB rule
 class RuleDCB_PTSingleToDiff(RulePD):
     def match(self, data, dcb_idx):
         if data['Pigtail slot'] is not None and \
@@ -436,30 +410,6 @@ class RuleDCB_PTSingleToDiff(RulePD):
                 'PT': self.PT_PREFIX + self.PTID(data['Pigtail slot']),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
-
-
-class RuleDCB_DCB(RulePD):
-    def match(self, data, dcb_idx):
-        if data['SEAM pin D'] is not None:
-            # Which means that this DCB pin is connected to a DCB pin.
-            return True
-        else:
-            return False
-
-    def process(self, data, dcb_idx):
-        net_name = \
-            self.DCB_PREFIX + str(dcb_idx) + '_' + \
-            self.DCB_PREFIX + self.DCBID(data['SEAM slot']) + '_' + \
-            data['Signal ID']
-        return (
-            GenericNetNode(
-                self.DCB_PREFIX + str(dcb_idx),
-                data['SEAM pin'],
-                self.DCB_PREFIX + self.DCBID(data['SEAM slot']),
-                self.DEPADDING(data['SEAM pin D'])
-            ),
             {'NETNAME': net_name, 'ATTR': None}
         )
 
@@ -614,7 +564,6 @@ dcb_rules = [
     RuleDCB_1V5(brkoutbrd_pin_assignments),
     RuleDCB_2V5(brkoutbrd_pin_assignments),
     RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-    # RuleDCB_DCB(),
     RuleDCB_Default()
 ]
 
@@ -666,7 +615,6 @@ for pt_id in range(0, len(pt_descr)):
 
 # Now apply all rules defined in the previous section
 PtSelector = SelectorPD(pt_descr, pt_rules)
-print('====WARNINGS for PigTail====')
 pt_result = PtSelector.do()
 
 
@@ -675,7 +623,6 @@ pt_result = PtSelector.do()
 #######################
 
 DcbSelector = SelectorPD(dcb_descr, dcb_rules)
-print('====WARNINGS for DCB====')
 dcb_result = DcbSelector.do()
 
 
@@ -688,10 +635,13 @@ dcb_aux = {
     for (node, prop) in dcb_result.items()
 }
 
-# These are power-related, after all.
 for i in range(0, 12):
+    # These are power-related, after all.
     brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'GND')
     brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'AGND')
+    # Account for unused pins
+    brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'B1')
+    brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'B3')
 
 
 ############################################
@@ -715,7 +665,6 @@ for node in dcb_result.keys():
         try:
             jd, some_conn, signal = split_netname(target_prop['NETNAME'])
             netname = node.DCB + '_' + some_conn + '_' + signal
-
             target_prop['NETNAME'] = netname
 
             # Fill up the additional auxiliary dict, for True-type.
@@ -735,7 +684,15 @@ for node in pt_result.keys():
         key, target_prop = pt_aux_true_type[(node.PT, node.PT_PIN)]
         pt_result_true[key] = target_prop
     else:
-        pt_result_true[node] = pt_result[node]
+        try:
+            prop = pt_result[node]
+            jd, some_conn, signal = split_netname(prop['NETNAME'])
+            prop['NETNAME'] = jd_swapping_true[jd] + '_' + some_conn + '_' + signal
+            key = NetNode(jd_swapping_true[jd], node.DCB_PIN,
+                          node.PT, node.PT_PIN)
+            pt_result_true[key] = prop
+        except Exception:
+            pt_result_true[node] = pt_result[node]
 
 write_to_csv(pt_true_result_output_filename, pt_result_true)
 write_to_csv(dcb_true_result_output_filename, dcb_result_true)
