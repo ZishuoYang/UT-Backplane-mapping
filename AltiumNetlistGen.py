@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 11:49 AM -0500
+# Last Change: Fri Dec 07, 2018 at 11:54 AM -0500
 
 import yaml
 
@@ -688,10 +688,13 @@ dcb_aux = {
     for (node, prop) in dcb_result.items()
 }
 
-# These are power-related, after all.
 for i in range(0, 12):
+    # These are power-related, after all.
     brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'GND')
     brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'AGND')
+    # Account for unused pins
+    brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'B1')
+    brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'B3')
 
 
 ############################################
