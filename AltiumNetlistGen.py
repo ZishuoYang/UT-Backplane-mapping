@@ -406,9 +406,10 @@ class RuleDCB_PT(RulePD):
 # Put PTSingleToDiff rule above the general PTDCB rule
 class RuleDCB_PTSingleToDiff(RulePD):
     def match(self, data, dcb_idx):
-        if 'HYB_i2C' in data['Signal ID'] or \
-                'EC_RESET' in data['Signal ID'] or \
-                'EC_ADC' in data['Signal ID']:
+        if data['Pigtail slot'] is not None and \
+                ('HYB_i2C' in data['Signal ID'] or
+                 'EC_RESET' in data['Signal ID'] or
+                 'EC_ADC' in data['Signal ID']):
             return True
         else:
             return False
@@ -417,14 +418,17 @@ class RuleDCB_PTSingleToDiff(RulePD):
         if 'EC_ADC' in data['Signal ID']:
             # Becuase EC_ADC connects to Thermistor, add prefix THERM
             net_name = \
-                self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
+                self.DCB_PREFIX + str(dcb_idx) + '_' + \
                 self.PT_PREFIX + str(dcb_idx) + '_THERM_' + \
                 data['Signal ID'] + '_P'
         else:
-            net_name = \
-                self.DCB_PREFIX + self.DCBID(data['DCB slot']) + '_' + \
-                self.PT_PREFIX + str(dcb_idx) + '_' + \
-                data['Signal ID'] + '_P'
+            try:
+                net_name = \
+                    self.DCB_PREFIX + str(dcb_idx) + '_' + \
+                    self.PT_PREFIX + str(dcb_idx) + '_' + \
+                    data['Signal ID'] + '_P'
+            except Exception:
+                print(data)
         return (
             {
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
@@ -605,6 +609,7 @@ class RuleDCB_AGND(RuleDCB_GND):
 dcb_rules = [
     RuleDCB_GND(),
     RuleDCB_AGND(),
+    RuleDCB_PTSingleToDiff(),
     RuleDCB_PT(),
     RuleDCB_1V5(brkoutbrd_pin_assignments),
     RuleDCB_2V5(brkoutbrd_pin_assignments),
