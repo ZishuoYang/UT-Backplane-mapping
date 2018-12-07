@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 05:09 PM -0500
+# Last Change: Fri Dec 07, 2018 at 01:22 AM -0500
 
 import yaml
 
@@ -23,8 +23,10 @@ pt_filename = input_dir / Path(
 dcb_filename = input_dir / Path(
     'backplaneMapping_SEAMPins_trueType_v5.2.xlsm')
 
-pt_result_output_filename = output_dir / Path('AltiumNetlist_PT_Full_TrueType.csv')
-dcb_result_output_filename = output_dir / Path('AltiumNetlist_DCB_Full_TrueType.csv')
+pt_true_result_output_filename = output_dir / Path(
+    'AltiumNetlist_PT_Full_TrueType.csv')
+dcb_true_result_output_filename = output_dir / Path(
+    'AltiumNetlist_DCB_Full_TrueType.csv')
 
 ############################################
 # Read pin assignments from breakout board #
@@ -672,33 +674,59 @@ print('====WARNINGS for DCB====')
 dcb_result = DcbSelector.do()
 
 
+######################################################################
+# Generate an auxiliary dict to aid True/Mirror-type list generation #
+######################################################################
+
+dcb_aux = {
+    (node.DCB, node.DCB_PIN): (node, prop)
+    for (node, prop) in dcb_result.items()
+}
+
+# These are power-related, after all.
+brkoutbrd_pin_assignments.append('GND')
+brkoutbrd_pin_assignments.append('AGND')
+
+
 ############################################
 # Generate True-type backplane Altium list #
 ############################################
 
-pt_result_true = dict()
 dcb_result_true = dict()
+pt_result_true = dict()
+pt_aux_true_type = dict()
 
-# Swap JD connectors according to definition on JP side
-for node in pt_result.keys():
-    prop = pt_result[node]
-    netname = prop['NETNAME']
-
-    if node.DCB is not None:
-        node = NetNode(jd_swapping_true[node.DCB],
-                       node.DCB_PIN, node.PT, node.PT_PIN)
-
-        jd, jp, signal_id = split_netname(netname)
-        jd = jd_swapping_true[jd]
-        prop['NETNAME'] = jd + '_' + jp + '_' + signal_id
-
-    pt_result_true[node] = prop
-
-# Swap JD connectors according to definition on JP side
+# Do DCB slot swapping on DCB side first. The order matters.
 for node in dcb_result.keys():
-    prop = dcb_result[node]
-    netname = prop['NETNAME']
-    dcb_result_true[node] = prop
+    target_jd = jd_swapping_true[node.DCB]
+    target_node, target_prop = dcb_aux[(target_jd, node.DCB_PIN)]
 
-write_to_csv(pt_result_output_filename, pt_result_true)
-write_to_csv(dcb_result_output_filename, dcb_result_true)
+    # Replace all pin definitions with target ones if it is not power-related
+    if target_prop['NETNAME'] not in brkoutbrd_pin_assignments:
+        key = NetNode(node.DCB, node.DCB_PIN,
+                      target_node.PT, target_node.PT_PIN)
+
+        try:
+            jd, some_conn, signal = split_netname(target_prop['NETNAME'])
+            netname = node.DCB + '_' + some_conn + '_' + signal
+
+            target_prop['NETNAME'] = netname
+
+            # Fill up the additional auxiliary dict, for True-type.
+            pt_aux_true_type[(target_node.PT, target_node.PT_PIN)] = \
+                (key, target_prop)
+        except Exception:
+            pass
+
+        dcb_result_true[key] = target_prop
+
+# Now do DCB slot swapping on PT side.
+for node in pt_result.keys():
+    if (node.PT, node.PT_PIN) in pt_aux_true_type.keys():
+        key, target_prop = pt_aux_true_type[(node.PT, node.PT_PIN)]
+        pt_result_true[key] = target_prop
+    else:
+        pt_result_true[node] = pt_result[node]
+
+write_to_csv(pt_true_result_output_filename, pt_result_true)
+write_to_csv(dcb_true_result_output_filename, dcb_result_true)
