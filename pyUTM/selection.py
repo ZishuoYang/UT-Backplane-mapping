@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 12:38 AM -0500
+# Last Change: Fri Dec 07, 2018 at 04:50 PM -0500
 
 from __future__ import annotations
 
@@ -139,9 +139,8 @@ class SelectorPD(Selector):
 
     @staticmethod
     def node_generate(node_spec):
-        # Generate a 'NetNode' if 'node_spec' is a dictionary,
-        # otherwise use it as-is as a dictionary key, assume it
-        # is hashable.
+        # Generate a 'NetNode' if 'node_spec' is a dictionary, otherwise use it
+        # as-is as a dictionary key, assume it is hashable.
         if isinstance(node_spec, dict):
             key = NetNode(**node_spec)
         else:
