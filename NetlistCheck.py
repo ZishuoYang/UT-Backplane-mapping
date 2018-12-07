@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Nov 19, 2018 at 03:39 PM -0500
+# Last Change: Fri Dec 07, 2018 at 02:38 PM -0500
 
 from pathlib import Path
 from os import environ
@@ -11,7 +11,7 @@ from pyUTM.selection import SelectorNet, RuleNet
 from pyUTM.datatype import GenericNetNode
 from AltiumNetlistGen import input_dir, pt_result
 
-netlist = input_dir / Path("backplane_netlists") / Path('Aug21_2018.net')
+netlist = input_dir / Path("backplane_netlists") / Path('PathFinder.net')
 cache_dir = 'cache'
 
 
@@ -176,19 +176,22 @@ class RuleNet_One_To_N(RuleNet):
         return node_name
 
 
-net_rules = [
-    RuleNet_ForRefOnly(node_dict, node_list, pt_result),
-    RuleNet_Node_NotIn(node_dict, node_list, pt_result),
-    RuleNet_DCB_PT_NetName_Inconsistent(node_dict, node_list, pt_result),
-    RuleNet_One_To_N(netlist_dict, node_dict, node_list, pt_result),
-    RuleNet_DCB_Or_PT_NetName_Equal_Cavalier(node_dict, node_list, pt_result),
-    RuleNet_DCB_Or_PT_NetName_Inconsistent(node_dict, node_list, pt_result),
-]
-
-
 ################################################
 # Compare Tom's connections with Zishuo's spec #
 ################################################
+
+net_rules = [
+    RuleNet_ForRefOnly(node_dict, node_list, pt_result),
+    RuleNet_Node_NotIn(node_dict, node_list, pt_result),
+    RuleNet_DCB_PT_NetName_Inconsistent(node_dict, node_list,
+                                        pt_result),
+    RuleNet_One_To_N(netlist_dict, node_dict, node_list, pt_result),
+    RuleNet_DCB_Or_PT_NetName_Equal_Cavalier(node_dict, node_list,
+                                             pt_result),
+    RuleNet_DCB_Or_PT_NetName_Inconsistent(node_dict, node_list,
+                                           pt_result),
+]
+
 
 NetSelector = SelectorNet(pt_result, net_rules)
 print('')
