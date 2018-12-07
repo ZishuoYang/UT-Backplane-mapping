@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 01:24 PM -0500
+# Last Change: Fri Dec 07, 2018 at 04:58 PM -0500
 
 import yaml
 
@@ -17,7 +17,7 @@ input_dir  = Path('..') / Path('input')
 output_dir = Path('..') / Path('output')
 
 strategy_yaml_filename = input_dir / Path('mapping_strategy.yml')
-strategy_tex_true_filename  = output_dir / Path('Mapping_strategy-true.tex')
+strategy_tex_true_filename  = output_dir / Path('mapping_strategy-true.tex')
 
 
 ###########
