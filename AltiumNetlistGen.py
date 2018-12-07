@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 12:07 PM -0500
+# Last Change: Fri Dec 07, 2018 at 02:11 PM -0500
 
 import yaml
 
@@ -665,7 +665,6 @@ for node in dcb_result.keys():
         try:
             jd, some_conn, signal = split_netname(target_prop['NETNAME'])
             netname = node.DCB + '_' + some_conn + '_' + signal
-
             target_prop['NETNAME'] = netname
 
             # Fill up the additional auxiliary dict, for True-type.
@@ -685,7 +684,15 @@ for node in pt_result.keys():
         key, target_prop = pt_aux_true_type[(node.PT, node.PT_PIN)]
         pt_result_true[key] = target_prop
     else:
-        pt_result_true[node] = pt_result[node]
+        try:
+            prop = pt_result[node]
+            jd, some_conn, signal = split_netname(prop['NETNAME'])
+            prop['NETNAME'] = jd_swapping_true[jd] + '_' + some_conn + '_' + signal
+            key = NetNode(jd_swapping_true[jd], node.DCB_PIN,
+                          node.PT, node.PT_PIN)
+            pt_result_true[key] = prop
+        except Exception:
+            pt_result_true[node] = pt_result[node]
 
 write_to_csv(pt_true_result_output_filename, pt_result_true)
 write_to_csv(dcb_true_result_output_filename, dcb_result_true)
