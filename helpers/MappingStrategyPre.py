@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 04:58 PM -0500
+# Last Change: Mon Dec 10, 2018 at 08:06 PM -0500
 
 import yaml
 
@@ -124,13 +124,14 @@ class SelectorJP(Selector):
 
     def do(self):
         processed_dataset = {}
+        dataset = self.dataset
 
-        for connector in self.loop_order(self.dataset):
+        for connector in self.loop_order(dataset):
             for rule in self.rules:
-                processed_dataset[connector] = \
-                    rule.filter(connector,
-                                self.dataset[connector],
-                                self.dataset)
+                    processed_dataset[connector] = self.nested.do(
+                        rule.filter(connector, dataset[connector], dataset)
+                    )
+
         return processed_dataset
 
 
@@ -138,10 +139,42 @@ class SelectorJP(Selector):
 # Rules for inner JD loop #
 ###########################
 
+class RuleJD_Connect(RuleMapping):
+    def filter(self, connector, dataset):
+        pass
+
+    @staticmethod
+    def normal_gbtx(idx):
+        return str(idx)
+
+    @staticmethod
+    def sub_gbtx(idx):
+        return '\\st{{{}}}'.format(idx)
+
+    @staticmethod
+    def depop_gbtx(idx):
+        return '\\ul{{{}}}'.format(idx)
+
+    @staticmethod
+    def addon_gbtx(idx):
+        return '\\textcolor{{red}}{{{}}}'.format(idx)
+
+
+class RuleJD_Format(RuleMapping):
+    pass
+
+
 class SelectorJD(SelectorJP):
     def __init__(self, *args, loop_order=lambda x:
                  ['JD'+str(i) for i in range(0, 12)]):
         super().__init__(*args, loop_order=loop_order)
+
+    def do(self, dataset):
+        for connector in self.loop_order(dataset):
+            for rule in self.rules:
+                dataset = rule.filter(connector, dataset)
+
+        return dataset
 
 
 ###################################
@@ -233,7 +266,6 @@ header_true += table_line_end
                 # for gbtx in gbtxs_common:
                     # # Check if there's depopulation within these pins
                     # if gbtx in gbtxs_depop:
-                        # tex_file.write('\\ul{{{}}}'.format(gbtx))
                     # else:
                         # tex_file.write(str(gbtx))
 
@@ -244,7 +276,6 @@ header_true += table_line_end
                     # if gbtx in gbtxs_depop:
                         # tex_file.write('\\textcolor{{red}}{{\\ul{{{}}}}}'.format(gbtx))
                     # else:
-                        # tex_file.write('\\textcolor{{red}}{{{}}}'.format(gbtx))
 
         # tex_file.write(table_line_end)
 
