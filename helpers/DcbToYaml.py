@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 01:23 PM -0500
+# Last Change: Tue Dec 11, 2018 at 02:16 AM -0500
 
 import yaml
 
@@ -58,7 +58,7 @@ yaml.add_representer(
 #######################
 
 DcbReader = XLReader(dcb_filename)
-dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
+dcb_descr = DcbReader.read(range(0, 12), 'C5:H405',
                            sortby=lambda d: PADDING(d['SEAM pin']))
 
 
@@ -74,10 +74,6 @@ for idx in range(0, len(dcb_descr)):
     for entry in dcb_descr[idx]:
         # Make sure there's no padding for the pins.
         entry['SEAM pin'] = DEPADDING(entry['SEAM pin'])
-        entry['SEAM pin D'] = PINID(entry['SEAM pin D'])
-
-        # Make sure 'ref' is stored as a number
-        entry['ref'] = int(entry['ref'])
 
         entries = make_entries(
             tmp_entries, entry,

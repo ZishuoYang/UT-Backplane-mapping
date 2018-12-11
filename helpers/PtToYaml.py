@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 01:23 PM -0500
+# Last Change: Tue Dec 11, 2018 at 02:16 AM -0500
 
 import yaml
 
@@ -66,7 +66,7 @@ def note_generator(s):
 ######################
 
 PtReader = XLReader(pt_filename)
-pt_descr = PtReader.read(range(0, 12), 'B5:K405',
+pt_descr = PtReader.read(range(0, 12), 'C5:H405',
                          sortby=lambda d: PADDING(d['Pigtail pin']))
 
 
@@ -82,9 +82,6 @@ for idx in range(0, len(pt_descr)):
     for entry in pt_descr[idx]:
         # Make sure there's no padding for the pins.
         entry['Pigtail pin'] = DEPADDING(entry['Pigtail pin'])
-
-        # Make sure 'ref' is stored as a number
-        entry['ref'] = int(entry['ref'])
 
         # See if the pin is unused, or alpha only, based on color
         entry['Note'] = note_generator(entry['Signal ID'])
