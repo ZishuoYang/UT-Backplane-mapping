@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Dec 10, 2018 at 11:11 PM -0500
+# Last Change: Tue Dec 11, 2018 at 12:03 AM -0500
 
 import yaml
 
@@ -23,6 +23,8 @@ strategy_tex_true_filename  = output_dir / Path('mapping_strategy-true.tex')
 ###########
 # Helpers #
 ###########
+
+indent = '    '
 
 header = '''\\documentclass[12pt]{article}
 
@@ -149,7 +151,7 @@ class RuleJD_FindConnection(RuleMapping):
                 if 'subConn' in dataset.keys() and \
                         connector in dataset['subConn'] and \
                         gbtx in dataset['subConn'][connector]:
-                    gbtx_str = self.sub_gbtx(gbtx_str)
+                    gbtx_str = self.color(self.sub_gbtx(gbtx_str), 'gray')
 
                 dataset[connector] += gbtx_str
 
@@ -171,12 +173,18 @@ class RuleJD_FindConnection(RuleMapping):
             return str(idx)
 
     @staticmethod
-    def addon_gbtx(idx):
-        return '\\textcolor{{red}}{{{}}}'.format(idx)
+    def color(idx, color='red'):
+        return '\\textcolor{{{}}}{{{}}}'.format(color, idx)
 
 
 class RuleJD_Format(RuleMapping):
-    pass
+    def filter(self, connector, dataset):
+        dataset['rowContent'] = dataset['header'] + ' & '
+        dataset['rowContent'] += ' & '.join(
+            [dataset[jd] for jd in dataset.keys() if 'JD' in jd]
+        )
+        dataset['rowContent'] += table_line_end
+        return dataset
 
 
 class SelectorJD(SelectorJP):
@@ -205,7 +213,7 @@ with open(strategy_yaml_filename) as yaml_file:
 ##############################
 
 selectorInner = SelectorJD(strategy_dict,
-                           [RuleJD_FindConnection()]
+                           [RuleJD_FindConnection(), RuleJD_Format()]
                            # [RuleMappingTester()]
                            )
 
@@ -216,7 +224,7 @@ selectorMap = SelectorJP(strategy_dict,
 
 # Generate the rest of the header
 jd_dict = collect_terms(strategy_dict, lambda x: filter(lambda y: 'JD' in y, x))
-header_true = ''
+header_true = indent
 for jd in jd_dict.keys():
     header_true += '&'
     header_true += jd[2:]
@@ -225,74 +233,14 @@ for jd in jd_dict.keys():
     header_true += ' '
 header_true += table_line_end
 
+# Generate all subsequent rows
+rows = selectorMap.do()
 
-# with open(strategy_tex_filename, 'w') as tex_file:
-    # tex_file.write(header)
+with open(strategy_tex_true_filename, 'w') as tex_file:
+    tex_file.write(header)
+    tex_file.write(header_true)
 
-    # # Fill out the remainder of the header
-    # jd_dict = collect_terms(strategy_dict, 'JD')
-    # tex_file.write('    ')
+    for jp in ['JP'+str(i) for i in range(0, 12)]:
+        tex_file.write(indent + rows[jp]['rowContent'])
 
-    # for jd in jd_dict.keys():
-        # tex_file.write('& ')
-        # tex_file.write(jd[2:])
-        # if jd_dict[jd]['depopulation']:
-            # tex_file.write('$^{depop}$')
-        # tex_file.write(' ')
-
-    # tex_file.write(table_line_end)
-
-    # # Generate the rest rows
-    # jp_dict = collect_terms(strategy_dict, 'JP')
-
-    # # for jp in jp_dict.keys():
-    # for jp in ['JP2', 'JP3', 'JP0', 'JP1', 'JP6', 'JP7', 'JP4', 'JP5', 'JP10',
-               # 'JP11', 'JP8', 'JP9']:
-        # jp_descr = jp_dict[jp]
-        # tex_file.write('    ')
-
-        # # Write the row title first
-        # tex_file.write(jp[2:])
-        # tex_file.write('$^{{{}'.format(jp_descr['type']))
-        # if jp_descr['typeDepop'] != jp_descr['type']:
-            # tex_file.write('/{}}}$'.format(jp_descr['typeDepop']))
-        # else:
-            # tex_file.write('}$')
-
-        # # Now loop through all DCB connectors
-        # num_of_jd_connectors = len(jd_dict)
-        # for jd in jd_dict.keys():
-            # tex_file.write(' & ')
-
-            # try:
-                # gbtxs_common = jp_descr['commonConn'][jd]
-            # except Exception:
-                # gbtxs_common = []
-            # try:
-                # gbtxs_special = jp_descr['specialConn'][jd]
-            # except Exception:
-                # gbtxs_special = []
-            # try:
-                # gbtxs_depop = jp_descr['depopConn'][jd]
-            # except Exception:
-                # gbtxs_depop = []
-
-            # # Common connectors are black
-            # if gbtxs_common:
-                # for gbtx in gbtxs_common:
-                    # # Check if there's depopulation within these pins
-                    # if gbtx in gbtxs_depop:
-                    # else:
-                        # tex_file.write(str(gbtx))
-
-            # # Special connectors are red
-            # if gbtxs_special:
-                # for gbtx in gbtxs_special:
-                    # # Check if there's depopulation within these pins
-                    # if gbtx in gbtxs_depop:
-                        # tex_file.write('\\textcolor{{red}}{{\\ul{{{}}}}}'.format(gbtx))
-                    # else:
-
-        # tex_file.write(table_line_end)
-
-    # tex_file.write(footer)
+    tex_file.write(footer)
