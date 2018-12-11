@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Dec 11, 2018 at 04:59 PM -0500
+# Last Change: Tue Dec 11, 2018 at 05:55 PM -0500
 
 import yaml
 
@@ -285,21 +285,6 @@ class RulePT_UnusedToGND(RulePD):
         )
 
 
-pt_rules = [
-    # RulePT_PathFinder(),
-    RulePT_PTSingleToDiffP(),
-    RulePT_PTSingleToDiffN(),
-    RulePT_UnusedToGND(),
-    RulePT_NotConnected(),
-    RulePT_DCB(),
-    RulePT_PTLvSource(brkoutbrd_pin_assignments),
-    RulePT_PTLvReturn(brkoutbrd_pin_assignments),
-    RulePT_PTLvSense(brkoutbrd_pin_assignments),
-    RulePT_PTThermistor(brkoutbrd_pin_assignments),
-    RulePT_Default()
-]
-
-
 ####################################
 # Define rules for DCB Altium list #
 ####################################
@@ -527,21 +512,23 @@ class RuleDCB_AGND(RuleDCB_GND):
         )
 
 
-dcb_rules = [
-    RuleDCB_GND(),
-    RuleDCB_AGND(),
-    RuleDCB_PTSingleToDiff(),
-    RuleDCB_PT(),
-    RuleDCB_1V5(brkoutbrd_pin_assignments),
-    RuleDCB_2V5(brkoutbrd_pin_assignments),
-    RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-    RuleDCB_Default()
-]
-
-
 ###########################
 # Apply rules for PigTail #
 ###########################
+
+pt_rules = [
+    # RulePT_PathFinder(),
+    RulePT_PTSingleToDiffP(),
+    RulePT_PTSingleToDiffN(),
+    RulePT_UnusedToGND(),
+    RulePT_NotConnected(),
+    RulePT_DCB(),
+    RulePT_PTLvSource(brkoutbrd_pin_assignments),
+    RulePT_PTLvReturn(brkoutbrd_pin_assignments),
+    RulePT_PTLvSense(brkoutbrd_pin_assignments),
+    RulePT_PTThermistor(brkoutbrd_pin_assignments),
+    RulePT_Default()
+]
 
 # First, deal with differential pairs.
 for pt_id in range(0, len(pt_descr)):
@@ -592,6 +579,17 @@ pt_result = PtSelector.do()
 #######################
 # Apply rules for DCB #
 #######################
+
+dcb_rules = [
+    RuleDCB_GND(),
+    RuleDCB_AGND(),
+    RuleDCB_PTSingleToDiff(),
+    RuleDCB_PT(),
+    RuleDCB_1V5(brkoutbrd_pin_assignments),
+    RuleDCB_2V5(brkoutbrd_pin_assignments),
+    RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
+    RuleDCB_Default()
+]
 
 DcbSelector = SelectorPD(dcb_descr, dcb_rules)
 dcb_result = DcbSelector.do()
