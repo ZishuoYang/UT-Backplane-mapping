@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Dec 11, 2018 at 12:34 AM -0500
+# Last Change: Tue Dec 11, 2018 at 12:42 AM -0500
 
 import yaml
 
@@ -226,7 +226,7 @@ with open(strategy_yaml_filename) as yaml_file:
 
 
 ##############################
-# Generate tex for true-type #
+# Generate tex for True-type #
 ##############################
 
 selectorInner = SelectorJD(strategy_dict,
