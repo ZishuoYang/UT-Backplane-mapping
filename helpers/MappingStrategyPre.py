@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Dec 10, 2018 at 08:06 PM -0500
+# Last Change: Mon Dec 10, 2018 at 10:41 PM -0500
 
 import yaml
 
@@ -63,11 +63,7 @@ class RuleMappingTester(RuleMapping):
     def filter(self, connector, spec, *args):
         print('connector is: {}'.format(connector))
         print('spec is: {}'.format(spec))
-
-
-class RuleMappingTesterStupid(RuleMapping):
-    def filter(self, connector, spec, *args):
-        print("I'm running.")
+        return spec
 
 
 ###########################
@@ -123,14 +119,17 @@ class SelectorJP(Selector):
         self.loop_order = loop_order
 
     def do(self):
-        processed_dataset = {}
         dataset = self.dataset
+        processed_dataset = {}
 
         for connector in self.loop_order(dataset):
+            # Apply rules in this selector, not chained
             for rule in self.rules:
-                    processed_dataset[connector] = self.nested.do(
-                        rule.filter(connector, dataset[connector], dataset)
-                    )
+                processed_dataset[connector] = rule.filter(
+                    connector, dataset[connector], dataset)
+            # Put the processed data to the nested selector.
+            processed_dataset[connector] = self.nested.do(
+                processed_dataset[connector])
 
         return processed_dataset
 
@@ -139,9 +138,19 @@ class SelectorJP(Selector):
 # Rules for inner JD loop #
 ###########################
 
-class RuleJD_Connect(RuleMapping):
+class RuleJD_FindConnection(RuleMapping):
     def filter(self, connector, dataset):
-        pass
+        if connector in dataset['base']:
+            dataset[connector] = ''
+
+            for gbtx in dataset['base'][connector]:
+                gbtx = self.normal_gbtx(gbtx)
+                if connector in dataset['subConn'] and \
+                        gbtx in dataset['subConn'][connector]:
+                    gbtx = self.sub_gbtx(gbtx)
+                dataset[connector] += gbtx
+
+        return dataset
 
     @staticmethod
     def normal_gbtx(idx):
@@ -152,8 +161,11 @@ class RuleJD_Connect(RuleMapping):
         return '\\st{{{}}}'.format(idx)
 
     @staticmethod
-    def depop_gbtx(idx):
-        return '\\ul{{{}}}'.format(idx)
+    def depop_gbtx(idx, ref):
+        if idx in ref:
+            return '\\ul{{{}}}'.format(idx)
+        else:
+            return str(idx)
 
     @staticmethod
     def addon_gbtx(idx):
@@ -190,7 +202,8 @@ with open(strategy_yaml_filename) as yaml_file:
 ##############################
 
 selectorInner = SelectorJD(strategy_dict,
-                           [RuleMappingTesterStupid()]
+                           # [RuleJD_FindConnection()]
+                           [RuleMappingTester()]
                            )
 
 selectorMap = SelectorJP(strategy_dict,
