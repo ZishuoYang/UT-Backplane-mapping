@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Dec 11, 2018 at 12:03 AM -0500
+# Last Change: Tue Dec 11, 2018 at 12:26 AM -0500
 
 import yaml
 
@@ -144,18 +144,40 @@ class RuleJD_FindConnection(RuleMapping):
     def filter(self, connector, dataset):
         dataset[connector] = ''
 
-        if connector in dataset['base']:
+        if self.connector_in_dict(connector, 'base', dataset):
             for gbtx in dataset['base'][connector]:
                 gbtx_str = self.normal_gbtx(gbtx)
 
-                if 'subConn' in dataset.keys() and \
-                        connector in dataset['subConn'] and \
-                        gbtx in dataset['subConn'][connector]:
+                if self.gbtx_in_dict(connector, gbtx, 'depopConn', dataset):
                     gbtx_str = self.color(self.sub_gbtx(gbtx_str), 'gray')
 
                 dataset[connector] += gbtx_str
 
+        if self.connector_in_dict(connector, 'addOnConn', dataset):
+            for gbtx in dataset['addOnConn'][connector]:
+                gbtx_str = self.normal_gbtx(gbtx)
+
+                if self.gbtx_in_dict(connector, gbtx, 'addOnConn', dataset):
+                    gbtx_str = self.color(gbtx)
+
+                dataset[connector] += gbtx_str
+
         return dataset
+
+    @classmethod
+    def gbtx_in_dict(cls, connector, gbtx, dict_name, dataset):
+        if cls.connector_in_dict(connector, dict_name, dataset) and \
+                gbtx in dataset[dict_name][connector]:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def connector_in_dict(connector, dict_name, dataset):
+        if dict_name in dataset.keys() and connector in dataset[dict_name]:
+            return True
+        else:
+            return False
 
     @staticmethod
     def normal_gbtx(idx):
