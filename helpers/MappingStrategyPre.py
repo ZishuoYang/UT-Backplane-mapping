@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Dec 10, 2018 at 10:41 PM -0500
+# Last Change: Mon Dec 10, 2018 at 11:11 PM -0500
 
 import yaml
 
@@ -140,15 +140,18 @@ class SelectorJP(Selector):
 
 class RuleJD_FindConnection(RuleMapping):
     def filter(self, connector, dataset):
-        if connector in dataset['base']:
-            dataset[connector] = ''
+        dataset[connector] = ''
 
+        if connector in dataset['base']:
             for gbtx in dataset['base'][connector]:
-                gbtx = self.normal_gbtx(gbtx)
-                if connector in dataset['subConn'] and \
+                gbtx_str = self.normal_gbtx(gbtx)
+
+                if 'subConn' in dataset.keys() and \
+                        connector in dataset['subConn'] and \
                         gbtx in dataset['subConn'][connector]:
-                    gbtx = self.sub_gbtx(gbtx)
-                dataset[connector] += gbtx
+                    gbtx_str = self.sub_gbtx(gbtx_str)
+
+                dataset[connector] += gbtx_str
 
         return dataset
 
@@ -202,8 +205,8 @@ with open(strategy_yaml_filename) as yaml_file:
 ##############################
 
 selectorInner = SelectorJD(strategy_dict,
-                           # [RuleJD_FindConnection()]
-                           [RuleMappingTester()]
+                           [RuleJD_FindConnection()]
+                           # [RuleMappingTester()]
                            )
 
 selectorMap = SelectorJP(strategy_dict,
