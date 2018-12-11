@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Dec 11, 2018 at 12:26 AM -0500
+# Last Change: Tue Dec 11, 2018 at 12:34 AM -0500
 
 import yaml
 
@@ -146,23 +146,29 @@ class RuleJD_FindConnection(RuleMapping):
 
         if self.connector_in_dict(connector, 'base', dataset):
             for gbtx in dataset['base'][connector]:
-                gbtx_str = self.normal_gbtx(gbtx)
+                gbtx_str = self.depop_gbtx(
+                    connector, gbtx, 'depopConn', dataset)
 
-                if self.gbtx_in_dict(connector, gbtx, 'depopConn', dataset):
+                if self.gbtx_in_dict(connector, gbtx, 'subConn', dataset):
                     gbtx_str = self.color(self.sub_gbtx(gbtx_str), 'gray')
 
                 dataset[connector] += gbtx_str
 
         if self.connector_in_dict(connector, 'addOnConn', dataset):
             for gbtx in dataset['addOnConn'][connector]:
-                gbtx_str = self.normal_gbtx(gbtx)
-
-                if self.gbtx_in_dict(connector, gbtx, 'addOnConn', dataset):
-                    gbtx_str = self.color(gbtx)
+                gbtx_str = self.color(self.depop_gbtx(
+                    connector, gbtx, 'depopConn', dataset))
 
                 dataset[connector] += gbtx_str
 
         return dataset
+
+    @classmethod
+    def depop_gbtx(cls, connector, gbtx, dict_name, dataset):
+        if cls.gbtx_in_dict(connector, gbtx, dict_name, dataset):
+            return '\\ul{{{}}}'.format(gbtx)
+        else:
+            return str(gbtx)
 
     @classmethod
     def gbtx_in_dict(cls, connector, gbtx, dict_name, dataset):
@@ -180,19 +186,8 @@ class RuleJD_FindConnection(RuleMapping):
             return False
 
     @staticmethod
-    def normal_gbtx(idx):
-        return str(idx)
-
-    @staticmethod
     def sub_gbtx(idx):
         return '\\st{{{}}}'.format(idx)
-
-    @staticmethod
-    def depop_gbtx(idx, ref):
-        if idx in ref:
-            return '\\ul{{{}}}'.format(idx)
-        else:
-            return str(idx)
 
     @staticmethod
     def color(idx, color='red'):
