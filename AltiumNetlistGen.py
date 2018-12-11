@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 02:27 PM -0500
+# Last Change: Tue Dec 11, 2018 at 04:59 PM -0500
 
 import yaml
 
@@ -75,8 +75,6 @@ class RulePT_Default(RulePD):
         net_name = self.PT_PREFIX + str(pt_idx) + '_' + data['Signal ID']
         return (
             {
-                'DCB': None,
-                'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
@@ -100,8 +98,6 @@ class RulePT_PathFinder(RulePD):
         # Note: here the matching nodes will have placeholder in netlist file.
         return (
             {
-                'DCB': None,
-                'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
@@ -151,8 +147,6 @@ class RulePT_NotConnected(RulePD):
         net_name = 'GND'
         return (
             {
-                'DCB': None,
-                'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
@@ -184,8 +178,6 @@ class RulePT_PTLvSource(RulePD):
                 break
         return (
             {
-                'DCB': None,
-                'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
@@ -266,8 +258,6 @@ class RulePT_PTSingleToDiffN(RulePD):
         net_name = dcb_name + '_' + self.PT_PREFIX + str(pt_idx) + '_' + tail
         return (
             {
-                'DCB': None,
-                'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
@@ -288,8 +278,6 @@ class RulePT_UnusedToGND(RulePD):
     def process(self, data, pt_idx):
         return (
             {
-                'DCB': None,
-                'DCB_PIN': None,
                 'PT': self.PT_PREFIX + str(pt_idx),
                 'PT_PIN': self.DEPADDING(data['Pigtail pin'])
             },
@@ -324,8 +312,6 @@ class RuleDCB_Default(RulePD):
         net_name = self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
         return (
             {
-                'PT': None,
-                'PT_PIN': None,
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
                 'DCB_PIN': self.DEPADDING(data['SEAM pin'])
             },
@@ -346,8 +332,6 @@ class RuleDCB_PathFinder(RulePD):
             {
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
                 'DCB_PIN': self.DEPADDING(data['SEAM pin']),
-                'PT': None,
-                'PT_PIN': None
             },
             {'NETNAME': None, 'ATTR': '_PlaceHolder_'}
         )
@@ -435,8 +419,6 @@ class RuleDCB_1V5(RulePD):
             {
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
                 'DCB_PIN': self.DEPADDING(data['SEAM pin']),
-                'PT': None,
-                'PT_PIN': None
             },
             {'NETNAME': net_name, 'ATTR': None}
         )
@@ -467,8 +449,6 @@ class RuleDCB_2V5(RulePD):
             {
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
                 'DCB_PIN': self.DEPADDING(data['SEAM pin']),
-                'PT': None,
-                'PT_PIN': None
             },
             {'NETNAME': net_name, 'ATTR': None}
         )
@@ -498,8 +478,6 @@ class RuleDCB_1V5Sense(RulePD):
             {
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
                 'DCB_PIN': self.DEPADDING(data['SEAM pin']),
-                'PT': None,
-                'PT_PIN': None
             },
             {'NETNAME': net_name, 'ATTR': None}
         )
@@ -519,8 +497,6 @@ class RuleDCB_GND(RulePD):
             {
                 'DCB': self.DCB_PREFIX + str(dcb_idx),
                 'DCB_PIN': data['SEAM pin'],
-                'PT': None,
-                'PT_PIN': None
             },
             {'NETNAME': net_name, 'ATTR': None}
         )
