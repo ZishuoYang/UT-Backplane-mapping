@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 05:51 AM -0500
+# Last Change: Wed Dec 12, 2018 at 05:54 AM -0500
 
 from pathlib import Path
 
@@ -539,7 +539,8 @@ for node in pt_result.keys():
         try:
             prop = pt_result[node]
             jd, some_conn, signal = split_netname(prop['NETNAME'])
-            prop['NETNAME'] = jd_swapping_true[jd] + '_' + some_conn + '_' + signal
+            prop['NETNAME'] = jd_swapping_true[jd] + '_' + some_conn + '_' \
+                + signal
             key = NetNode(jd_swapping_true[jd], node.DCB_PIN,
                           node.PT, node.PT_PIN)
             pt_result_true[key] = prop
