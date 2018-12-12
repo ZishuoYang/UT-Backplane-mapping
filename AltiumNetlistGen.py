@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 10:49 AM -0500
+# Last Change: Wed Dec 12, 2018 at 11:30 AM -0500
 
 from pathlib import Path
 from copy import deepcopy
@@ -81,19 +81,53 @@ def match_dcb_side_signal_id(pt_descr, dcb_descr):
 
 def aux_list_gen(pt_result):
     result = {'JP'+str(i): {
-        'Depopulation': {},
-        'All LV_SENSE_GND': {},
-        'All EC_RESET and EC_HYB_i2C': {}
+        'Depopulation: ELK': {},
+        'Depopulation: RCLK': {},
+        'Depopulation: MC_TFC': {},
+        'Depopulation: HYB': {},
+        'Depopulation: LV_SOURCE': {},
+        'Depopulation: LV_RETURN': {},
+        'Depopulation: LV_SENSE_GND': {},
+        'Depopulation: LV_SENSE_N/P': {},
+        'Depopulation: THERM': {},
+        'Depopulation: EC_RESET': {},
+        'All: EC_RESET': {},
+        'All: EC_HYB_i2C': {},
+        'All: LV_SENSE_GND': {},
     } for i in range(0, 12)}
 
     for node in pt_result:
         prop = pt_result[node]
         if prop['NOTE'] == 'Alpha only':
-            result[node.PT]['Depopulation'][node] = prop
+            if 'ELK' in prop['NETNAME']:
+                result[node.PT]['Depopulation: ELK'][node] = prop
+            elif 'RCLK' in prop['NETNAME']:
+                result[node.PT]['Depopulation: RCLK'][node] = prop
+            elif 'TFC' in prop['NETNAME']:
+                result[node.PT]['Depopulation: MC_TFC'][node] = prop
+            elif 'HYB' in prop['NETNAME']:
+                result[node.PT]['Depopulation: HYB'][node] = prop
+            elif 'LV_SOURCE' in prop['NETNAME']:
+                result[node.PT]['Depopulation: LV_SOURCE'][node] = prop
+            elif 'LV_RETURN' in prop['NETNAME']:
+                result[node.PT]['Depopulation: LV_RETURN'][node] = prop
+            elif 'LV_SENSE_GND' in prop['NETNAME']:
+                result[node.PT]['Depopulation: LV_SENSE_GND'][node] = prop
+            elif 'LV_SENSE' in prop['NETNAME']:
+                result[node.PT]['Depopulation: LV_SENSE_N/P'][node] = prop
+            elif 'THERM' in prop['NETNAME']:
+                result[node.PT]['Depopulation: THERM'][node] = prop
+            else:
+                result[node.PT]['Depopulation: EC_RESET'][node] = prop
+
+        if 'EC_RESET' in prop['NETNAME']:
+            result[node.PT]['All: EC_RESET'][node] = prop
+
+        if 'EC_HYB_i2C' in prop['NETNAME']:
+            result[node.PT]['All: EC_HYB_i2C'][node] = prop
+
         if 'LV_SENSE_GND' in prop['NETNAME']:
-            result[node.PT]['All LV_SENSE_GND'][node] = prop
-        if 'EC_RESET' in prop['NETNAME'] or 'EC_HYB_i2C' in prop['NETNAME']:
-            result[node.PT]['All EC_RESET and EC_HYB_i2C'][node] = prop
+            result[node.PT]['All: LV_SENSE_GND'][node] = prop
 
     return result
 
