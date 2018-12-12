@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 03:00 AM -0500
+# Last Change: Wed Dec 12, 2018 at 03:41 AM -0500
 
 from pathlib import Path
 
@@ -49,7 +49,7 @@ pt_descr = PtReader.read(flattener=lambda x: flatten(x, 'Pigtail pin'))
 
 # Read info from DCB #
 DcbReader = YamlReader(dcb_filename)
-dcb_descr = PtReader.read(flattener=lambda x: flatten(x, 'SEAM pin'))
+dcb_descr = DcbReader.read(flattener=lambda x: flatten(x, 'SEAM pin'))
 
 
 ########################################
@@ -500,49 +500,39 @@ class RuleDCB_AGND(RuleDCB_GND):
         )
 
 
-###########################
-# Apply rules for PigTail #
-###########################
+##########################
+# Signal ID replacements #
+##########################
 
-pt_rules = [
-    # RulePT_PathFinder(),
-    RulePT_PTSingleToDiffP(),
-    RulePT_PTSingleToDiffN(),
-    RulePT_UnusedToGND(),
-    RulePT_NotConnected(),
-    RulePT_DCB(),
-    RulePT_PTLvSource(brkoutbrd_pin_assignments),
-    RulePT_PTLvReturn(brkoutbrd_pin_assignments),
-    RulePT_PTLvSense(brkoutbrd_pin_assignments),
-    RulePT_PTThermistor(brkoutbrd_pin_assignments),
-    RulePT_Default()
-]
-
-# First, deal with differential pairs.
+# Deal with differential pairs.
 for jp in pt_descr.keys():
-    for pt_entry in pt_descr[jp]:
-        if pt_entry['Signal ID'] is not None and (
-           pt_entry['Signal ID'].endswith('SCL_N') or
-           pt_entry['Signal ID'].endswith('SDA_N') or
-           pt_entry['Signal ID'].endswith('RESET_N')):
-            reference_id = pt_entry['Signal ID'][:-1] + 'P'
+    for idx, pt in filter(
+            lambda x: x[1]['Signal ID'] is not None and (
+                x[1]['Signal ID'].endswith('SCL_N') or
+                x[1]['Signal ID'].endswith('SDA_N') or
+                x[1]['Signal ID'].endswith('RESET_N')
+            ),
+            enumerate(pt_descr[jp])
+    ):
+        reference_id = pt['Signal ID'][:-1] + 'P'
 
-            for pt_entry_ref in pt_descr[jp]:
-                if pt_entry_ref['Signal ID'] == reference_id:
-                    if pt_entry_ref['SEAM pin'] is not None:
-                        dcb_id = RulePD.DCBID(pt_entry_ref['DCB slot'])
+        for pt_ref in filter(
+                lambda x: x['Signal ID'] == reference_id and
+                x['SEAM pin'] is not None,
+                pt_descr[jp]
+        ):
+            jd = pt_ref['DCB slot']
 
-                        for dcb_entry in dcb_descr[int(dcb_id)]:
-                            if pt_entry_ref['SEAM pin'] == dcb_entry['SEAM pin'] and\
-                               dcb_entry['Pigtail slot'] is not None and\
-                               str(pt_id) == RulePD.PTID(dcb_entry['Pigtail slot']) and\
-                               pt_entry_ref['Pigtail pin'] == dcb_entry['Pigtail pin']:
-                                pt_entry['Signal ID'] = \
-                                        ExcelCell(
-                                        "JD"+str(dcb_id)+'_'+dcb_entry['Signal ID']+'_N'
-                                        )
-                                break
-                        break
+            for dcb in dcb_descr[jd]:
+                if pt_ref['SEAM pin'] == dcb['SEAM pin'] and \
+                   dcb['Pigtail slot'] is not None and \
+                   dcb['Pigtail slot'] == jp and \
+                   pt_ref['Pigtail pin'] == dcb['Pigtail pin']:
+                    # Modify pt_descr in place.
+                    pt_descr[jp][idx]['Signal ID'] = \
+                        jd + '_' + dcb['Signal ID'] + '_N'
+                    break
+            break
 
 
 # Second, replace 'Signal ID' to DCB side definitions.
@@ -561,14 +551,27 @@ for pt_id in range(0, len(pt_descr)):
                     pt_entry['Signal ID'] = dcb_entry['Signal ID']
                     break
 
-# Now apply all rules defined in the previous section
+
+################
+# Apply rules  #
+################
+
+pt_rules = [
+    # RulePT_PathFinder(),
+    RulePT_PTSingleToDiffP(),
+    RulePT_PTSingleToDiffN(),
+    RulePT_UnusedToGND(),
+    RulePT_NotConnected(),
+    RulePT_DCB(),
+    RulePT_PTLvSource(brkoutbrd_pin_assignments),
+    RulePT_PTLvReturn(brkoutbrd_pin_assignments),
+    RulePT_PTLvSense(brkoutbrd_pin_assignments),
+    RulePT_PTThermistor(brkoutbrd_pin_assignments),
+    RulePT_Default()
+]
+
 PtSelector = SelectorPD(pt_descr, pt_rules)
 pt_result = PtSelector.do()
-
-
-#######################
-# Apply rules for DCB #
-#######################
 
 dcb_rules = [
     RuleDCB_GND(),
