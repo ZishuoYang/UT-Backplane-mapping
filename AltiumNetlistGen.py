@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 03:41 AM -0500
+# Last Change: Wed Dec 12, 2018 at 04:01 AM -0500
 
 from pathlib import Path
 
@@ -9,7 +9,6 @@ from pyUTM.io import write_to_csv
 from pyUTM.io import YamlReader
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import NetNode
-from pyUTM.datatype import ExcelCell
 from pyUTM.common import flatten, transpose, split_netname
 from pyUTM.common import jd_swapping_true
 
@@ -503,6 +502,7 @@ class RuleDCB_AGND(RuleDCB_GND):
 ##########################
 # Signal ID replacements #
 ##########################
+# NOTE: The order of these replacements probably matters!
 
 # Deal with differential pairs.
 for jp in pt_descr.keys():
@@ -534,21 +534,17 @@ for jp in pt_descr.keys():
                     break
             break
 
-
-# Second, replace 'Signal ID' to DCB side definitions.
-for pt_id in range(0, len(pt_descr)):
-    for pt_entry in pt_descr[pt_id]:
-        if pt_entry['DCB slot'] is not None:
-            dcb_id = RulePD.DCBID(pt_entry['DCB slot'])
-            for dcb_entry in dcb_descr[int(dcb_id)]:
-                if pt_entry['SEAM pin'] == dcb_entry['SEAM pin'] \
-                        and \
-                        dcb_entry['Pigtail slot'] is not None \
-                        and \
-                        str(pt_id) == RulePD.PTID(dcb_entry['Pigtail slot']) \
-                        and \
-                        pt_entry['Pigtail pin'] == dcb_entry['Pigtail pin']:
-                    pt_entry['Signal ID'] = dcb_entry['Signal ID']
+# Replace 'Signal ID' to DCB side definitions.
+for jp in pt_descr.keys():
+    for pt in pt_descr[jp]:
+        if pt['DCB slot'] is not None:
+            jd = pt['DCB slot']
+            for dcb in dcb_descr[jd]:
+                if pt['SEAM pin'] == dcb['SEAM pin'] and \
+                        dcb['Pigtail slot'] is not None and \
+                        dcb['Pigtail slot'] == jp and \
+                        pt['Pigtail pin'] == dcb['Pigtail pin']:
+                    pt['Signal ID'] = dcb['Signal ID']
                     break
 
 
