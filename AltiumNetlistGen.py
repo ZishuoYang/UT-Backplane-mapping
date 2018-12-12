@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 05:54 AM -0500
+# Last Change: Wed Dec 12, 2018 at 06:22 AM -0500
 
 from pathlib import Path
 
@@ -549,3 +549,20 @@ for node in pt_result.keys():
 
 write_to_csv(pt_true_result_output_filename, pt_result_true)
 write_to_csv(dcb_true_result_output_filename, dcb_result_true)
+
+
+###############################################
+# Generate True-type backplane auxiliary list #
+###############################################
+
+pt_result_true_depop_aux = {'JP'+str(i): {
+    'Depopulation': [],
+    'All LV_SENSE_GND': [],
+    'All EC_RESET and EC_HYB_i2C': []
+} for i in range(0, 12)}
+
+for node in pt_result_true:
+    prop = pt_result_true[node]
+    if prop['NOTE'] == 'Alpha only':
+        pt_result_true_depop_aux[node.PT]['Depopulation'].append(
+            prop['NETNAME'])

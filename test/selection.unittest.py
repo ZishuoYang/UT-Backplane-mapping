@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Nov 27, 2018 at 03:42 PM -0500
+# Last Change: Wed Dec 12, 2018 at 06:36 AM -0500
 
 import unittest
 
@@ -26,12 +26,8 @@ class RuleDummy(RulePD):
 
     def process(self, data, idx):
         return (
-            {'DCB': data,
-             'DCB_PIN': data,
-             'PT': data,
-             'PT_PIN': data
-             },
-            {'NETNAME': data, 'ATTR': None}
+            NetNode(DCB=idx, DCB_PIN=data),
+            self.prop_gen(netname=data)
         )
 
 
@@ -55,22 +51,22 @@ class RulePDTester(unittest.TestCase):
 
 class SelectorPDTester(unittest.TestCase):
     def test_dummy_rule_populated(self):
-        dataset = ((1, 2, 3, 4), ('A', 'B', 'C'))
+        dataset = {0: (1, 2, 3), 1: (1, 2), 2: (1,), 3: (1,)}
         rule = RuleDummy()
         selector = SelectorPD(dataset, [rule])
         selector.do()
-        self.assertEqual(rule.TOTAL_TRUE, 3)
-        self.assertEqual(rule.TOTAL_FALSE, 4)
+        self.assertEqual(rule.TOTAL_TRUE, 4)
+        self.assertEqual(rule.TOTAL_FALSE, 3)
 
     def test_with_dummy(self):
-        dataset = ((1, 2, 3, 4), ('A', 'B', 'C'))
+        self.maxDiff = None
+        dataset = {0: (1, 2, 3), 1: (1, 2)}
         rule = RuleDummy()
         selector = SelectorPD(dataset, [rule])
         result = selector.do()
         self.assertEqual(result, {
-            NetNode('A', 'A', 'A', 'A'): {'NETNAME': 'A', 'ATTR': None},
-            NetNode('B', 'B', 'B', 'B'): {'NETNAME': 'B', 'ATTR': None},
-            NetNode('C', 'C', 'C', 'C'): {'NETNAME': 'C', 'ATTR': None},
+            NetNode(1, 1): {'NETNAME': 1, 'NOTE': None, 'ATTR': None},
+            NetNode(1, 2): {'NETNAME': 2, 'NOTE': None, 'ATTR': None},
         })
 
 
