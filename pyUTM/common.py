@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 01:55 PM -0500
+# Last Change: Wed Dec 12, 2018 at 02:16 AM -0500
 
 from collections import defaultdict
 
@@ -38,7 +38,6 @@ def transpose(l):
     return dict(result)
 
 
-# NOTE: This functions modify the 'l' in-place.
 def flatten(l, header='PlaceHolder'):
     result = []
     for d in l:
@@ -48,7 +47,6 @@ def flatten(l, header='PlaceHolder'):
     return result
 
 
-# NOTE: This functions modify the 'l' in-place.
 def unflatten(l, header):
     result = []
     for d in l:

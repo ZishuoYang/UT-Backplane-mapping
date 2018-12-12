@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Dec 11, 2018 at 05:55 PM -0500
-
-import yaml
+# Last Change: Wed Dec 12, 2018 at 02:40 AM -0500
 
 from pathlib import Path
 
-from pyUTM.io import XLReader, write_to_csv
+from pyUTM.io import write_to_csv
+from pyUTM.io import XLReader, YamlReader
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import NetNode
 from pyUTM.datatype import ExcelCell
@@ -32,15 +31,18 @@ dcb_true_result_output_filename = output_dir / Path(
 # Read pin assignments from breakout board #
 ############################################
 
-with open(brkoutbrd_filename) as yaml_file:
-    brkoutbrd_pin_assignments_yaml = yaml.safe_load(yaml_file)
+BrkoutbrdReader = YamlReader(brkoutbrd_filename)
+brkoutbrd_descr = BrkoutbrdReader.read()
+
+brkoutbrd_data = map(transpose, brkoutbrd_descr.values())
+brkoutbrd_nested_signals = list(map(
+    lambda x: [s for s in x['Signal ID'] if s is not None and s != 'GND'],
+    brkoutbrd_data
+))
 
 # We intent to keep 'Signal ID' only, in a list.
-brkoutbrd_pin_assignments = []
-for connector in brkoutbrd_pin_assignments_yaml.keys():
-    data = transpose(flatten(brkoutbrd_pin_assignments_yaml[connector]))
-    signals = [s for s in data['Signal ID'] if s is not None and s != 'GND']
-    brkoutbrd_pin_assignments += signals
+brkoutbrd_pin_assignments = [item for sublist in brkoutbrd_nested_signals
+                             for item in sublist]
 
 
 ##########################
