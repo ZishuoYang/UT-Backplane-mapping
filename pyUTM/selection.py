@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 04:50 PM -0500
+# Last Change: Wed Dec 12, 2018 at 04:47 AM -0500
 
 from __future__ import annotations
 
@@ -84,6 +84,14 @@ class RulePD(Rule):
             return self.process(data, connector_idx)
 
     @staticmethod
+    def prop_gen(netname, note, attr=None):
+        return {
+            'NETNAME': netname,
+            'NOTE': note,
+            'ATTR': attr
+        }
+
+    @staticmethod
     def PADDING(s):
         # FIXME: Still unclear on how to deal with multiple pins.
         if '|' in s or '/' in s:
@@ -120,36 +128,19 @@ class SelectorPD(Selector):
     def do(self):
         processed_dataset = {}
 
-        for connector_idx in range(0, len(self.dataset)):
-            for entry in self.dataset[connector_idx]:
+        for connector in self.dataset:
+            for entry in self.dataset[connector]:
                 for rule in self.rules:
-                    result = rule.filter((entry, connector_idx))
+                    result = rule.filter((entry, connector))
                     if result is not None:
-                        node_spec, prop = result
-
-                        key = self.node_generate(node_spec)
-                        prop = self.prop_mod(prop)
+                        node, prop = result
 
                         # NOTE: The insertion-order is preserved starting in
                         # Python 3.7.0.
-                        processed_dataset[key] = prop
+                        processed_dataset[node] = prop
                         break
 
         return processed_dataset
-
-    @staticmethod
-    def node_generate(node_spec):
-        # Generate a 'NetNode' if 'node_spec' is a dictionary, otherwise use it
-        # as-is as a dictionary key, assume it is hashable.
-        if isinstance(node_spec, dict):
-            key = NetNode(**node_spec)
-        else:
-            key = node_spec
-        return key
-
-    @staticmethod
-    def prop_mod(prop):
-        return prop  # By default, don't do any modification
 
 
 ##########################################
