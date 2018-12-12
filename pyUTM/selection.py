@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 04:47 AM -0500
+# Last Change: Wed Dec 12, 2018 at 04:58 AM -0500
 
 from __future__ import annotations
 
@@ -10,8 +10,6 @@ import abc
 
 from collections import defaultdict
 from typing import Union, List, Optional
-
-from .datatype import NetNode
 
 
 ########################
@@ -78,10 +76,9 @@ class RulePD(Rule):
     PT_PREFIX = 'JP'
     DCB_PREFIX = 'JD'
 
-    def filter(self, databundle):
-        data, connector_idx = databundle
-        if self.match(data, connector_idx):
-            return self.process(data, connector_idx)
+    def filter(self, data, connector):
+        if self.match(data, connector):
+            return self.process(data, connector)
 
     @staticmethod
     def prop_gen(netname, note, attr=None):
@@ -131,7 +128,7 @@ class SelectorPD(Selector):
         for connector in self.dataset:
             for entry in self.dataset[connector]:
                 for rule in self.rules:
-                    result = rule.filter((entry, connector))
+                    result = rule.filter(entry, connector)
                     if result is not None:
                         node, prop = result
 
