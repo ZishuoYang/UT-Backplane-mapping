@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 12:38 AM -0500
+# Last Change: Wed Dec 12, 2018 at 05:42 AM -0500
 
 from __future__ import annotations
 
@@ -10,8 +10,6 @@ import abc
 
 from collections import defaultdict
 from typing import Union, List, Optional
-
-from .datatype import NetNode
 
 
 ########################
@@ -78,10 +76,17 @@ class RulePD(Rule):
     PT_PREFIX = 'JP'
     DCB_PREFIX = 'JD'
 
-    def filter(self, databundle):
-        data, connector_idx = databundle
-        if self.match(data, connector_idx):
-            return self.process(data, connector_idx)
+    def filter(self, data, connector):
+        if self.match(data, connector):
+            return self.process(data, connector)
+
+    @staticmethod
+    def prop_gen(netname, note=None, attr=None):
+        return {
+            'NETNAME': netname,
+            'NOTE': note,
+            'ATTR': attr
+        }
 
     @staticmethod
     def PADDING(s):
@@ -120,37 +125,19 @@ class SelectorPD(Selector):
     def do(self):
         processed_dataset = {}
 
-        for connector_idx in range(0, len(self.dataset)):
-            for entry in self.dataset[connector_idx]:
+        for connector in self.dataset:
+            for entry in self.dataset[connector]:
                 for rule in self.rules:
-                    result = rule.filter((entry, connector_idx))
+                    result = rule.filter(entry, connector)
                     if result is not None:
-                        node_spec, prop = result
-
-                        key = self.node_generate(node_spec)
-                        prop = self.prop_mod(prop)
+                        node, prop = result
 
                         # NOTE: The insertion-order is preserved starting in
                         # Python 3.7.0.
-                        processed_dataset[key] = prop
+                        processed_dataset[node] = prop
                         break
 
         return processed_dataset
-
-    @staticmethod
-    def node_generate(node_spec):
-        # Generate a 'NetNode' if 'node_spec' is a dictionary,
-        # otherwise use it as-is as a dictionary key, assume it
-        # is hashable.
-        if isinstance(node_spec, dict):
-            key = NetNode(**node_spec)
-        else:
-            key = node_spec
-        return key
-
-    @staticmethod
-    def prop_mod(prop):
-        return prop  # By default, don't do any modification
 
 
 ##########################################

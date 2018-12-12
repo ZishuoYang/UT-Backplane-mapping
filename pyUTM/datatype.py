@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 04:46 PM -0500
+# Last Change: Tue Dec 11, 2018 at 04:19 PM -0500
 
 import builtins
 import typing
@@ -95,7 +95,8 @@ class ExcelCell(str):
 ##############################################################
 # NOTE: These are immutable data types.
 
-NetNode = namedtuple('NetNode', ['DCB', 'DCB_PIN', 'PT', 'PT_PIN'])
+NetNode = namedtuple('NetNode', ['DCB', 'DCB_PIN', 'PT', 'PT_PIN'],
+                     defaults=(None,)*4)
 
 
 class GenericNetNode(typing.NamedTuple):

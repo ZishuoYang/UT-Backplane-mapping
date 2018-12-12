@@ -185,9 +185,6 @@ JP5:
     type: S'
     typeDepop: S'
     base: BaseJP1
-    depopConn:
-        JD4:
-            - 5
     subConn:
         JD4:
             - 2
@@ -204,9 +201,6 @@ JP6:
     type: S'
     typeDepop: S'
     base: BaseJP2
-    depopConn:
-        JD5:
-            - 5
     subConn:
         JD5:
             - 2
@@ -241,11 +235,6 @@ JP8:
     type: M''
     typeDepop: O
     base: BaseJP0
-    depopConn:
-        JD10:
-            - 6
-            - 1
-            - 4
     subConn:
         JD10:
             - 5
@@ -254,11 +243,6 @@ JP9:
     type: S''
     typeDepop: O
     base: BaseJP1
-    depopConn:
-        JD10:
-            - 2
-            - 3
-            - 5
     subConn:
         JD8:
             - 2
@@ -272,11 +256,6 @@ JP10:
     type: S''
     typeDepop: O
     base: BaseJP2
-    depopConn:
-        JD11:
-            - 2
-            - 3
-            - 5
     subConn:
         JD9:
             - 2
@@ -290,11 +269,6 @@ JP11:
     type: M''
     typeDepop: O
     base: BaseJP3
-    depopConn:
-        JD11:
-            - 6
-            - 1
-            - 4
     subConn:
         JD11:
             - 5

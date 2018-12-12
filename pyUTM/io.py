@@ -1,16 +1,28 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 04:53 PM -0500
+# Last Change: Wed Dec 12, 2018 at 07:08 AM -0500
 
 import openpyxl
 import re
+import yaml
 
 from pyparsing import nestedExpr
 from tco import with_continuations  # Make Python do tail recursion elimination
 from joblib import Memory  # For persistent cache
+from itertools import zip_longest
 
 from .datatype import range, ColNum, NetNode, GenericNetNode, ExcelCell
+from .common import flatten
+
+
+#########################
+# General write to file #
+#########################
+
+def write_to_file(filename, data, mode='a', eol='\n'):
+    with open(filename, mode) as f:
+        f.write(data + eol)
 
 
 ##################
@@ -41,11 +53,11 @@ def csv_line(node, prop):
     return s[:-1]
 
 
-def write_to_csv(filename, data, formatter=csv_line):
-    with open(filename, 'w') as f:
+def write_to_csv(filename, data, formatter=csv_line, mode='w', eol='\n'):
+    with open(filename, mode) as f:
         for node in data.keys():
             attr = data[node]
-            f.write(formatter(node, attr) + '\n')
+            f.write(formatter(node, attr) + eol)
 
 
 #######################
@@ -185,12 +197,11 @@ class PcadReader(NestedListReader):
 
             # First, handle DCB-PT connections
             if dcb_nodes and pt_nodes:
-                for d in dcb_nodes:
-                    for p in pt_nodes:
-                        net_nodes_dict[self.net_node_gen(d, p)] = {
-                            'NETNAME': netname,
-                            'ATTR': None
-                        }
+                for d, p in zip_longest(dcb_nodes, pt_nodes):
+                    net_nodes_dict[self.net_node_gen(d, p)] = {
+                        'NETNAME': netname,
+                        'ATTR': None
+                    }
 
             # Now deal with DCB-DCB connections, with recursion
             if dcb_nodes:
@@ -267,3 +278,24 @@ class PcadReaderCached(PcadReader):
 
         self.read = self.mem.cache(super().read)
         self.readnets = self.mem.cache(super().readnets)
+
+
+############
+# For YAML #
+############
+
+
+class YamlReader(object):
+    def __init__(self, filename):
+        self.filename = filename
+
+    def read(self, flattener=flatten, sortby=None):
+        with open(self.filename) as f:
+            raw = yaml.safe_load(f)
+
+        for k in raw.keys():
+            raw[k] = flattener(raw[k])
+            if sortby is not None:
+                raw[k] = sorted(raw[k], key=sortby)
+
+        return raw
