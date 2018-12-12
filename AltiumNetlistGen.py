@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 07:11 AM -0500
+# Last Change: Wed Dec 12, 2018 at 10:49 AM -0500
 
 from pathlib import Path
+from copy import deepcopy
 
 from pyUTM.io import write_to_csv, write_to_file
 from pyUTM.io import YamlReader
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import NetNode
-from pyUTM.common import flatten, transpose, split_netname
+from pyUTM.common import flatten, transpose
 from pyUTM.common import jd_swapping_true
 
 input_dir = Path('input')
@@ -26,6 +27,76 @@ dcb_true_output_filename = output_dir / Path(
 pt_result_true_depop_aux_output_filename = output_dir / Path(
     'AuxList_PT_Full_TrueType.csv'
 )
+
+
+###########
+# Helpers #
+###########
+
+def match_diff_pairs(pt_descr, dcb_descr):
+    for jp in pt_descr.keys():
+        for idx, pt in filter(
+                lambda x: x[1]['Signal ID'] is not None and (
+                    x[1]['Signal ID'].endswith('SCL_N') or
+                    x[1]['Signal ID'].endswith('SDA_N') or
+                    x[1]['Signal ID'].endswith('RESET_N')
+                ),
+                enumerate(pt_descr[jp])
+        ):
+            reference_id = pt['Signal ID'][:-1] + 'P'
+
+            for pt_ref in filter(
+                    lambda x: x['Signal ID'] == reference_id and
+                    x['SEAM pin'] is not None,
+                    pt_descr[jp]
+            ):
+                jd = pt_ref['DCB slot']
+
+                for dcb in dcb_descr[jd]:
+                    if pt_ref['SEAM pin'] == dcb['SEAM pin'] and \
+                       dcb['Pigtail slot'] is not None and \
+                       dcb['Pigtail slot'] == jp and \
+                       pt_ref['Pigtail pin'] == dcb['Pigtail pin']:
+                        # Modify pt_descr in place.
+                        pt_descr[jp][idx]['Signal ID'] = \
+                            jd + '_' + dcb['Signal ID'] + '_N'
+                        pt_descr[jp][idx]['DCB slot'] = jd
+                        break
+                break
+
+
+def match_dcb_side_signal_id(pt_descr, dcb_descr):
+    for jp in pt_descr.keys():
+        for pt in pt_descr[jp]:
+            if pt['DCB slot'] is not None:
+                jd = pt['DCB slot']
+                for dcb in dcb_descr[jd]:
+                    if pt['SEAM pin'] == dcb['SEAM pin'] and \
+                            dcb['Pigtail slot'] is not None and \
+                            dcb['Pigtail slot'] == jp and \
+                            pt['Pigtail pin'] == dcb['Pigtail pin']:
+                        pt['Signal ID'] = dcb['Signal ID']
+                        break
+
+
+def aux_list_gen(pt_result):
+    result = {'JP'+str(i): {
+        'Depopulation': {},
+        'All LV_SENSE_GND': {},
+        'All EC_RESET and EC_HYB_i2C': {}
+    } for i in range(0, 12)}
+
+    for node in pt_result:
+        prop = pt_result[node]
+        if prop['NOTE'] == 'Alpha only':
+            result[node.PT]['Depopulation'][node] = prop
+        if 'LV_SENSE_GND' in prop['NETNAME']:
+            result[node.PT]['All LV_SENSE_GND'][node] = prop
+        if 'EC_RESET' in prop['NETNAME'] or 'EC_HYB_i2C' in prop['NETNAME']:
+            result[node.PT]['All EC_RESET and EC_HYB_i2C'][node] = prop
+
+    return result
+
 
 #############################
 # Read signals and mappings #
@@ -216,7 +287,8 @@ class RulePT_PTSingleToDiffN(RulePD):
         dcb_name, tail = data['Signal ID'].split('_', 1)
         net_name = dcb_name + '_' + jp + '_' + tail
         return (
-            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
+            NetNode(PT=jp, PT_PIN=data['Pigtail pin'],
+                    DCB=data['DCB slot'], DCB_PIN=data['SEAM pin']),
             self.prop_gen(net_name, data['Note']))
 
 
@@ -398,58 +470,9 @@ class RuleDCB_AGND(RuleDCB_GND):
             self.prop_gen(net_name))
 
 
-##########################
-# Signal ID replacements #
-##########################
-# NOTE: The order of these replacements probably matters!
-
-# Deal with differential pairs.
-for jp in pt_descr.keys():
-    for idx, pt in filter(
-            lambda x: x[1]['Signal ID'] is not None and (
-                x[1]['Signal ID'].endswith('SCL_N') or
-                x[1]['Signal ID'].endswith('SDA_N') or
-                x[1]['Signal ID'].endswith('RESET_N')
-            ),
-            enumerate(pt_descr[jp])
-    ):
-        reference_id = pt['Signal ID'][:-1] + 'P'
-
-        for pt_ref in filter(
-                lambda x: x['Signal ID'] == reference_id and
-                x['SEAM pin'] is not None,
-                pt_descr[jp]
-        ):
-            jd = pt_ref['DCB slot']
-
-            for dcb in dcb_descr[jd]:
-                if pt_ref['SEAM pin'] == dcb['SEAM pin'] and \
-                   dcb['Pigtail slot'] is not None and \
-                   dcb['Pigtail slot'] == jp and \
-                   pt_ref['Pigtail pin'] == dcb['Pigtail pin']:
-                    # Modify pt_descr in place.
-                    pt_descr[jp][idx]['Signal ID'] = \
-                        jd + '_' + dcb['Signal ID'] + '_N'
-                    break
-            break
-
-# Replace 'Signal ID' to DCB side definitions.
-for jp in pt_descr.keys():
-    for pt in pt_descr[jp]:
-        if pt['DCB slot'] is not None:
-            jd = pt['DCB slot']
-            for dcb in dcb_descr[jd]:
-                if pt['SEAM pin'] == dcb['SEAM pin'] and \
-                        dcb['Pigtail slot'] is not None and \
-                        dcb['Pigtail slot'] == jp and \
-                        pt['Pigtail pin'] == dcb['Pigtail pin']:
-                    pt['Signal ID'] = dcb['Signal ID']
-                    break
-
-
-################
-# Apply rules  #
-################
+###############################
+# Define rules to be applied  #
+###############################
 
 pt_rules = [
     # RulePT_PathFinder(),
@@ -465,9 +488,6 @@ pt_rules = [
     RulePT_Default()
 ]
 
-PtSelector = SelectorPD(pt_descr, pt_rules)
-pt_result = PtSelector.do()
-
 dcb_rules = [
     RuleDCB_GND(),
     RuleDCB_AGND(),
@@ -479,76 +499,38 @@ dcb_rules = [
     RuleDCB_Default()
 ]
 
-DcbSelector = SelectorPD(dcb_descr, dcb_rules)
-dcb_result = DcbSelector.do()
 
+###########################################
+# True-type signal manipulations (VOODOO) #
+###########################################
 
-######################################################################
-# Generate an auxiliary dict to aid True/Mirror-type list generation #
-######################################################################
+pt_descr_true = deepcopy(pt_descr)
+dcb_descr_true = {}
 
-dcb_aux = {
-    (node.DCB, node.DCB_PIN): (node, prop)
-    for (node, prop) in dcb_result.items()
-}
+for jd in dcb_descr.keys():
+    dcb_descr_true[jd] = dcb_descr[jd_swapping_true[jd]]
 
-for i in range(0, 12):
-    # These are power-related, after all.
-    brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'GND')
-    brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'AGND')
-    # Account for unused pins
-    brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'B1')
-    brkoutbrd_pin_assignments.append('JD' + str(i) + '_' + 'B3')
+for jp in pt_descr_true.keys():
+    for pt in pt_descr_true[jp]:
+        if pt['DCB slot'] is not None:
+            pt['DCB slot'] = jd_swapping_true[pt['DCB slot']]
+
+# Deal with differential pairs.
+match_diff_pairs(pt_descr_true, dcb_descr_true)
+
+# Replace 'Signal ID' to DCB side definitions.
+match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
 
 
 ############################################
 # Generate True-type backplane Altium list #
 ############################################
 
-dcb_result_true = dict()
-pt_result_true = dict()
-pt_aux_true_type = dict()
+PtSelector = SelectorPD(pt_descr_true, pt_rules)
+pt_result_true = PtSelector.do()
 
-# Do DCB slot swapping on DCB side first. The order matters.
-for node in dcb_result.keys():
-    target_jd = jd_swapping_true[node.DCB]
-    target_node, target_prop = dcb_aux[(target_jd, node.DCB_PIN)]
-
-    # Replace all pin definitions with target ones if it is not power-related
-    if target_prop['NETNAME'] not in brkoutbrd_pin_assignments:
-        key = NetNode(node.DCB, node.DCB_PIN,
-                      target_node.PT, target_node.PT_PIN)
-        try:
-            jd, some_conn, signal = split_netname(target_prop['NETNAME'])
-            target_prop['NETNAME'] = node.DCB + '_' + some_conn + '_' + signal
-            # Fill up the additional auxiliary dict, for True-type.
-            pt_aux_true_type[(target_node.PT, target_node.PT_PIN)] = \
-                (key, target_prop)
-        except Exception:
-            pass
-
-        dcb_result_true[key] = target_prop
-
-    else:
-        dcb_result_true[node] = dcb_result[node]
-
-# Now do DCB slot swapping on PT side.
-for node in pt_result.keys():
-    if (node.PT, node.PT_PIN) in pt_aux_true_type.keys():
-        key, target_prop = pt_aux_true_type[(node.PT, node.PT_PIN)]
-        pt_result_true[key] = target_prop
-
-    else:
-        try:
-            prop = pt_result[node]
-            jd, some_conn, signal = split_netname(prop['NETNAME'])
-            prop['NETNAME'] = jd_swapping_true[jd] + '_' + some_conn + '_' \
-                + signal
-            key = NetNode(jd_swapping_true[jd], node.DCB_PIN,
-                          node.PT, node.PT_PIN)
-            pt_result_true[key] = prop
-        except Exception:
-            pt_result_true[node] = pt_result[node]
+DcbSelector = SelectorPD(dcb_descr_true, dcb_rules)
+dcb_result_true = DcbSelector.do()
 
 write_to_csv(pt_true_output_filename, pt_result_true)
 write_to_csv(dcb_true_output_filename, dcb_result_true)
@@ -558,21 +540,7 @@ write_to_csv(dcb_true_output_filename, dcb_result_true)
 # Generate True-type backplane auxiliary list #
 ###############################################
 
-pt_result_true_depop_aux = {'JP'+str(i): {
-    'Depopulation': {},
-    'All LV_SENSE_GND': {},
-    'All EC_RESET and EC_HYB_i2C': {}
-} for i in range(0, 12)}
-
-for node in pt_result_true:
-    prop = pt_result_true[node]
-    if prop['NOTE'] == 'Alpha only':
-        pt_result_true_depop_aux[node.PT]['Depopulation'][node] = prop
-    if 'LV_SENSE_GND' in prop['NETNAME']:
-        pt_result_true_depop_aux[node.PT]['All LV_SENSE_GND'][node] = prop
-    if 'EC_RESET' in prop['NETNAME'] or 'EC_HYB_i2C' in prop['NETNAME']:
-        pt_result_true_depop_aux[node.PT][
-            'All EC_RESET and EC_HYB_i2C'][node] = prop
+pt_result_true_depop_aux = aux_list_gen(pt_result_true)
 
 # Always clear the content of the output file
 write_to_file(pt_result_true_depop_aux_output_filename,
