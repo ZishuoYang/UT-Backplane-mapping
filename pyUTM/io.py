@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 01:06 AM -0500
+# Last Change: Wed Dec 12, 2018 at 01:51 AM -0500
 
 import openpyxl
 import re
@@ -280,9 +280,13 @@ class YamlReader(object):
     def __init__(self, filename):
         self.filename = filename
 
-    def read(self, flattener=flatten):
-        raw = yaml.safe_load(self.filename)
-        if flattener is not None:
-            for k in raw.keys():
-                flattener(raw[k])
+    def read(self, flattener=flatten, sortby=None):
+        with open(self.filename) as f:
+            raw = yaml.safe_load(f)
+
+        for k in raw.keys():
+            raw[k] = flattener(raw[k])
+            if sortby is not None:
+                raw[k] = sorted(raw[k], key=sortby)
+
         return raw
