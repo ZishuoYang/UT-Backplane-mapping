@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 05:40 AM -0500
+# Last Change: Wed Dec 12, 2018 at 05:43 AM -0500
 
 from pathlib import Path
 
@@ -260,7 +260,7 @@ class RuleDCB_Default(RulePD):
             NetNode(DCB=jd,
                     DCB_PIN=data['SEAM pin']
                     ),
-            self.prop_gen(net_name, data['Note'], '_ForRefOnly_'))
+            self.prop_gen(net_name, attr='_ForRefOnly_'))
 
 
 class RuleDCB_PathFinder(RulePD):
@@ -276,7 +276,7 @@ class RuleDCB_PathFinder(RulePD):
             NetNode(DCB=jd,
                     DCB_PIN=data['SEAM pin'],
                     ),
-            self.prop_gen(None, data['Note'], '_PlaceHolder_'))
+            self.prop_gen(None, attr='_PlaceHolder_'))
 
 
 class RuleDCB_PT(RulePD):
@@ -295,7 +295,7 @@ class RuleDCB_PT(RulePD):
                     PT=data['Pigtail slot'],
                     PT_PIN=data['Pigtail pin']
                     ),
-            self.prop_gen(net_name, data['Note']))
+            self.prop_gen(net_name))
 
 
 # Put PTSingleToDiff rule above the general PT-DCB rule
@@ -323,7 +323,7 @@ class RuleDCB_PTSingleToDiff(RulePD):
                     PT=data['Pigtail slot'],
                     PT_PIN=data['Pigtail pin']
                     ),
-            self.prop_gen(net_name, data['Note']))
+            self.prop_gen(net_name))
 
 
 class RuleDCB_1V5(RulePD):
@@ -342,7 +342,7 @@ class RuleDCB_1V5(RulePD):
             NetNode(DCB=jd,
                     DCB_PIN=data['SEAM pin'],
                     ),
-            self.prop_gen(net_name, data['Note']))
+            self.prop_gen(net_name))
 
     def netname_replacement(self, jd, signal):
         net_name = jd + '_' + signal
@@ -401,7 +401,7 @@ class RuleDCB_GND(RulePD):
             NetNode(DCB=jd,
                     DCB_PIN=data['SEAM pin']
                     ),
-            self.prop_gen('GND', data['Note']))
+            self.prop_gen('GND'))
 
 
 class RuleDCB_AGND(RuleDCB_GND):
@@ -421,7 +421,7 @@ class RuleDCB_AGND(RuleDCB_GND):
                     PT_PIN=data['Pigtail pin'] if data['Pigtail pin'] is not
                     None else None
                     ),
-            self.prop_gen(net_name, data['Note']))
+            self.prop_gen(net_name))
 
 
 ##########################

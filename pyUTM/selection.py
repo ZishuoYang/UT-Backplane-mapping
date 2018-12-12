@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 04:58 AM -0500
+# Last Change: Wed Dec 12, 2018 at 05:42 AM -0500
 
 from __future__ import annotations
 
@@ -81,7 +81,7 @@ class RulePD(Rule):
             return self.process(data, connector)
 
     @staticmethod
-    def prop_gen(netname, note, attr=None):
+    def prop_gen(netname, note=None, attr=None):
         return {
             'NETNAME': netname,
             'NOTE': note,
