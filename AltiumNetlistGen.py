@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 02:40 AM -0500
+# Last Change: Wed Dec 12, 2018 at 02:56 AM -0500
 
 from pathlib import Path
 
@@ -17,8 +17,7 @@ input_dir = Path('input')
 output_dir = Path('output')
 
 brkoutbrd_filename = input_dir / Path('brkoutbrd_pin_assignments.yml')
-pt_filename = input_dir / Path(
-    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.2.xlsm')
+pt_filename = input_dir / Path('backplane_mapping_PT.yml')
 dcb_filename = input_dir / Path(
     'backplaneMapping_SEAMPins_trueType_v5.2.xlsm')
 
@@ -49,9 +48,8 @@ brkoutbrd_pin_assignments = [item for sublist in brkoutbrd_nested_signals
 # Read info from PigTail #
 ##########################
 
-PtReader = XLReader(pt_filename)
-pt_descr = PtReader.read(range(0, 12), 'B5:K405',
-                         sortby=lambda d: d['Pigtail pin'])
+PtReader = YamlReader(pt_filename)
+pt_descr = PtReader.read(flattener=lambda x: flatten(x, 'Pigtail pin'))
 
 
 ######################
@@ -269,10 +267,7 @@ class RulePT_PTSingleToDiffN(RulePD):
 
 class RulePT_UnusedToGND(RulePD):
     def match(self, data, pt_idx):
-        if data['Signal ID'] is not None \
-                and data['Signal ID'].font_color is not None \
-                and data['Signal ID'].font_color.tint != 0.0 \
-                and data['Signal ID'].font_color.theme == 0:
+        if data['Note'] == 'Unused':
             return True
         else:
             return False
@@ -540,6 +535,7 @@ for pt_id in range(0, len(pt_descr)):
            pt_entry['Signal ID'].endswith('SDA_N') or
            pt_entry['Signal ID'].endswith('RESET_N')):
             reference_id = pt_entry['Signal ID'][:-1] + 'P'
+
             for pt_entry_ref in pt_descr[pt_id]:
                 if pt_entry_ref['Signal ID'] == reference_id:
                     if pt_entry_ref['SEAM pin'] is not None:
