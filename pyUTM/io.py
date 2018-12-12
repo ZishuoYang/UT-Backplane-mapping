@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 01:00 AM -0500
+# Last Change: Wed Dec 12, 2018 at 01:06 AM -0500
 
 import openpyxl
 import re
@@ -188,12 +188,11 @@ class PcadReader(NestedListReader):
 
             # First, handle DCB-PT connections
             if dcb_nodes and pt_nodes:
-                for d in dcb_nodes:
-                    for p in pt_nodes:
-                        net_nodes_dict[self.net_node_gen(d, p)] = {
-                            'NETNAME': netname,
-                            'ATTR': None
-                        }
+                for d, p in zip_longest(dcb_nodes, pt_nodes):
+                    net_nodes_dict[self.net_node_gen(d, p)] = {
+                        'NETNAME': netname,
+                        'ATTR': None
+                    }
 
             # Now deal with DCB-DCB connections, with recursion
             if dcb_nodes:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 02:38 PM -0500
+# Last Change: Wed Dec 12, 2018 at 01:04 AM -0500
 
 from pathlib import Path
 from os import environ
@@ -194,7 +194,6 @@ net_rules = [
 
 
 NetSelector = SelectorNet(pt_result, net_rules)
-print('')
 print('====ERRORS for Backplane connections====')
 net_result = NetSelector.do()
 
