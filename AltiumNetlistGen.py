@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 05:15 AM -0500
+# Last Change: Wed Dec 12, 2018 at 05:40 AM -0500
 
 from pathlib import Path
 
@@ -67,8 +67,7 @@ class RulePT_Default(RulePD):
             NetNode(PT=jp,
                     PT_PIN=self.DEPADDING(data['Pigtail pin'])
                     ),
-            self.prop_gen(net_name, data['Note'], '_ForRefOnly_')
-        )
+            self.prop_gen(net_name, data['Note'], '_ForRefOnly_'))
 
 
 class RulePT_PathFinder(RulePD):
@@ -89,8 +88,7 @@ class RulePT_PathFinder(RulePD):
             NetNode(PT=jp,
                     PT_PIN=self.DEPADDING(data['Pigtail pin'])
                     ),
-            self.prop_gen(None, data['Note'], '_PlaceHolder_')
-        )
+            self.prop_gen(None, data['Note'], '_PlaceHolder_'))
 
 
 class RulePT_DCB(RulePD):
@@ -109,8 +107,7 @@ class RulePT_DCB(RulePD):
                     PT=jp,
                     PT_PIN=data['Pigtail pin']
                     ),
-            self.prop_gen(net_name, data['Note'])
-        )
+            self.prop_gen(net_name, data['Note']))
 
 
 class RulePT_NotConnected(RulePD):
@@ -132,8 +129,7 @@ class RulePT_NotConnected(RulePD):
             NetNode(PT=jp,
                     PT_PIN=data['Pigtail pin']
                     ),
-            self.prop_gen('GND', data['Note'])
-        )
+            self.prop_gen('GND', data['Note']))
 
 
 class RulePT_PTLvSource(RulePD):
@@ -160,8 +156,7 @@ class RulePT_PTLvSource(RulePD):
             NetNode(PT=jp,
                     PT_PIN=data['Pigtail pin']
                     ),
-            self.prop_gen(net_name, data['Note'], attr)
-        )
+            self.prop_gen(net_name, data['Note'], attr))
 
 
 class RulePT_PTLvReturn(RulePT_PTLvSource):
@@ -213,8 +208,7 @@ class RulePT_PTSingleToDiffP(RulePD):
                     PT=jp,
                     PT_PIN=data['Pigtail pin']
                     ),
-            self.prop_gen(net_name, data['Note'])
-        )
+            self.prop_gen(net_name, data['Note']))
 
 
 class RulePT_PTSingleToDiffN(RulePD):
@@ -234,8 +228,7 @@ class RulePT_PTSingleToDiffN(RulePD):
             NetNode(PT=jp,
                     PT_PIN=data['Pigtail pin']
                     ),
-            self.prop_gen(net_name, data['Note'])
-        )
+            self.prop_gen(net_name, data['Note']))
 
 
 class RulePT_UnusedToGND(RulePD):
@@ -250,8 +243,7 @@ class RulePT_UnusedToGND(RulePD):
             NetNode(PT=jp,
                     PT_PIN=data['Pigtail pin']
                     ),
-            self.prop_gen('GND', data['Note'])
-        )
+            self.prop_gen('GND', data['Note']))
 
 
 ####################################
@@ -259,65 +251,56 @@ class RulePT_UnusedToGND(RulePD):
 ####################################
 
 class RuleDCB_Default(RulePD):
-    def match(self, data, dcb_idx):
+    def match(self, data, jd):
         return True
 
-    def process(self, data, dcb_idx):
-        net_name = self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
+    def process(self, data, jd):
+        net_name = jd + '_' + data['Signal ID']
         return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': self.DEPADDING(data['SEAM pin'])
-            },
-            {'NETNAME': net_name, 'ATTR': '_ForRefOnly_'}
-        )
+            NetNode(DCB=jd,
+                    DCB_PIN=data['SEAM pin']
+                    ),
+            self.prop_gen(net_name, data['Note'], '_ForRefOnly_'))
 
 
 class RuleDCB_PathFinder(RulePD):
-    def match(self, data, dcb_idx):
+    def match(self, data, jd):
         # For slot 0 or 1, we need to process the non-BOB nets so skip this
         # rule.
-        if dcb_idx in [0, 2, 4]:
+        if jd in ['JD0', 'JD2', 'JD4']:
             return False
 
-    def process(self, data, dcb_idx):
+    def process(self, data, jd):
         # Note: here the matching nodes will have placeholder in netlist file.
         return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': self.DEPADDING(data['SEAM pin']),
-            },
-            {'NETNAME': None, 'ATTR': '_PlaceHolder_'}
-        )
+            NetNode(DCB=jd,
+                    DCB_PIN=data['SEAM pin'],
+                    ),
+            self.prop_gen(None, data['Note'], '_PlaceHolder_'))
 
 
 class RuleDCB_PT(RulePD):
-    def match(self, data, dcb_idx):
+    def match(self, data, jd):
         if data['Pigtail pin'] is not None:
             # Which means that this DCB pin is connected to a PT pin.
             return True
         else:
             return False
 
-    def process(self, data, dcb_idx):
-        net_name = \
-            self.DCB_PREFIX + str(dcb_idx) + '_' + \
-            self.PT_PREFIX + self.PTID(data['Pigtail slot']) + '_' + \
-            data['Signal ID']
+    def process(self, data, jd):
+        net_name = jd + '_' + data['Pigtail slot'] + '_' + data['Signal ID']
         return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': data['SEAM pin'],
-                'PT': self.PT_PREFIX + self.PTID(data['Pigtail slot']),
-                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
+            NetNode(DCB=jd,
+                    DCB_PIN=data['SEAM pin'],
+                    PT=data['Pigtail slot'],
+                    PT_PIN=data['Pigtail pin']
+                    ),
+            self.prop_gen(net_name, data['Note']))
 
 
 # Put PTSingleToDiff rule above the general PT-DCB rule
 class RuleDCB_PTSingleToDiff(RulePD):
-    def match(self, data, dcb_idx):
+    def match(self, data, jd):
         if data['Pigtail slot'] is not None and \
                 ('HYB_i2C' in data['Signal ID'] or
                  'EC_RESET' in data['Signal ID'] or
@@ -326,159 +309,119 @@ class RuleDCB_PTSingleToDiff(RulePD):
         else:
             return False
 
-    def process(self, data, dcb_idx):
+    def process(self, data, jd):
         if 'EC_ADC' in data['Signal ID']:
             # Becuase EC_ADC connects to Thermistor, add prefix THERM
-            net_name = \
-                self.DCB_PREFIX + str(dcb_idx) + '_' + \
-                self.PT_PREFIX + self.PTID(data['Pigtail slot']) + \
-                '_THERM_' + data['Signal ID'] + '_P'
+            net_name = jd + '_' + data['Pigtail slot'] + '_THERM_' \
+                + data['Signal ID'] + '_P'
         else:
-            net_name = \
-                self.DCB_PREFIX + str(dcb_idx) + '_' + \
-                self.PT_PREFIX + self.PTID(data['Pigtail slot']) + '_' + \
-                data['Signal ID'] + '_P'
+            net_name = jd + '_' + data['Pigtail slot'] + '_' \
+                + data['Signal ID'] + '_P'
         return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': data['SEAM pin'],
-                'PT': self.PT_PREFIX + self.PTID(data['Pigtail slot']),
-                'PT_PIN': self.DEPADDING(data['Pigtail pin'])
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
+            NetNode(DCB=jd,
+                    DCB_PIN=data['SEAM pin'],
+                    PT=data['Pigtail slot'],
+                    PT_PIN=data['Pigtail pin']
+                    ),
+            self.prop_gen(net_name, data['Note']))
 
 
 class RuleDCB_1V5(RulePD):
     def __init__(self, brkoutbrd_rules):
         self.rules = brkoutbrd_rules
 
-    def match(self, data, dcb_idx):
+    def match(self, data, jd):
         if data['Signal ID'] == '1.5V':
             return True
         else:
             return False
 
-    def process(self, data, dcb_idx):
-        net_name = \
-            self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
+    def process(self, data, jd):
+        net_name = self.netname_replacement(jd, data['Signal ID'])
+        return (
+            NetNode(DCB=jd,
+                    DCB_PIN=data['SEAM pin'],
+                    ),
+            self.prop_gen(net_name, data['Note']))
 
+    def netname_replacement(self, jd, signal):
+        net_name = jd + '_' + signal
         for rule in self.rules:
             dcb_name, tail = rule.split('_', 1)
-            if self.DCB_PREFIX+str(dcb_idx) == dcb_name and \
-                    '1V5' in tail and 'SENSE' not in tail:
+            if jd == dcb_name and '1V5' in tail and 'SENSE' not in tail:
                 net_name = rule
                 break
-        return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': self.DEPADDING(data['SEAM pin']),
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
+        return net_name
 
 
-class RuleDCB_2V5(RulePD):
-    def __init__(self, brkoutbrd_rules):
-        self.rules = brkoutbrd_rules
-
-    def match(self, data, dcb_idx):
+class RuleDCB_2V5(RuleDCB_1V5):
+    def match(self, data, jd):
         if data['Signal ID'] == '2.5V':
             return True
         else:
             return False
 
-    def process(self, data, dcb_idx):
-        net_name = \
-            self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-
+    def netname_replacement(self, jd, signal):
+        net_name = jd + '_' + signal
         for rule in self.rules:
             if '2V5' in rule and 'SENSE' not in rule:
                 dcb1, dcb2, _ = rule.split('_', 2)
-                if self.DCB_PREFIX+str(dcb_idx) == dcb1 or \
-                        str(dcb_idx) == dcb2:
+                if jd == dcb1 or jd[2:] == dcb2:
                     net_name = rule
                     break
-        return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': self.DEPADDING(data['SEAM pin']),
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
+        return net_name
 
 
-class RuleDCB_1V5Sense(RulePD):
-    def __init__(self, brkoutbrd_rules):
-        self.rules = brkoutbrd_rules
-
-    def match(self, data, dcb_idx):
+class RuleDCB_1V5Sense(RuleDCB_1V5):
+    def match(self, data, jd):
         if '1V5_SENSE' in data['Signal ID']:
             return True
         else:
             return False
 
-    def process(self, data, dcb_idx):
-        net_name = \
-            self.DCB_PREFIX + str(dcb_idx) + '_' + data['Signal ID']
-
+    def netname_replacement(self, jd, signal):
+        net_name = jd + '_' + signal
         for rule in self.rules:
             dcb_name, tail = rule.split('_', 1)
-            if self.DCB_PREFIX+str(dcb_idx) == dcb_name and \
-                    data['Signal ID'][:-2] in tail:
+            if jd == dcb_name and signal[:-2] in tail:
                 net_name = rule
                 break
-        return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': self.DEPADDING(data['SEAM pin']),
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
+        return net_name
 
 
 class RuleDCB_GND(RulePD):
-    def match(self, data, dcb_idx):
+    def match(self, data, jd):
         if 'GND' == data['Signal ID']:
-            # Which means that this DCB pin GND (not AGND).
             return True
         else:
             return False
 
-    def process(self, data, dcb_idx):
-        net_name = data['Signal ID']
+    def process(self, data, jd):
         return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': data['SEAM pin'],
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
+            NetNode(DCB=jd,
+                    DCB_PIN=data['SEAM pin']
+                    ),
+            self.prop_gen('GND', data['Note']))
 
 
 class RuleDCB_AGND(RuleDCB_GND):
-    def match(self, data, dcb_idx):
+    def match(self, data, jd):
         if 'AGND' == data['Signal ID']:
-            # Which means that this DCB pin AGND (not GND).
             return True
         else:
             return False
 
-    def process(self, data, dcb_idx):
-        net_name = \
-            self.DCB_PREFIX + str(dcb_idx) + '_' + \
-            data['Signal ID']
+    def process(self, data, jd):
+        net_name = jd + '_' + 'AGND'
         return (
-            {
-                'DCB': self.DCB_PREFIX + str(dcb_idx),
-                'DCB_PIN': data['SEAM pin'],
-                'PT': data['Pigtail slot'] if data['Pigtail slot'] is not None
-                else None,
-                'PT_PIN': data['Pigtail pin'] if data['Pigtail pin'] is not None
-                else None
-            },
-            {'NETNAME': net_name, 'ATTR': None}
-        )
+            NetNode(DCB=jd,
+                    DCB_PIN=data['SEAM pin'],
+                    PT=data['Pigtail slot'] if data['Pigtail slot'] is not None
+                    else None,
+                    PT_PIN=data['Pigtail pin'] if data['Pigtail pin'] is not
+                    None else None
+                    ),
+            self.prop_gen(net_name, data['Note']))
 
 
 ##########################
