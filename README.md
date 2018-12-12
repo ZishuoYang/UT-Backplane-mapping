@@ -3,9 +3,9 @@ Signal mapping netlist (list of pin-to-pin correspondence) formatted for Altium
 to design the LHCb UT backplane.
 
 * `AltiumNetlistGen.py`: This script takes 3 YAML files and write the
-  reformatted list to `output/`.  All MS Excel files are located under
-  `input/`; one of them describes connections from PT connectors point-of-view
-  (`PT- DCB`); another from DCB; the third one includes break-out boards pin
+  reformatted list to `output/`.  All YAML files are located under `input/`;
+  one of them describes connections from PT connectors point-of-view (`PT-
+  DCB`); another from DCB; the third one includes break-out boards pin
   assignments.
 * `NetlistCheck.py`: This scripts takes Altium-exported netlists (under
   `input/netlists`) and check if these netlists fully implements connections
