@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 06, 2018 at 04:53 PM -0500
+# Last Change: Wed Dec 12, 2018 at 12:37 AM -0500
 
 import openpyxl
 import re
+import yaml
 
 from pyparsing import nestedExpr
 from tco import with_continuations  # Make Python do tail recursion elimination
 from joblib import Memory  # For persistent cache
 
 from .datatype import range, ColNum, NetNode, GenericNetNode, ExcelCell
+from .common import flatten
 
 
 ##################
@@ -186,11 +188,7 @@ class PcadReader(NestedListReader):
             # First, handle DCB-PT connections
             if dcb_nodes and pt_nodes:
                 for d in dcb_nodes:
-                    for p in pt_nodes:
-                        net_nodes_dict[self.net_node_gen(d, p)] = {
-                            'NETNAME': netname,
-                            'ATTR': None
-                        }
+                    pass
 
             # Now deal with DCB-DCB connections, with recursion
             if dcb_nodes:
@@ -267,3 +265,20 @@ class PcadReaderCached(PcadReader):
 
         self.read = self.mem.cache(super().read)
         self.readnets = self.mem.cache(super().readnets)
+
+
+############
+# For YAML #
+############
+
+
+class YamlReader(object):
+    def __init__(self, filename):
+        self.filename = filename
+
+    def read(self, flattener=flatten):
+        raw = yaml.safe_load(self.filename)
+        if flattener is not None:
+            for k in raw.keys():
+                flattener(raw[k])
+        return raw
