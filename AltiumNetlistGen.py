@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 05:43 AM -0500
+# Last Change: Wed Dec 12, 2018 at 05:51 AM -0500
 
 from pathlib import Path
 
@@ -64,9 +64,7 @@ class RulePT_Default(RulePD):
     def process(self, data, jp):
         net_name = jp + '_' + data['Signal ID']
         return (
-            NetNode(PT=jp,
-                    PT_PIN=self.DEPADDING(data['Pigtail pin'])
-                    ),
+            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
             self.prop_gen(net_name, data['Note'], '_ForRefOnly_'))
 
 
@@ -85,9 +83,7 @@ class RulePT_PathFinder(RulePD):
     def process(self, data, jp):
         # Note: here the matching nodes will have placeholder in netlist file.
         return (
-            NetNode(PT=jp,
-                    PT_PIN=self.DEPADDING(data['Pigtail pin'])
-                    ),
+            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
             self.prop_gen(None, data['Note'], '_PlaceHolder_'))
 
 
@@ -102,10 +98,8 @@ class RulePT_DCB(RulePD):
     def process(self, data, jp):
         net_name = data['DCB slot'] + '_' + jp + '_' + data['Signal ID']
         return (
-            NetNode(DCB=data['DCB slot'],
-                    DCB_PIN=data['SEAM pin'],
-                    PT=jp,
-                    PT_PIN=data['Pigtail pin']
+            NetNode(DCB=data['DCB slot'], DCB_PIN=data['SEAM pin'],
+                    PT=jp, PT_PIN=data['Pigtail pin']
                     ),
             self.prop_gen(net_name, data['Note']))
 
@@ -126,9 +120,7 @@ class RulePT_NotConnected(RulePD):
 
     def process(self, data, jp):
         return (
-            NetNode(PT=jp,
-                    PT_PIN=data['Pigtail pin']
-                    ),
+            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
             self.prop_gen('GND', data['Note']))
 
 
@@ -153,9 +145,7 @@ class RulePT_PTLvSource(RulePD):
                 attr = None
                 break
         return (
-            NetNode(PT=jp,
-                    PT_PIN=data['Pigtail pin']
-                    ),
+            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
             self.prop_gen(net_name, data['Note'], attr))
 
 
@@ -203,10 +193,8 @@ class RulePT_PTSingleToDiffP(RulePD):
             net_name = data['DCB slot'] + '_' + jp + '_' + \
                 data['Signal ID'] + '_P'
         return (
-            NetNode(DCB=data['DCB slot'],
-                    DCB_PIN=data['SEAM pin'],
-                    PT=jp,
-                    PT_PIN=data['Pigtail pin']
+            NetNode(DCB=data['DCB slot'], DCB_PIN=data['SEAM pin'],
+                    PT=jp, PT_PIN=data['Pigtail pin']
                     ),
             self.prop_gen(net_name, data['Note']))
 
@@ -225,9 +213,7 @@ class RulePT_PTSingleToDiffN(RulePD):
         dcb_name, tail = data['Signal ID'].split('_', 1)
         net_name = dcb_name + '_' + jp + '_' + tail
         return (
-            NetNode(PT=jp,
-                    PT_PIN=data['Pigtail pin']
-                    ),
+            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
             self.prop_gen(net_name, data['Note']))
 
 
@@ -240,9 +226,7 @@ class RulePT_UnusedToGND(RulePD):
 
     def process(self, data, jp):
         return (
-            NetNode(PT=jp,
-                    PT_PIN=data['Pigtail pin']
-                    ),
+            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
             self.prop_gen('GND', data['Note']))
 
 
@@ -257,9 +241,7 @@ class RuleDCB_Default(RulePD):
     def process(self, data, jd):
         net_name = jd + '_' + data['Signal ID']
         return (
-            NetNode(DCB=jd,
-                    DCB_PIN=data['SEAM pin']
-                    ),
+            NetNode(DCB=jd, DCB_PIN=data['SEAM pin']),
             self.prop_gen(net_name, attr='_ForRefOnly_'))
 
 
@@ -273,9 +255,7 @@ class RuleDCB_PathFinder(RulePD):
     def process(self, data, jd):
         # Note: here the matching nodes will have placeholder in netlist file.
         return (
-            NetNode(DCB=jd,
-                    DCB_PIN=data['SEAM pin'],
-                    ),
+            NetNode(DCB=jd, DCB_PIN=data['SEAM pin']),
             self.prop_gen(None, attr='_PlaceHolder_'))
 
 
@@ -290,10 +270,8 @@ class RuleDCB_PT(RulePD):
     def process(self, data, jd):
         net_name = jd + '_' + data['Pigtail slot'] + '_' + data['Signal ID']
         return (
-            NetNode(DCB=jd,
-                    DCB_PIN=data['SEAM pin'],
-                    PT=data['Pigtail slot'],
-                    PT_PIN=data['Pigtail pin']
+            NetNode(DCB=jd, DCB_PIN=data['SEAM pin'],
+                    PT=data['Pigtail slot'], PT_PIN=data['Pigtail pin']
                     ),
             self.prop_gen(net_name))
 
@@ -318,10 +296,8 @@ class RuleDCB_PTSingleToDiff(RulePD):
             net_name = jd + '_' + data['Pigtail slot'] + '_' \
                 + data['Signal ID'] + '_P'
         return (
-            NetNode(DCB=jd,
-                    DCB_PIN=data['SEAM pin'],
-                    PT=data['Pigtail slot'],
-                    PT_PIN=data['Pigtail pin']
+            NetNode(DCB=jd, DCB_PIN=data['SEAM pin'],
+                    PT=data['Pigtail slot'], PT_PIN=data['Pigtail pin']
                     ),
             self.prop_gen(net_name))
 
@@ -339,9 +315,7 @@ class RuleDCB_1V5(RulePD):
     def process(self, data, jd):
         net_name = self.netname_replacement(jd, data['Signal ID'])
         return (
-            NetNode(DCB=jd,
-                    DCB_PIN=data['SEAM pin'],
-                    ),
+            NetNode(DCB=jd, DCB_PIN=data['SEAM pin'],),
             self.prop_gen(net_name))
 
     def netname_replacement(self, jd, signal):
@@ -398,9 +372,7 @@ class RuleDCB_GND(RulePD):
 
     def process(self, data, jd):
         return (
-            NetNode(DCB=jd,
-                    DCB_PIN=data['SEAM pin']
-                    ),
+            NetNode(DCB=jd, DCB_PIN=data['SEAM pin']),
             self.prop_gen('GND'))
 
 
@@ -414,8 +386,7 @@ class RuleDCB_AGND(RuleDCB_GND):
     def process(self, data, jd):
         net_name = jd + '_' + 'AGND'
         return (
-            NetNode(DCB=jd,
-                    DCB_PIN=data['SEAM pin'],
+            NetNode(DCB=jd, DCB_PIN=data['SEAM pin'],
                     PT=data['Pigtail slot'] if data['Pigtail slot'] is not None
                     else None,
                     PT_PIN=data['Pigtail pin'] if data['Pigtail pin'] is not
