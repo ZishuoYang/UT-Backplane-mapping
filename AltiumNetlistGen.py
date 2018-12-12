@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 06:22 AM -0500
+# Last Change: Wed Dec 12, 2018 at 07:11 AM -0500
 
 from pathlib import Path
 
-from pyUTM.io import write_to_csv
+from pyUTM.io import write_to_csv, write_to_file
 from pyUTM.io import YamlReader
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import NetNode
@@ -19,10 +19,13 @@ brkoutbrd_filename = input_dir / Path('brkoutbrd_pin_assignments.yml')
 pt_filename = input_dir / Path('backplane_mapping_PT.yml')
 dcb_filename = input_dir / Path('backplane_mapping_DCB.yml')
 
-pt_true_result_output_filename = output_dir / Path(
+pt_true_output_filename = output_dir / Path(
     'AltiumNetlist_PT_Full_TrueType.csv')
-dcb_true_result_output_filename = output_dir / Path(
+dcb_true_output_filename = output_dir / Path(
     'AltiumNetlist_DCB_Full_TrueType.csv')
+pt_result_true_depop_aux_output_filename = output_dir / Path(
+    'AuxList_PT_Full_TrueType.csv'
+)
 
 #############################
 # Read signals and mappings #
@@ -547,8 +550,8 @@ for node in pt_result.keys():
         except Exception:
             pt_result_true[node] = pt_result[node]
 
-write_to_csv(pt_true_result_output_filename, pt_result_true)
-write_to_csv(dcb_true_result_output_filename, dcb_result_true)
+write_to_csv(pt_true_output_filename, pt_result_true)
+write_to_csv(dcb_true_output_filename, dcb_result_true)
 
 
 ###############################################
@@ -556,13 +559,29 @@ write_to_csv(dcb_true_result_output_filename, dcb_result_true)
 ###############################################
 
 pt_result_true_depop_aux = {'JP'+str(i): {
-    'Depopulation': [],
-    'All LV_SENSE_GND': [],
-    'All EC_RESET and EC_HYB_i2C': []
+    'Depopulation': {},
+    'All LV_SENSE_GND': {},
+    'All EC_RESET and EC_HYB_i2C': {}
 } for i in range(0, 12)}
 
 for node in pt_result_true:
     prop = pt_result_true[node]
     if prop['NOTE'] == 'Alpha only':
-        pt_result_true_depop_aux[node.PT]['Depopulation'].append(
-            prop['NETNAME'])
+        pt_result_true_depop_aux[node.PT]['Depopulation'][node] = prop
+    if 'LV_SENSE_GND' in prop['NETNAME']:
+        pt_result_true_depop_aux[node.PT]['All LV_SENSE_GND'][node] = prop
+    if 'EC_RESET' in prop['NETNAME'] or 'EC_HYB_i2C' in prop['NETNAME']:
+        pt_result_true_depop_aux[node.PT][
+            'All EC_RESET and EC_HYB_i2C'][node] = prop
+
+# Always clear the content of the output file
+write_to_file(pt_result_true_depop_aux_output_filename,
+              'Aux PT list for True-type', mode='w')
+
+for jp in pt_result_true_depop_aux.keys():
+    write_to_file(pt_result_true_depop_aux_output_filename, '# '+jp)
+    for sec in pt_result_true_depop_aux[jp].keys():
+        write_to_file(pt_result_true_depop_aux_output_filename, '## '+sec)
+        write_to_csv(pt_result_true_depop_aux_output_filename,
+                     pt_result_true_depop_aux[jp][sec], mode='a')
+        write_to_file(pt_result_true_depop_aux_output_filename, '')

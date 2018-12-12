@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 01:51 AM -0500
+# Last Change: Wed Dec 12, 2018 at 07:08 AM -0500
 
 import openpyxl
 import re
@@ -14,6 +14,15 @@ from itertools import zip_longest
 
 from .datatype import range, ColNum, NetNode, GenericNetNode, ExcelCell
 from .common import flatten
+
+
+#########################
+# General write to file #
+#########################
+
+def write_to_file(filename, data, mode='a', eol='\n'):
+    with open(filename, mode) as f:
+        f.write(data + eol)
 
 
 ##################
@@ -44,11 +53,11 @@ def csv_line(node, prop):
     return s[:-1]
 
 
-def write_to_csv(filename, data, formatter=csv_line):
-    with open(filename, 'w') as f:
+def write_to_csv(filename, data, formatter=csv_line, mode='w', eol='\n'):
+    with open(filename, mode) as f:
         for node in data.keys():
             attr = data[node]
-            f.write(formatter(node, attr) + '\n')
+            f.write(formatter(node, attr) + eol)
 
 
 #######################
