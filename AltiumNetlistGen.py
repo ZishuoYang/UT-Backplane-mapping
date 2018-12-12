@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 02:56 AM -0500
+# Last Change: Wed Dec 12, 2018 at 03:00 AM -0500
 
 from pathlib import Path
 
 from pyUTM.io import write_to_csv
-from pyUTM.io import XLReader, YamlReader
+from pyUTM.io import YamlReader
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import NetNode
 from pyUTM.datatype import ExcelCell
@@ -18,18 +18,18 @@ output_dir = Path('output')
 
 brkoutbrd_filename = input_dir / Path('brkoutbrd_pin_assignments.yml')
 pt_filename = input_dir / Path('backplane_mapping_PT.yml')
-dcb_filename = input_dir / Path(
-    'backplaneMapping_SEAMPins_trueType_v5.2.xlsm')
+dcb_filename = input_dir / Path('backplane_mapping_DCB.yml')
 
 pt_true_result_output_filename = output_dir / Path(
     'AltiumNetlist_PT_Full_TrueType.csv')
 dcb_true_result_output_filename = output_dir / Path(
     'AltiumNetlist_DCB_Full_TrueType.csv')
 
-############################################
-# Read pin assignments from breakout board #
-############################################
+#############################
+# Read signals and mappings #
+#############################
 
+# Read pin assignments from breakout board #
 BrkoutbrdReader = YamlReader(brkoutbrd_filename)
 brkoutbrd_descr = BrkoutbrdReader.read()
 
@@ -43,22 +43,13 @@ brkoutbrd_nested_signals = list(map(
 brkoutbrd_pin_assignments = [item for sublist in brkoutbrd_nested_signals
                              for item in sublist]
 
-
-##########################
 # Read info from PigTail #
-##########################
-
 PtReader = YamlReader(pt_filename)
 pt_descr = PtReader.read(flattener=lambda x: flatten(x, 'Pigtail pin'))
 
-
-######################
 # Read info from DCB #
-######################
-
-DcbReader = XLReader(dcb_filename)
-dcb_descr = DcbReader.read(range(0, 12), 'B5:K405',
-                           sortby=lambda d: RulePD.PADDING(d['SEAM pin']))
+DcbReader = YamlReader(dcb_filename)
+dcb_descr = PtReader.read(flattener=lambda x: flatten(x, 'SEAM pin'))
 
 
 ########################################
@@ -528,18 +519,19 @@ pt_rules = [
 ]
 
 # First, deal with differential pairs.
-for pt_id in range(0, len(pt_descr)):
-    for pt_entry in pt_descr[pt_id]:
+for jp in pt_descr.keys():
+    for pt_entry in pt_descr[jp]:
         if pt_entry['Signal ID'] is not None and (
            pt_entry['Signal ID'].endswith('SCL_N') or
            pt_entry['Signal ID'].endswith('SDA_N') or
            pt_entry['Signal ID'].endswith('RESET_N')):
             reference_id = pt_entry['Signal ID'][:-1] + 'P'
 
-            for pt_entry_ref in pt_descr[pt_id]:
+            for pt_entry_ref in pt_descr[jp]:
                 if pt_entry_ref['Signal ID'] == reference_id:
                     if pt_entry_ref['SEAM pin'] is not None:
                         dcb_id = RulePD.DCBID(pt_entry_ref['DCB slot'])
+
                         for dcb_entry in dcb_descr[int(dcb_id)]:
                             if pt_entry_ref['SEAM pin'] == dcb_entry['SEAM pin'] and\
                                dcb_entry['Pigtail slot'] is not None and\
