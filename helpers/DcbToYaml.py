@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Dec 11, 2018 at 02:16 AM -0500
+# Last Change: Thu Dec 13, 2018 at 10:29 AM -0500
 
 import yaml
 
@@ -20,8 +20,7 @@ from pyUTM.common import unflatten
 
 input_dir = Path('..') / Path('input')
 
-dcb_filename = input_dir / Path(
-    'backplaneMapping_SEAMPins_trueType_v5.2.xlsm')
+dcb_filename = sys.argv[1]
 dcb_yaml_filename = input_dir / Path('backplane_mapping_DCB.yml')
 
 

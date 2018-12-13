@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Dec 11, 2018 at 02:16 AM -0500
+# Last Change: Thu Dec 13, 2018 at 10:57 AM -0500
 
 import yaml
 
@@ -20,8 +20,7 @@ from pyUTM.common import unflatten
 
 input_dir = Path('..') / Path('input')
 
-pt_filename = input_dir / Path(
-    'backplaneMapping_pigtailPins_trueType_strictDepopulation_v5.2.xlsm')
+pt_filename = sys.argv[1]
 pt_yaml_filename = input_dir / Path('backplane_mapping_PT.yml')
 
 
@@ -55,7 +54,7 @@ yaml.add_representer(
 
 def note_generator(s):
     if s is not None and s.font_color is not None:
-        if s.font_color.theme != 0:
+        if s.font_color.theme != 0 and s.font_color.theme != 1:
             return 'Alpha only'
         elif s.font_color.tint != 0.0:
             return 'Unused'
