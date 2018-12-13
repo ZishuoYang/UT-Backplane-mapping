@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 01:04 AM -0500
+# Last Change: Thu Dec 13, 2018 at 01:36 PM -0500
 
 from pathlib import Path
 from os import environ
@@ -11,7 +11,7 @@ from pyUTM.selection import SelectorNet, RuleNet
 from pyUTM.datatype import GenericNetNode
 from AltiumNetlistGen import input_dir, pt_result
 
-netlist = input_dir / Path("backplane_netlists") / Path('PathFinder.net')
+netlist = input_dir / Path("backplane_netlists") / Path('path_finder.net')
 cache_dir = 'cache'
 
 
