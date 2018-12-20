@@ -9,16 +9,10 @@ env:
 cache: pip
 
 install:
-    - pip install -r ./requirements.txt
+    - pip install -r ./pyUTM/requirements.txt
 
 script:
-    - cd ./test
-    - python ./common.unittest.py
-    - python ./datatype.unittest.py
-    - python ./io.unittest.py
-    - python ./selection.unittest.py
-    - python ./legacy.unittest.py
-    - cd ../ && mkdir output
+    - mkdir output
     - python ./AltiumNetlistGen.py
 
 deploy:

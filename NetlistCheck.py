@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 13, 2018 at 01:36 PM -0500
+# Last Change: Thu Dec 20, 2018 at 12:00 AM -0500
 
 from pathlib import Path
 from os import environ
+
+import sys
+sys.path.insert(0, './pyUTM')
 
 from pyUTM.io import PcadReader, PcadReaderCached
 from pyUTM.selection import SelectorNet, RuleNet

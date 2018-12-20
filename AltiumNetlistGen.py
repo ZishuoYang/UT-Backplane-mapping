@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 12, 2018 at 11:30 AM -0500
+# Last Change: Thu Dec 20, 2018 at 12:00 AM -0500
 
 from pathlib import Path
 from copy import deepcopy
+
+import sys
+sys.path.insert(0, './pyUTM')
 
 from pyUTM.io import write_to_csv, write_to_file
 from pyUTM.io import YamlReader
