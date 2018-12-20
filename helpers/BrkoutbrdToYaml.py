@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Nov 13, 2018 at 07:00 PM -0500
+# Last Change: Thu Dec 20, 2018 at 01:14 AM -0500
 
 import yaml
 
@@ -10,7 +10,7 @@ from collections import defaultdict
 from yaml.representer import Representer
 
 import sys
-sys.path.insert(0, '..')
+sys.path.insert(0, '../pyUTM')
 
 from pyUTM.io import XLReader
 
