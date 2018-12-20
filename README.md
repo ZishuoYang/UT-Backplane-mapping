@@ -13,18 +13,9 @@ to design the LHCb UT backplane.
 
 
 ## Prerequisite
+Install the dependencies:
 ```
-Python: >= 3.7 (this is a hard requirement)
-openpyxl: >= 2.5.3
-pyparsing
-tco
-joblib
-pyyaml
-```
-
-These `Python` libraries can be installed via:
-```
-pip install -r requirements.txt
+pip install -r pyUTM/requirements.txt
 ```
 
 
