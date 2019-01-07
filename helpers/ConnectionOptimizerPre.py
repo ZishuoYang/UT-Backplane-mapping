@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 07, 2018 at 01:21 AM -0500
+# Last Change: Thu Dec 20, 2018 at 01:14 AM -0500
 
 import yaml
 
 from pathlib import Path
 
 import sys
-sys.path.insert(0, '..')
+sys.path.insert(0, '../pyUTM')
 
 input_dir  = Path('..') / Path('input')
 output_dir = Path('..') / Path('output')

@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Sep 24, 2018 at 01:48 PM -0400
+# Last Change: Thu Dec 20, 2018 at 12:00 AM -0500
 
 from pathlib import Path
+
+import sys
+sys.path.insert(0, './pyUTM')
 
 from pyUTM.io import XLReader, write_to_csv
 from pyUTM.selection import RulePD

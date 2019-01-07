@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 13, 2018 at 10:29 AM -0500
+# Last Change: Thu Dec 20, 2018 at 01:15 AM -0500
 
 import yaml
 
@@ -9,7 +9,7 @@ from pathlib import Path
 from collections import OrderedDict
 
 import sys
-sys.path.insert(0, '..')
+sys.path.insert(0, '../pyUTM')
 
 from pyUTM.datatype import ExcelCell
 from pyUTM.io import XLReader

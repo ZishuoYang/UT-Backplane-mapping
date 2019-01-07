@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Dec 11, 2018 at 12:42 AM -0500
+# Last Change: Thu Dec 20, 2018 at 01:15 AM -0500
 
 import yaml
 
 from pathlib import Path
 
 import sys
-sys.path.insert(0, '..')
+sys.path.insert(0, '../pyUTM')
 
 from pyUTM.selection import Rule, Selector
 from pyUTM.common import collect_terms
