@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Jan 18, 2019 at 11:59 AM -0500
+# Last Change: Fri Jan 18, 2019 at 03:31 PM -0500
 
 from pathlib import Path
 from os import environ
@@ -9,7 +9,7 @@ from os import environ
 import sys
 sys.path.insert(0, './pyUTM')
 
-from pyUTM.io import PcadReader, PcadReaderCached
+from pyUTM.io import PcadBackPlaneReader, PcadBackPlaneReaderCached
 from pyUTM.selection import SelectorNet, RuleNet
 from pyUTM.datatype import GenericNetNode
 from AltiumNetlistGen import input_dir
@@ -26,13 +26,12 @@ cache_dir = 'cache'
 
 if 'IN_TRAVIS_CI' in environ:
     print('Travis CI builder detected. Skip caching.')
-    NetReader = PcadReader(netlist)
+    NetReader = PcadBackPlaneReader(netlist)
 else:
-    NetReader = PcadReaderCached(cache_dir, netlist)
+    NetReader = PcadBackPlaneReaderCached(cache_dir, netlist)
 
-node_dict = NetReader.read()
+node_dict, netlist_dict = NetReader.read()
 node_list = list(node_dict.keys())
-netlist_dict = NetReader.readnets()
 
 
 ########################################
