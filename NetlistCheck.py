@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 20, 2018 at 12:00 AM -0500
+# Last Change: Fri Jan 18, 2019 at 11:59 AM -0500
 
 from pathlib import Path
 from os import environ
@@ -12,9 +12,11 @@ sys.path.insert(0, './pyUTM')
 from pyUTM.io import PcadReader, PcadReaderCached
 from pyUTM.selection import SelectorNet, RuleNet
 from pyUTM.datatype import GenericNetNode
-from AltiumNetlistGen import input_dir, pt_result
+from AltiumNetlistGen import input_dir
+from AltiumNetlistGen import pt_result_true
 
-netlist = input_dir / Path("backplane_netlists") / Path('path_finder.net')
+netlist = input_dir / Path("backplane_netlists") / Path(
+    'backplane_true_type.net')
 cache_dir = 'cache'
 
 
@@ -57,7 +59,7 @@ class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
     def process(self, node):
         return (
             'DCB-PT',
-            "NETNAME inconsistent: Tom's: {}, Zishuo's: {}, NODE: {}".format(
+            "NETNAME inconsistent: Implemented: {}, Specified: {}, NODE: {}".format(
                 self.node_dict[node]['NETNAME'],
                 self.reference[node]['NETNAME'],
                 self.node_to_str(node)
@@ -75,7 +77,7 @@ class RuleNet_DCB_Or_PT_NetName_Inconsistent(RuleNet):
     def process(self, node):
         return (
             'DCB-None or None-PT',
-            "NETNAME inconsistent: Tom's: {}, Zishuo's: {}, NODE: {}".format(
+            "NETNAME inconsistent: Implemented: {}, Specified: {}, NODE: {}".format(
                 self.node_dict[node]['NETNAME'],
                 self.reference[node]['NETNAME'],
                 self.node_to_str(node)
@@ -102,8 +104,8 @@ class RuleNet_Node_NotIn(RuleNet):
 
     def process(self, node):
         return (
-            'Not Implemented by Tom',
-            "NOT present in Tom's net: NET: {}, NODE: {}".format(
+            'Not Implemented',
+            "NOT Implementation: NET: {}, NODE: {}".format(
                 self.reference[node]['NETNAME'], self.node_to_str(node)
             )
         )
@@ -184,20 +186,20 @@ class RuleNet_One_To_N(RuleNet):
 ################################################
 
 net_rules = [
-    RuleNet_ForRefOnly(node_dict, node_list, pt_result),
-    RuleNet_Node_NotIn(node_dict, node_list, pt_result),
+    RuleNet_ForRefOnly(node_dict, node_list, pt_result_true),
+    RuleNet_Node_NotIn(node_dict, node_list, pt_result_true),
     RuleNet_DCB_PT_NetName_Inconsistent(node_dict, node_list,
-                                        pt_result),
-    RuleNet_One_To_N(netlist_dict, node_dict, node_list, pt_result),
+                                        pt_result_true),
+    RuleNet_One_To_N(netlist_dict, node_dict, node_list, pt_result_true),
     RuleNet_DCB_Or_PT_NetName_Equal_Cavalier(node_dict, node_list,
-                                             pt_result),
+                                             pt_result_true),
     RuleNet_DCB_Or_PT_NetName_Inconsistent(node_dict, node_list,
-                                           pt_result),
+                                           pt_result_true),
 ]
 
 
-NetSelector = SelectorNet(pt_result, net_rules)
-print('====ERRORS for Backplane connections====')
+NetSelector = SelectorNet(pt_result_true, net_rules)
+print('====ERRORS for true-type backplane connections====')
 net_result = NetSelector.do()
 
 for section in net_result.keys():
