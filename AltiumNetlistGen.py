@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 20, 2018 at 12:00 AM -0500
+# Last Change: Tue Jan 22, 2019 at 01:55 PM -0500
 
 from pathlib import Path
 from copy import deepcopy
@@ -176,7 +176,7 @@ class RulePT_Default(RulePD):
         net_name = jp + '_' + data['Signal ID']
         return (
             NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
-            self.prop_gen(net_name, data['Note'], '_ForRefOnly_'))
+            self.prop_gen(net_name, data['Note'], '_FRO_'))
 
 
 class RulePT_PathFinder(RulePD):
