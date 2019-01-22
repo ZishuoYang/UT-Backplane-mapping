@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Jan 22, 2019 at 01:47 PM -0500
+# Last Change: Tue Jan 22, 2019 at 01:58 PM -0500
 
 from pathlib import Path
 from os import environ
@@ -12,13 +12,15 @@ sys.path.insert(0, './pyUTM')
 from pyUTM.io import PcadBackPlaneReader, PcadBackPlaneReaderCached
 from pyUTM.selection import SelectorNet, RuleNet
 from pyUTM.datatype import GenericNetNode
-# from pyUTM.datatype import NetNode  # for debugging
+from pyUTM.datatype import NetNode  # for debugging
 from AltiumNetlistGen import input_dir
-from AltiumNetlistGen import pt_result_true
+from AltiumNetlistGen import pt_result_true, dcb_result_true
 
 netlist = input_dir / Path("backplane_netlists") / Path(
     'backplane_true_type.net')
 cache_dir = 'cache'
+
+pt_result_true.update(dcb_result_true)
 
 
 ####################################
@@ -105,7 +107,7 @@ class RuleNet_Node_NotIn(RuleNet):
     def process(self, node):
         return (
             'Not Implemented',
-            "NOT Implementation: NET: {}, NODE: {}".format(
+            "NOT implemented: NET: {}, NODE: {}".format(
                 self.reference[node]['NETNAME'], self.node_to_str(node)
             )
         )
@@ -198,8 +200,8 @@ net_rules = [
 ]
 
 # Debug
-# for rule in net_rules:
-#     rule.debug_node = NetNode('JD8', 'A1')
+for rule in net_rules:
+    rule.debug_node = NetNode('JD8', 'A1')
 
 NetSelector = SelectorNet(pt_result_true, net_rules)
 print('====ERRORS for true-type backplane connections====')
