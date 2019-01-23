@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Jan 22, 2019 at 01:58 PM -0500
+# Last Change: Wed Jan 23, 2019 at 03:31 PM -0500
 
 from pathlib import Path
 from os import environ
@@ -60,7 +60,7 @@ class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
 
     def process(self, node):
         return (
-            'DCB-PT',
+            '2. DCB-PT',
             "NETNAME inconsistent: Implemented: {}, Specified: {}, NODE: {}".format(
                 self.node_dict[node]['NETNAME'],
                 self.reference[node]['NETNAME'],
@@ -78,7 +78,7 @@ class RuleNet_DCB_Or_PT_NetName_Inconsistent(RuleNet):
 
     def process(self, node):
         return (
-            'DCB-None or None-PT',
+            '3. DCB-None or None-PT',
             "NETNAME inconsistent: Implemented: {}, Specified: {}, NODE: {}".format(
                 self.node_dict[node]['NETNAME'],
                 self.reference[node]['NETNAME'],
@@ -106,7 +106,7 @@ class RuleNet_Node_NotIn(RuleNet):
 
     def process(self, node):
         return (
-            'Not Implemented',
+            '1. Not Implemented',
             "NOT implemented: NET: {}, NODE: {}".format(
                 self.reference[node]['NETNAME'], self.node_to_str(node)
             )
@@ -115,16 +115,16 @@ class RuleNet_Node_NotIn(RuleNet):
 
 class RuleNet_ForRefOnly(RuleNet):
     def match(self, node):
-        if self.reference[node]['NETNAME'] is None:
+        if self.reference[node]['ATTR'] is '_FRO_':
             return True
         else:
             return False
 
     def process(self, node):
         return (
-            'For Reference Only',
-            "NOT populated: ATTR: {}, NODE: {}".format(
-                self.reference[node]['ATTR'], self.node_to_str(node)
+            '4. For Reference Only',
+            "NOT populated: NETNAME: {}, NODE: {}".format(
+                self.reference[node]['NETNAME'], self.node_to_str(node)
             )
         )
 
@@ -207,7 +207,7 @@ NetSelector = SelectorNet(pt_result_true, net_rules)
 print('====ERRORS for true-type backplane connections====')
 net_result = NetSelector.do()
 
-for section in net_result.keys():
+for section in sorted(net_result.keys()):
     print('========{}========'.format(section))
     for entry in net_result[section]:
         print(entry)
