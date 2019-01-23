@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Jan 22, 2019 at 01:55 PM -0500
+# Last Change: Wed Jan 23, 2019 at 03:17 PM -0500
 
 from pathlib import Path
 from copy import deepcopy
@@ -247,7 +247,7 @@ class RulePT_PTLvSource(RulePD):
 
     def process(self, data, jp):
         net_name = jp + '_' + data['Signal ID']
-        attr = '_ForRefOnly_'
+        attr = '_FRO_'
 
         for rule in self.rules:
             pt_name, tail = rule.split('_', 1)
@@ -354,7 +354,7 @@ class RuleDCB_Default(RulePD):
         net_name = jd + '_' + data['Signal ID']
         return (
             NetNode(DCB=jd, DCB_PIN=data['SEAM pin']),
-            self.prop_gen(net_name, attr='_ForRefOnly_'))
+            self.prop_gen(net_name, attr='_FRO_'))
 
 
 class RuleDCB_PathFinder(RulePD):
