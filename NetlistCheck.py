@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 01, 2019 at 10:05 AM -0500
+# Last Change: Fri Feb 01, 2019 at 10:10 AM -0500
 
 import re
 
@@ -48,7 +48,7 @@ for jp in pt_result_true_depop_aux.keys():
 print("Checking depopulated differential pairs...")
 for diff_net in all_diff_nets:
     components = netlist_dict[diff_net]
-    if True not in map(lambda x: bool(re.search(x, r'^R\d+')), components):
+    if True not in map(lambda x: bool(re.search(r'^R\d+', x)), components):
         print("No resistor found in {}".format(diff_net))
 
 
