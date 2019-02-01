@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Jan 31, 2019 at 02:30 PM -0500
+# Last Change: Fri Feb 01, 2019 at 07:14 AM -0500
 
 from pathlib import Path
 
 import sys
 sys.path.insert(0, './pyUTM')
 
-from pyUTM.io import PcadReader
+from pyUTM.legacy import PcadBackPlaneReader
 from pyUTM.selection import SelectorNet, RuleNet
-from pyUTM.datatype import GenericNetNode
 from pyUTM.datatype import NetNode  # for debugging
 from AltiumNetlistGen import input_dir
 from AltiumNetlistGen import pt_result_true, dcb_result_true
@@ -26,23 +25,15 @@ pt_result_true.update(dcb_result_true)
 # Read info from backplane netlist #
 ####################################
 
-NetReader = PcadReader(netlist)
+NetLegacyReader = PcadBackPlaneReader(netlist)
 
-node_dict, netlist_dict = NetReader.read()
+node_dict, netlist_dict = NetLegacyReader.read()
 node_list = list(node_dict.keys())
 
 
 ########################################
 # Cross-checking rules for DCB/PigTail #
 ########################################
-
-class RuleNet_DCB_DCB(RuleNet):
-    def match(self, node):
-        if isinstance(node, GenericNetNode):
-            return True
-        else:
-            return False
-
 
 class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
     def match(self, node):
@@ -110,7 +101,7 @@ class RuleNet_Node_NotIn(RuleNet):
 
 class RuleNet_ForRefOnly(RuleNet):
     def match(self, node):
-        if self.reference[node]['ATTR'] is '_FRO_':
+        if self.reference[node]['ATTR'] == '_FRO_':
             return True
         else:
             return False
