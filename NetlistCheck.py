@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 01, 2019 at 07:14 AM -0500
+# Last Change: Fri Feb 01, 2019 at 10:05 AM -0500
+
+import re
 
 from pathlib import Path
 
@@ -13,6 +15,7 @@ from pyUTM.selection import SelectorNet, RuleNet
 from pyUTM.datatype import NetNode  # for debugging
 from AltiumNetlistGen import input_dir
 from AltiumNetlistGen import pt_result_true, dcb_result_true
+from AltiumNetlistGen import pt_result_true_depop_aux
 
 netlist = input_dir / Path("backplane_netlists") / Path(
     'backplane_true_type.net')
@@ -29,6 +32,24 @@ NetLegacyReader = PcadBackPlaneReader(netlist)
 
 node_dict, netlist_dict = NetLegacyReader.read()
 node_list = list(node_dict.keys())
+
+
+##########################################
+# Check differential signal depopulation #
+##########################################
+
+all_diff_nets = []
+for jp in pt_result_true_depop_aux.keys():
+    for node in pt_result_true_depop_aux[jp]['Depopulation: ELK']:
+        all_diff_nets.append(
+            pt_result_true_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
+        )
+
+print("Checking depopulated differential pairs...")
+for diff_net in all_diff_nets:
+    components = netlist_dict[diff_net]
+    if True not in map(lambda x: bool(re.search(x, r'^R\d+')), components):
+        print("No resistor found in {}".format(diff_net))
 
 
 ########################################
