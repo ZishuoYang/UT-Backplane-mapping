@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Feb 06, 2019 at 03:13 PM -0500
+# Last Change: Wed Feb 06, 2019 at 03:14 PM -0500
 
 import re
 from pathlib import Path
@@ -94,19 +94,21 @@ def find_matching_entries(flattened, ref, functor):
 # access via entries['JDX']['PINXX']
 dcb_ref_proto = make_dcb_ref(dcb_descr)
 
+pt_descr_flattend = flatten_descr(pt_descr)
+
 
 ###########################
 # Find ASIC elink entries #
 ###########################
 
 filter_elk = filter_by_signal_id([r'ASIC'])
-elks_proto = find_matching_entries(pt_descr, dcb_ref_proto, filter_elk)
+elks_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto, filter_elk)
 
 # Now since elinks are differential signals, we have two redundant description:
 # one by all positive channels, one by negative channels. Here we pick positive
 # channels only (fix a gauge).
 filter_positive = filter_by_signal_id([r'_P$'])
-elks_proto = find_matching_entries(pt_descr, dcb_ref_proto, filter_elk)
+elks_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto, filter_elk)
 
 
 ############################################################
