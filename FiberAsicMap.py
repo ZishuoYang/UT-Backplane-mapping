@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Feb 06, 2019 at 02:49 PM -0500
+# Last Change: Wed Feb 06, 2019 at 03:13 PM -0500
 
+import re
 from pathlib import Path
 
 import sys
@@ -38,6 +39,17 @@ def make_dcb_ref(dcb_descr):
     return dcb_ref
 
 
+def flatten_descr(descr, header='Pigtail slot'):
+    flattened = []
+
+    for key, items in descr.items():
+        for i in items:
+            i[header] = key
+            flattened.append(i)
+
+    return flattened
+
+
 # Make selections ##############################################################
 
 def filter_by_signal_id(keywords):
@@ -45,7 +57,7 @@ def filter_by_signal_id(keywords):
         matched = False
 
         for kw in keywords:
-            if kw in entry['Signal ID']:
+            if bool(re.search(kw, entry['Signal ID'])):
                 matched = True
                 break
 
@@ -53,33 +65,33 @@ def filter_by_signal_id(keywords):
     return filter_functor
 
 
-def find_matching_entries(pt_descr, dcb_ref, functor):
+def find_matching_entries(flattened, ref, functor):
     result = []
 
-    for jp, entries in pt_descr.items():
-        for i in filter(functor, entries):
-            try:
-                jd, jd_pin = (i['DCB slot'], i['SEAM pin'])
+    for i in filter(functor, flattened):
+        try:
+            jd, jd_pin = (i['DCB slot'], i['SEAM pin'])
 
-                if i['Note'] != 'Unused':
-                    i['DCB signal ID'] = dcb_ref[jd][jd_pin]['Signal ID']
-                    result.append(i)
+            if i['Note'] != 'Unused':
+                i['DCB signal ID'] = ref[jd][jd_pin]['Signal ID']
+                result.append(i)
 
-            except Exception as e:
-                print('{} occured while processing DCB connector {}, pin {}'.format(
-                    e.__class__.__name__, jd, jd_pin))
-                print('The Pigtail side Signal ID is: {}'.format(
-                    i['Signal ID']))
-                break
+        except Exception as e:
+            print('{} occured while processing DCB connector {}, pin {}'.format(
+                e.__class__.__name__, jd, jd_pin))
+            print('The Pigtail side Signal ID is: {}'.format(
+                i['Signal ID']))
+            break
 
     return result
 
 
-##############################
-# Unflatten DCB descriptions #
-##############################
-# We do this so that DCB entries can be access via entries['JDX']['PINXX']
+##########################
+# Prepare for selections #
+##########################
 
+# Convert DCB description to a dictionary: We do this so that DCB entries can be
+# access via entries['JDX']['PINXX']
 dcb_ref_proto = make_dcb_ref(dcb_descr)
 
 
@@ -87,7 +99,13 @@ dcb_ref_proto = make_dcb_ref(dcb_descr)
 # Find ASIC elink entries #
 ###########################
 
-filter_elk = filter_by_signal_id(['ASIC'])
+filter_elk = filter_by_signal_id([r'ASIC'])
+elks_proto = find_matching_entries(pt_descr, dcb_ref_proto, filter_elk)
+
+# Now since elinks are differential signals, we have two redundant description:
+# one by all positive channels, one by negative channels. Here we pick positive
+# channels only (fix a gauge).
+filter_positive = filter_by_signal_id([r'_P$'])
 elks_proto = find_matching_entries(pt_descr, dcb_ref_proto, filter_elk)
 
 
