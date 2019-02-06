@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Feb 05, 2019 at 02:23 PM -0500
+# Last Change: Wed Feb 06, 2019 at 02:27 PM -0500
 
 from pathlib import Path
 
@@ -9,8 +9,8 @@ import sys
 sys.path.insert(0, './pyUTM')
 
 from pyUTM.common import unflatten
-from AltiumNetlistGen import pt_descr as pt_descr_true
-from AltiumNetlistGen import dcb_descr as dcb_descr_true
+from AltiumNetlistGen import pt_descr
+from AltiumNetlistGen import dcb_descr
 
 output_dir = Path('output')
 elk_mapping_output_filename = output_dir / Path('AsicToFiberMapping.csv')
@@ -76,7 +76,7 @@ def find_matching_entries(pt_descr, dcb_ref, functor):
 ##############################
 # We do this so that DCB entries can be access via entries['JDX']['PINXX']
 
-dcb_ref_true = make_dcb_ref(dcb_descr_true)
+dcb_ref_proto = make_dcb_ref(dcb_descr)
 
 
 ###########################
@@ -84,8 +84,15 @@ dcb_ref_true = make_dcb_ref(dcb_descr_true)
 ###########################
 
 filter_elk = filter_by_signal_id(['ASIC'])
+elks_proto = find_matching_entries(pt_descr, dcb_ref_proto, filter_elk)
 
-elk_true = find_matching_entries(pt_descr_true, dcb_ref_true, filter_elk)
+
+############################################################
+# Generate ASIC elink fiber mapping for a single backplane #
+############################################################
+# NOTE: Here we'll use the flex type as part of the unique identifier for ASICs
+#       because signal type moves with flex type (e.g. 'X-0-M'), not pigtail
+#       connector label.
 
 
 #################################################
