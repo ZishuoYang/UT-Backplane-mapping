@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Feb 06, 2019 at 02:27 PM -0500
+# Last Change: Wed Feb 06, 2019 at 02:49 PM -0500
 
 from pathlib import Path
 
@@ -20,6 +20,8 @@ elk_mapping_output_filename = output_dir / Path('AsicToFiberMapping.csv')
 # Helpers #
 ###########
 
+# Regularize input #############################################################
+
 def unpack_one_elem_dict(d):
     return tuple(d.items())[0]
 
@@ -35,6 +37,8 @@ def make_dcb_ref(dcb_descr):
 
     return dcb_ref
 
+
+# Make selections ##############################################################
 
 def filter_by_signal_id(keywords):
     def filter_functor(entry):
@@ -94,29 +98,6 @@ elks_proto = find_matching_entries(pt_descr, dcb_ref_proto, filter_elk)
 #       because signal type moves with flex type (e.g. 'X-0-M'), not pigtail
 #       connector label.
 
-
-#################################################
-# Do ASIC-Fiber mapping and control-DCB mapping #
-#################################################
-
-#  PT slot #  | Plane/Stave/Flex
-#     0       | X-0-M
-#     1       | X-0-S
-#     2       | S-0-S
-#     3       | S-0-M
-#     4       | X-1-M
-#     5       | X-1-S
-#     6       | S-1-S
-#     7       | S-1-M
-#     8       | X-2-M
-#     9       | X-2-S
-#     10      | S-2-S
-#     11      | S-2-M
-#
-# X/S for vertical/stereo;
-# 0/1/2 for Stave index;
-# M/S for DataFlex Medium/Short*
-# (*except for Stave-0 where S is Long)
 
 # # Initialize the dict to store fiber-asic map
 # fiber_asic_descr = {}
