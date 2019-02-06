@@ -1,4 +1,4 @@
-PEPI,Stave,Flex,Hybrid,ASIC_index,BP_index(alpha/beta/gamma),BP_type(true/mirrored),DCB_index,GBTx_index,GBTx_channels(GBT frame bytes)
+PEPI,Stave,Flex,Hybrid,ASIC index,BP index (alpha/beta/gamma),BP type (true/mirrored),DCB index,GBTx index,GBTx channels (GBT frame bytes)
 Magnet-Top-C,UTbX_1C,X-0-M,P1,4,a,t,2,5,6-5-4-3
 Magnet-Top-C,UTbX_1C,X-0-M,P1,5,a,t,2,5,11-10-9-8
 Magnet-Top-C,UTbX_1C,X-0-M,P1,6,a,t,2,0,6-5-4-3
