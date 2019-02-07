@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 09:54 AM -0500
+# Last Change: Thu Feb 07, 2019 at 10:07 AM -0500
 
 import re
 
@@ -116,28 +116,18 @@ def find_gbtx_info(d):
 def find_asic_bp_id(hybrid, asic_idx, flex):
     if hybrid == 'P1' or hybrid == 'P2':
         if asic_idx <= 3:
-            asic_bp_id = flex + '_' + hybrid + '_WEST' + '_ASIC_' + \
-                str(asic_idx)
+            asic_bp_id = hybrid + '_WEST' + '_ASIC_' +  str(asic_idx)
         else:
-            asic_bp_id = flex + '_' + hybrid + '_EAST' + '_ASIC_' + \
-                str(asic_idx)
+            asic_bp_id = hybrid + '_EAST' + '_ASIC_' + str(asic_idx)
 
     else:
-        asic_bp_id = flex + '_' + hybrid + '_ASIC_' + str(asic_idx)
+        asic_bp_id = hybrid + '_ASIC_' + str(asic_idx)
 
     return asic_bp_id
 
 
 def find_pt_slot(d):
     return int(d['Pigtail slot'][2:])
-
-
-# Sorting ######################################################################
-
-# NOTE: This modifies the list in-place
-def sort_descr(descr, kw='asic_bp_id'):
-    for k in descr.keys():
-        descr[k].sort(key=lambda x: x[kw])
 
 
 # Swapping JD/JP connectors for true/mirror type from backplane proto ##########
@@ -176,9 +166,9 @@ elks_proto_p = find_matching_entries(elks_proto, dcb_ref_proto, filter_positive)
 #       connector label.
 
 # Initialize elink mapppings
-elks_descr_alpha = defaultdict(list)
-elks_descr_beta = defaultdict(list)
-elks_descr_gamma = defaultdict(list)
+elks_descr_alpha = defaultdict(lambda: defaultdict(list))
+elks_descr_beta  = defaultdict(lambda: defaultdict(list))
+elks_descr_gamma = defaultdict(lambda: defaultdict(list))
 
 for elk in elks_proto_p:
     # Find flex type, this is used for all backplanes
@@ -191,37 +181,33 @@ for elk in elks_proto_p:
     asic_bp_id = find_asic_bp_id(hybrid, asic_idx, flex)
 
     # Unconditionally append to alpha type backplane
-    elks_descr_alpha[flex].append({
+    elks_descr_alpha[flex][asic_bp_id].append({
         'hybrid': hybrid,
-        'asic_bp_id': asic_bp_id,
         'asic_idx': asic_idx,
         'asic_ch': asic_ch,
+        'gbtx_idx': gbtx_idx,
         'gbtx_ch': gbtx_ch
     })
 
     # Now depopulate to beta type
     if elk['Note'] != 'Alpha only':
-        elks_descr_beta[flex].append({
+        elks_descr_beta[flex][asic_bp_id].append({
             'hybrid': hybrid,
-            'asic_bp_id': asic_bp_id,
             'asic_idx': asic_idx,
             'asic_ch': asic_ch,
+            'gbtx_idx': gbtx_idx,
             'gbtx_ch': gbtx_ch
         })
 
         # Finally, depopulate further to gamma
         if find_pt_slot(elk) < 8:
-            elks_descr_gamma[flex].append({
+            elks_descr_gamma[flex][asic_bp_id].append({
                 'hybrid': hybrid,
-                'asic_bp_id': asic_bp_id,
                 'asic_idx': asic_idx,
                 'asic_ch': asic_ch,
+                'gbtx_idx': gbtx_idx,
                 'gbtx_ch': gbtx_ch
             })
-
-# Sort all elink descriptions by asic_bp_id
-for descr in [elks_descr_alpha, elks_descr_beta, elks_descr_gamma]:
-    sort_descr(descr)
 
 
 # # Check that dcb_idx and gbtx_idx do not change for single ASIC
@@ -246,8 +232,6 @@ for descr in [elks_descr_alpha, elks_descr_beta, elks_descr_gamma]:
 ########################################
 # Generate list of ASICs for all PEPIs #
 ########################################
-
-# asic_bp_id_list = sorted(fiber_asic_descr)
 
 # # Write to CSV file
 # with open('asic_map.csv', 'w') as f:
