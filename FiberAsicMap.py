@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 09:48 AM -0500
+# Last Change: Thu Feb 07, 2019 at 09:54 AM -0500
 
 import re
 
@@ -134,6 +134,11 @@ def find_pt_slot(d):
 
 # Sorting ######################################################################
 
+# NOTE: This modifies the list in-place
+def sort_descr(descr, kw='asic_bp_id'):
+    for k in descr.keys():
+        descr[k].sort(key=lambda x: x[kw])
+
 
 # Swapping JD/JP connectors for true/mirror type from backplane proto ##########
 
@@ -215,7 +220,8 @@ for elk in elks_proto_p:
             })
 
 # Sort all elink descriptions by asic_bp_id
-for k in elks_descr_alpha:
+for descr in [elks_descr_alpha, elks_descr_beta, elks_descr_gamma]:
+    sort_descr(descr)
 
 
 # # Check that dcb_idx and gbtx_idx do not change for single ASIC
