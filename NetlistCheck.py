@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 03:27 PM -0500
+# Last Change: Thu Feb 07, 2019 at 04:52 PM -0500
 
 import re
+
+from datetime import datetime
+from pathlib import Path
+from os.path import basename
 
 import sys
 sys.path.insert(0, './pyUTM')
@@ -14,11 +18,43 @@ from pyUTM.datatype import NetNode  # for debugging
 from AltiumNetlistGen import pt_result_true, dcb_result_true
 from AltiumNetlistGen import pt_result_true_depop_aux
 
+log_dir = Path('log')
+
+
+###########
+# Helpers #
+###########
+
 # Use first argument as netlist filename.
 netlist = sys.argv[1]
 
 # Combine Pigtail and DCB rules into a larger set of rules
 pt_result_true.update(dcb_result_true)
+
+
+def generate_log_filename(time_format="%Y-%m-%d_%H%M%S", file_extension='.log'):
+    header, _ = basename(__file__).split('.', 1)
+    filename = sys.argv[1].lower()
+
+    if 'true' in filename:
+        type = 'true'
+    elif 'mirror' in filename:
+        type = 'mirror'
+    else:
+        type = 'unknown'
+
+    time = datetime.now().strftime(time_format)
+
+    return log_dir / Path(header+'-'+type+'-'+time+file_extension)
+
+
+def write_to_log(filename, data, mode='w', eol='\n'):
+    with open(filename, mode) as f:
+        for section in sorted(data.keys()):
+            f.write('========{}========'.format(section) + eol)
+            for entry in data[section]:
+                f.write(entry + eol)
+            f.write(eol)
 
 
 ####################################
@@ -208,11 +244,6 @@ for rule in net_rules:
     rule.debug_node = NetNode('JD8', 'A1')
 
 NetSelector = SelectorNet(pt_result_true, net_rules)
-print('====ERRORS for true-type backplane connections====')
 net_result = NetSelector.do()
 
-for section in sorted(net_result.keys()):
-    print('========{}========'.format(section))
-    for entry in net_result[section]:
-        print(entry)
-    print('')
+write_to_log(generate_log_filename(), net_result)
