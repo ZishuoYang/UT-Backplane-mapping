@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 04:52 PM -0500
+# Last Change: Thu Feb 07, 2019 at 04:58 PM -0500
 
 import re
 
@@ -246,4 +246,9 @@ for rule in net_rules:
 NetSelector = SelectorNet(pt_result_true, net_rules)
 net_result = NetSelector.do()
 
-write_to_log(generate_log_filename(), net_result)
+try:
+    log_filename = sys.argv[2]
+except IndexError:
+    log_filename = generate_log_filename()
+
+write_to_log(log_filename, net_result)
