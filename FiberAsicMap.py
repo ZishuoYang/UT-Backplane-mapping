@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Feb 06, 2019 at 03:14 PM -0500
+# Last Change: Thu Feb 07, 2019 at 09:48 AM -0500
 
 import re
+
 from pathlib import Path
+from collections import defaultdict
 
 import sys
 sys.path.insert(0, './pyUTM')
 
 from pyUTM.common import unflatten
+from pyUTM.common import jp_flex_type_proto
 from AltiumNetlistGen import pt_descr
 from AltiumNetlistGen import dcb_descr
 
@@ -86,6 +89,55 @@ def find_matching_entries(flattened, ref, functor):
     return result
 
 
+# Find ASIC/elink channels/etc. info ###########################################
+
+def find_proto_flex_type(d):
+    jp = d['Pigtail slot']
+    return jp_flex_type_proto[jp]
+
+
+def find_hybrid_asic_info(d):
+    pt_signal_id = d['Signal ID']
+    hybrid, _, asic_idx, asic_ch, _ = pt_signal_id.split('_')
+    asic_idx = int(asic_idx)
+    asic_ch = int(asic_ch[2:])
+    return (hybrid, asic_idx, asic_ch)
+
+
+def find_gbtx_info(d):
+    dcb_signal_id = d['DCB signal ID']
+    gbtx_idx, _, gbtx_ch, _ = dcb_signal_id.split('_')
+    gbtx_idx = int(gbtx_idx[2:])
+    gbtx_ch = int(gbtx_ch[2:])
+    return (gbtx_idx, gbtx_ch)
+
+
+# NOTE: asic_bp_id is used for sorting
+def find_asic_bp_id(hybrid, asic_idx, flex):
+    if hybrid == 'P1' or hybrid == 'P2':
+        if asic_idx <= 3:
+            asic_bp_id = flex + '_' + hybrid + '_WEST' + '_ASIC_' + \
+                str(asic_idx)
+        else:
+            asic_bp_id = flex + '_' + hybrid + '_EAST' + '_ASIC_' + \
+                str(asic_idx)
+
+    else:
+        asic_bp_id = flex + '_' + hybrid + '_ASIC_' + str(asic_idx)
+
+    return asic_bp_id
+
+
+def find_pt_slot(d):
+    return int(d['Pigtail slot'][2:])
+
+
+# Sorting ######################################################################
+
+
+# Swapping JD/JP connectors for true/mirror type from backplane proto ##########
+
+
 ##########################
 # Prepare for selections #
 ##########################
@@ -104,11 +156,11 @@ pt_descr_flattend = flatten_descr(pt_descr)
 filter_elk = filter_by_signal_id([r'ASIC'])
 elks_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto, filter_elk)
 
-# Now since elinks are differential signals, we have two redundant description:
+# Now since elinks are differential signals, we have two redundant descriptions:
 # one by all positive channels, one by negative channels. Here we pick positive
 # channels only (fix a gauge).
 filter_positive = filter_by_signal_id([r'_P$'])
-elks_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto, filter_elk)
+elks_proto_p = find_matching_entries(elks_proto, dcb_ref_proto, filter_positive)
 
 
 ############################################################
@@ -118,63 +170,53 @@ elks_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto, filter_elk)
 #       because signal type moves with flex type (e.g. 'X-0-M'), not pigtail
 #       connector label.
 
+# Initialize elink mapppings
+elks_descr_alpha = defaultdict(list)
+elks_descr_beta = defaultdict(list)
+elks_descr_gamma = defaultdict(list)
 
-# # Initialize the dict to store fiber-asic map
-# fiber_asic_descr = {}
+for elk in elks_proto_p:
+    # Find flex type, this is used for all backplanes
+    flex = find_proto_flex_type(elk)
 
-# # Loop over the gbtx_descr list
-# for dcb_idx in range(0, len(gbtx_descr)):
-    # for elk in gbtx_descr[dcb_idx]:
-        # if elk['PT Attr'] is not None and \
-           # elk['PT Signal ID'][-1:] == 'P':
-            # flex = elk['Pigtail slot'][-5:]
-            # hybrid, _, asic_idx, asic_ch, _ = elk['PT Signal ID'].split('_')
-            # gbtx_idx, _, gbtx_ch, _ = elk['Signal ID'].split('_')
-            # is_inner, is_middle, is_outer = True, True, True
+    hybrid, asic_idx, asic_ch = find_hybrid_asic_info(elk)
+    gbtx_idx, gbtx_ch = find_gbtx_info(elk)
 
-            # if elk['PT Attr'] == 'DEPOPULATED':
-                # # Depopulated signals not on Middle/Outer
-                # is_middle = False
-                # is_outer = False
-            # else:
-                # # UTa-Outer does not have 8/9/10/11 (Stave-2)
-                # if int(elk['Pigtail slot'][:2]) >= 8:
-                    # is_outer = False
+    # 8-ASIC is seperated into WEST/EAST for sorting
+    asic_bp_id = find_asic_bp_id(hybrid, asic_idx, flex)
 
-            # # 8-ASIC is seperated into WEST/EAST
-            # if hybrid in ['P1', 'P2']:
-                # if int(asic_idx) <= 3:
-                    # asic_bp_id = flex + '_' + hybrid + 'WEST' + '_ASIC_' + asic_idx
-                # else:
-                    # asic_bp_id = flex + '_' + hybrid + 'EAST' + '_ASIC_' + asic_idx
-            # else:
-                    # asic_bp_id = flex + '_' + hybrid + '_ASIC_' + asic_idx
+    # Unconditionally append to alpha type backplane
+    elks_descr_alpha[flex].append({
+        'hybrid': hybrid,
+        'asic_bp_id': asic_bp_id,
+        'asic_idx': asic_idx,
+        'asic_ch': asic_ch,
+        'gbtx_ch': gbtx_ch
+    })
 
-            # if asic_bp_id not in fiber_asic_descr.keys():
-                # fiber_asic_descr[asic_bp_id] = {
-                    # 'flex': flex,
-                    # 'hybrid': hybrid,
-                    # 'asic_idx': asic_idx,
-                    # 'channels': {
-                        # int(asic_ch[2:]): {
-                            # 'dcb_idx': dcb_idx,
-                            # 'gbtx_idx': int(gbtx_idx[2:]),
-                            # 'gbtx_ch': int(gbtx_ch[2:]),
-                            # 'is_inner': is_inner,
-                            # 'is_middle': is_middle,
-                            # 'is_outer': is_outer
-                            # }
-                        # }
-                                                # }
-            # else:
-                # fiber_asic_descr[asic_bp_id]['channels'][int(asic_ch[2:])] = {
-                        # 'dcb_idx': dcb_idx,
-                        # 'gbtx_idx': int(gbtx_idx[2:]),
-                        # 'gbtx_ch': int(gbtx_ch[2:]),
-                        # 'is_inner': is_inner,
-                        # 'is_middle': is_middle,
-                        # 'is_outer': is_outer
-                        # }
+    # Now depopulate to beta type
+    if elk['Note'] != 'Alpha only':
+        elks_descr_beta[flex].append({
+            'hybrid': hybrid,
+            'asic_bp_id': asic_bp_id,
+            'asic_idx': asic_idx,
+            'asic_ch': asic_ch,
+            'gbtx_ch': gbtx_ch
+        })
+
+        # Finally, depopulate further to gamma
+        if find_pt_slot(elk) < 8:
+            elks_descr_gamma[flex].append({
+                'hybrid': hybrid,
+                'asic_bp_id': asic_bp_id,
+                'asic_idx': asic_idx,
+                'asic_ch': asic_ch,
+                'gbtx_ch': gbtx_ch
+            })
+
+# Sort all elink descriptions by asic_bp_id
+for k in elks_descr_alpha:
+
 
 # # Check that dcb_idx and gbtx_idx do not change for single ASIC
 # for i in fiber_asic_descr:
@@ -195,215 +237,9 @@ elks_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto, filter_elk)
 # # End of check
 
 
-# # Now extend to 1 PEPI system (alpha+beta+gamma backplanes)
-
-
-# def get_dcb_info(asic, is_inner=False, is_middle=False, is_outer=False):
-    # chan_keys = list(asic['channels'].keys())
-    # dcb_idx = asic['channels'][chan_keys[0]]['dcb_idx']
-    # gbtx_idx = asic['channels'][chan_keys[0]]['gbtx_idx']
-    # gbtx_ch = []
-    # for i in chan_keys:
-        # if (asic['channels'][i]['is_inner'] and is_inner) or \
-                # (asic['channels'][i]['is_middle'] and is_middle) or \
-                # (asic['channels'][i]['is_outer'] and is_outer):
-                    # gbtx_ch.append(asic['channels'][i]['gbtx_ch'])
-    # gbtx_ch.sort(reverse=True)
-    # return dcb_idx, gbtx_idx, gbtx_ch
-
-
-# # For all PEPI's:
-# all_PEPIs = {
-    # # For true-type PEPIs
-    # 'Magnet-Top-C': [
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_7C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_7C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_8C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_8C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_9C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_9C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # ]
-    # ,
-    # 'Magnet-Bottom-A': [
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_7A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_7A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_8A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_8A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_9A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_9A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 't'},
-        # ]
-    # ,
-    # 'IP-Top-A': [
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_7A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_7A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_8A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_8A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_9A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_9A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # ]
-    # ,
-    # 'IP-Bottom-C': [
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 't'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 't'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_7C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_7C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_8C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_8C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_9C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_9C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 't'}
-        # ]
-    # ,
-    # # Now for mirror-tye PEPIs
-    # 'Magnet-Bottom-C': [
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_7C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_7C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_8C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_8C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_9C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_9C', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # ]
-    # ,
-    # 'Magnet-Top-A': [
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTbX_7A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTbV_7A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTbX_8A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTbV_8A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTbX_9A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTbV_9A', 'bp_var': 'middle', 'bp_abg': 'g', 'bp_type': 'm'},
-        # ]
-    # ,
-    # 'IP-Bottom-A': [
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_1A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_2A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_3A', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_4A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_5A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_6A', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_7A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_7A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_8A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_8A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_9A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_9A', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # ]
-    # ,
-    # 'IP-Top-C': [
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_1C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_2C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_3C', 'bp_var': 'inner', 'bp_abg': 'a', 'bp_type': 'm'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_4C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_5C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_6C', 'bp_var': 'middle', 'bp_abg': 'b', 'bp_type': 'm'},
-
-        # {'stv_bp': 'X-0', 'stv_ut': 'UTaX_7C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-0', 'stv_ut': 'UTaU_7C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'X-1', 'stv_ut': 'UTaX_8C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-1', 'stv_ut': 'UTaU_8C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'X-2', 'stv_ut': 'UTaX_9C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'},
-        # {'stv_bp': 'S-2', 'stv_ut': 'UTaU_9C', 'bp_var': 'outer', 'bp_abg': 'g', 'bp_type': 'm'}
-        # ]
-    # }
-
-# ########################################
-# # Generate list of ASICs for all PEPIs #
-# ########################################
+########################################
+# Generate list of ASICs for all PEPIs #
+########################################
 
 # asic_bp_id_list = sorted(fiber_asic_descr)
 
