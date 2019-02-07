@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 10:07 AM -0500
+# Last Change: Thu Feb 07, 2019 at 10:16 AM -0500
 
 import re
 
@@ -138,7 +138,7 @@ def find_pt_slot(d):
 ##########################
 
 # Convert DCB description to a dictionary: We do this so that DCB entries can be
-# access via entries['JDX']['PINXX']
+# access via entries['JDX']['PINXX'].
 dcb_ref_proto = make_dcb_ref(dcb_descr)
 
 pt_descr_flattend = flatten_descr(pt_descr)
@@ -171,16 +171,16 @@ elks_descr_beta  = defaultdict(lambda: defaultdict(list))
 elks_descr_gamma = defaultdict(lambda: defaultdict(list))
 
 for elk in elks_proto_p:
-    # Find flex type, this is used for all backplanes
+    # Find flex type, this is used for all backplanes.
     flex = find_proto_flex_type(elk)
 
     hybrid, asic_idx, asic_ch = find_hybrid_asic_info(elk)
     gbtx_idx, gbtx_ch = find_gbtx_info(elk)
 
-    # 8-ASIC is seperated into WEST/EAST for sorting
+    # 8-ASIC is seperated into WEST/EAST for sorting.
     asic_bp_id = find_asic_bp_id(hybrid, asic_idx, flex)
 
-    # Unconditionally append to alpha type backplane
+    # Unconditionally append to alpha type backplane.
     elks_descr_alpha[flex][asic_bp_id].append({
         'hybrid': hybrid,
         'asic_idx': asic_idx,
@@ -189,7 +189,7 @@ for elk in elks_proto_p:
         'gbtx_ch': gbtx_ch
     })
 
-    # Now depopulate to beta type
+    # Now depopulate to beta type.
     if elk['Note'] != 'Alpha only':
         elks_descr_beta[flex][asic_bp_id].append({
             'hybrid': hybrid,
@@ -199,7 +199,7 @@ for elk in elks_proto_p:
             'gbtx_ch': gbtx_ch
         })
 
-        # Finally, depopulate further to gamma
+        # Finally, depopulate further to gamma.
         if find_pt_slot(elk) < 8:
             elks_descr_gamma[flex][asic_bp_id].append({
                 'hybrid': hybrid,
@@ -209,6 +209,9 @@ for elk in elks_proto_p:
                 'gbtx_ch': gbtx_ch
             })
 
+
+# Combine GBTx channels for each ASIC on each flex, and check errors at the same
+# time.
 
 # # Check that dcb_idx and gbtx_idx do not change for single ASIC
 # for i in fiber_asic_descr:
