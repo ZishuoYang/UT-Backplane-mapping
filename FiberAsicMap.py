@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 10:16 AM -0500
+# Last Change: Thu Feb 07, 2019 at 11:28 AM -0500
 
 import re
 
@@ -12,12 +12,12 @@ import sys
 sys.path.insert(0, './pyUTM')
 
 from pyUTM.common import unflatten
-from pyUTM.common import jp_flex_type_proto
-from AltiumNetlistGen import pt_descr
-from AltiumNetlistGen import dcb_descr
+from pyUTM.common import jp_flex_type_proto, all_pepis
+from AltiumNetlistGen import pt_descr, dcb_descr
 
 output_dir = Path('output')
-elk_mapping_output_filename = output_dir / Path('AsicToFiberMapping.csv')
+elk_mapping_output_filename = output_dir / Path('AsicToElkFiberMapping.csv')
+ctrl_mapping_output_filename = output_dir / Path('AsicToCtrlFiberMapping.csv')
 
 
 ###########
@@ -126,11 +126,68 @@ def find_asic_bp_id(hybrid, asic_idx, flex):
     return asic_bp_id
 
 
-def find_pt_slot(d):
-    return int(d['Pigtail slot'][2:])
+def find_slot_idx(d, key='Pigtail slot'):
+    return int(d[key][2:])
 
 
-# Swapping JD/JP connectors for true/mirror type from backplane proto ##########
+# Regularize output ############################################################
+
+def combine_asic_channels(asic_descr):
+    for flex, flex_descr in asic_descr.items():
+        for asic, asic_chs in flex_descr.items():
+            # Error checking: Make sure ASIC elinks are connected to the same
+            # GBTx on the same DCB
+            dcb_ids = list(set(map(lambda x: x['dcb_idx'], asic_chs)))
+            gbtx_ids = list(set(map(lambda x: x['gbtx_idx'], asic_chs)))
+            if len(gbtx_ids) > 1 or len(dcb_ids) > 1:
+                raise ValueError(
+                    'More than one GBTx connected to {}-{}'.format(flex, asic))
+
+            # Now combine channels
+            gbtx_chs = map(lambda x: x['gbtx_ch'], asic_chs)
+            asic_descr[flex][asic] = {
+                'dcb_idx': dcb_ids[0],
+                'gbtx_idx': gbtx_ids[0],
+                'gbtx_chs':
+                ','.join(map(str, sorted(gbtx_chs, reverse=True)))
+            }
+
+
+# Swapping JD/JP connectors for true/mirror type from backplane proto
+
+# Output #######################################################################
+
+def make_all_descr(descr, header=['inner', 'middle', 'outer']):
+    return dict(zip(header, descr))
+
+
+def generate_descr_for_all_pepi(all_descr):
+    flattened_all_pepis = flatten_descr(all_pepis, header='PEPI')
+    data = []
+
+    for pepi in flattened_all_pepis:
+        for flex_type in ['M', 'S']:
+            pass
+
+    return data
+
+
+def write_to_csv(filename, data,
+                 header={
+                     'PEPI': 'PEPI',
+                     'Stave': 0,
+                     'Flex': 0,
+                     'Hybrid': 0,
+                     'ASIC index': 0,
+                     'BP index (alpha/beta/gamma)': 0,
+                     'BP type (true/mirrored)': 0,
+                     'DCB index': 0,
+                     'GBTx index': 0,
+                     'GBTx channels (GBT frame bytes)': 0,
+                 },
+                 mode='w', eol='\n'):
+    with open(filename, mode) as f:
+        f.write(','.join(header.keys()) + eol)
 
 
 ##########################
@@ -185,6 +242,7 @@ for elk in elks_proto_p:
         'hybrid': hybrid,
         'asic_idx': asic_idx,
         'asic_ch': asic_ch,
+        'dcb_idx': find_slot_idx(elk, key='DCB slot'),
         'gbtx_idx': gbtx_idx,
         'gbtx_ch': gbtx_ch
     })
@@ -195,16 +253,18 @@ for elk in elks_proto_p:
             'hybrid': hybrid,
             'asic_idx': asic_idx,
             'asic_ch': asic_ch,
+            'dcb_idx': find_slot_idx(elk, key='DCB slot'),
             'gbtx_idx': gbtx_idx,
             'gbtx_ch': gbtx_ch
         })
 
         # Finally, depopulate further to gamma.
-        if find_pt_slot(elk) < 8:
+        if find_slot_idx(elk) < 8:
             elks_descr_gamma[flex][asic_bp_id].append({
                 'hybrid': hybrid,
                 'asic_idx': asic_idx,
                 'asic_ch': asic_ch,
+                'dcb_idx': find_slot_idx(elk, key='DCB slot'),
                 'gbtx_idx': gbtx_idx,
                 'gbtx_ch': gbtx_ch
             })
@@ -212,55 +272,15 @@ for elk in elks_proto_p:
 
 # Combine GBTx channels for each ASIC on each flex, and check errors at the same
 # time.
+all_elk_descr = make_all_descr(
+    [elks_descr_alpha, elks_descr_beta, elks_descr_gamma])
 
-# # Check that dcb_idx and gbtx_idx do not change for single ASIC
-# for i in fiber_asic_descr:
-    # channel_dict = fiber_asic_descr[i]['channels']
-    # keys = list(channel_dict.keys())
-    # dcb = channel_dict[keys[0]]['dcb_idx']
-    # for ii in keys:
-        # if channel_dict[ii]['dcb_idx'] != dcb:
-            # print('ERROR: more than 1 dcb_idx', i)
-
-# for i in fiber_asic_descr:
-    # channel_dict = fiber_asic_descr[i]['channels']
-    # keys = list(channel_dict.keys())
-    # dcb = channel_dict[keys[0]]['gbtx_idx']
-    # for ii in keys:
-        # if channel_dict[ii]['gbtx_idx'] != dcb:
-            # print('ERROR: more than 1 gbtx_idx', i)
-# # End of check
+for _, i in all_elk_descr.items():
+    combine_asic_channels(i)
 
 
-########################################
-# Generate list of ASICs for all PEPIs #
-########################################
+#################
+# Output to csv #
+#################
 
-# # Write to CSV file
-# with open('asic_map.csv', 'w') as f:
-    # # Header here
-    # f.write('PEPI,Stave,Flex,Hybrid,ASIC_index,BP_index(alpha/beta/gamma),' +
-            # 'BP_type(true/mirrored),' + 'DCB_index,GBTx_index,' +
-            # 'GBTx_channels(GBT frame bytes)' + '\n')
-    # # Loop over all ASICs
-    # for pepi in all_PEPIs:
-        # for stave in all_PEPIs[pepi]:
-            # is_inner, is_middle, is_outer = (stave['bp_var'] == 'inner'), \
-                                            # (stave['bp_var'] == 'middle'), \
-                                            # (stave['bp_var'] == 'outer')
-            # for asic_bp_id in asic_bp_id_list:
-                # if stave['stv_bp'] in asic_bp_id:
-                    # asic = fiber_asic_descr[asic_bp_id]
-                    # dcb_idx, gbtx_idx, gbtx_ch = get_dcb_info(asic, is_inner, is_middle, is_outer)
-                    # if len(gbtx_ch) == 0: continue
-                    # f.write(pepi + ',' +
-                            # stave['stv_ut'] + ',' +
-                            # asic['flex'] + ',' +
-                            # asic['hybrid'] + ',' +
-                            # asic['asic_idx'] + ',' +
-                            # stave['bp_abg'] + ',' +
-                            # stave['bp_type'] + ',' +
-                            # str(dcb_idx) + ',' +
-                            # str(gbtx_idx) + ',' +
-                            # '-'.join(list(map(str, gbtx_ch))) + '\n'
-                            # )
+write_to_csv(elk_mapping_output_filename, all_elk_descr)
