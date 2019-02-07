@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 01, 2019 at 10:10 AM -0500
+# Last Change: Thu Feb 07, 2019 at 03:27 PM -0500
 
 import re
-
-from pathlib import Path
 
 import sys
 sys.path.insert(0, './pyUTM')
@@ -13,14 +11,13 @@ sys.path.insert(0, './pyUTM')
 from pyUTM.legacy import PcadBackPlaneReader
 from pyUTM.selection import SelectorNet, RuleNet
 from pyUTM.datatype import NetNode  # for debugging
-from AltiumNetlistGen import input_dir
 from AltiumNetlistGen import pt_result_true, dcb_result_true
 from AltiumNetlistGen import pt_result_true_depop_aux
 
-netlist = input_dir / Path("backplane_netlists") / Path(
-    'backplane_true_type.net')
-cache_dir = 'cache'
+# Use first argument as netlist filename.
+netlist = sys.argv[1]
 
+# Combine Pigtail and DCB rules into a larger set of rules
 pt_result_true.update(dcb_result_true)
 
 
@@ -53,7 +50,7 @@ for diff_net in all_diff_nets:
 
 
 ########################################
-# Cross-checking rules for DCB/PigTail #
+# Cross-checking rules for DCB/Pigtail #
 ########################################
 
 class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
@@ -98,7 +95,7 @@ class RuleNet_DCB_Or_PT_NetName_Equal_Cavalier(RuleNet):
     def match(self, node):
         if self.reference[node]['NETNAME'] == \
                 self.node_dict[node]['NETNAME'].replace('EAST_LV', 'WEST_LV'):
-                # ^Seems that 'WEST_LV' and 'EAST_LV' are always equivalent
+            # ^Seems that 'WEST_LV' and 'EAST_LV' are always equivalent
             return True
         else:
             return False
