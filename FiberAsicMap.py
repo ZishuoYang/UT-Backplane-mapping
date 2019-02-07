@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 11:28 AM -0500
+# Last Change: Thu Feb 07, 2019 at 12:08 PM -0500
 
 import re
 
 from pathlib import Path
 from collections import defaultdict
+from copy import deepcopy
 
 import sys
 sys.path.insert(0, './pyUTM')
@@ -137,19 +138,24 @@ def combine_asic_channels(asic_descr):
         for asic, asic_chs in flex_descr.items():
             # Error checking: Make sure ASIC elinks are connected to the same
             # GBTx on the same DCB
-            dcb_ids = list(set(map(lambda x: x['dcb_idx'], asic_chs)))
-            gbtx_ids = list(set(map(lambda x: x['gbtx_idx'], asic_chs)))
-            if len(gbtx_ids) > 1 or len(dcb_ids) > 1:
+            hybrid = list(set(map(lambda x: x['hybrid'], asic_chs)))
+            asic_id = list(set(map(lambda x: x['asic_idx'], asic_chs)))
+            dcb_id = list(set(map(lambda x: x['dcb_idx'], asic_chs)))
+            gbtx_id = list(set(map(lambda x: x['gbtx_idx'], asic_chs)))
+            if len(gbtx_id) > 1 or len(dcb_id) > 1 or len(hybrid) > 1 or \
+                    len(asic_id) > 1:
                 raise ValueError(
                     'More than one GBTx connected to {}-{}'.format(flex, asic))
 
             # Now combine channels
             gbtx_chs = map(lambda x: x['gbtx_ch'], asic_chs)
             asic_descr[flex][asic] = {
-                'dcb_idx': dcb_ids[0],
-                'gbtx_idx': gbtx_ids[0],
+                'hybrid': hybrid[0],
+                'asic_idx': asic_id[0],
+                'dcb_idx': dcb_id[0],
+                'gbtx_idx': gbtx_id[0],
                 'gbtx_chs':
-                ','.join(map(str, sorted(gbtx_chs, reverse=True)))
+                '-'.join(map(str, sorted(gbtx_chs, reverse=True)))
             }
 
 
@@ -162,32 +168,63 @@ def make_all_descr(descr, header=['inner', 'middle', 'outer']):
 
 
 def generate_descr_for_all_pepi(all_descr):
-    flattened_all_pepis = flatten_descr(all_pepis, header='PEPI')
+    flattened_all_pepis = flatten_descr(all_pepis, header='pepi')
     data = []
 
     for pepi in flattened_all_pepis:
-        for flex_type in ['M', 'S']:
-            pass
+        for flex_type_suffix in ['-M', '-S']:
 
-    return data
+            # FIXME: Currently we are using 'inner', etc as version, but we
+            # should use 'alpha' etc.
+            bp_type = pepi['bp_var']
+
+            flex_type = pepi['stv_bp'] + flex_type_suffix
+
+            if flex_type in all_descr[bp_type].keys():
+                pointer = all_descr[bp_type][flex_type]
+                for asic_type in sorted(pointer.keys()):
+                    asic_descr = pointer[asic_type]
+                    entry = deepcopy(pepi)
+                    entry['stv_bp'] = flex_type
+                    entry['hybrid'] = asic_descr['hybrid']
+                    entry['asic_idx'] = str(asic_descr['asic_idx'])
+                    entry['dcb_idx'] = str(asic_descr['dcb_idx'])
+                    entry['gbtx_idx'] = str(asic_descr['gbtx_idx'])
+                    entry['gbtx_chs'] = asic_descr['gbtx_chs']
+                    data.append(entry)
+
+            else:
+                # This flex type is illegal---which means that we are dealing
+                # with gamma type backplane.
+                pass
+
+    # Error check: unitarity
+    if len(data) != 4192:
+        raise ValueError(
+            'Length of output data is {}, which is not 4192'.format(len(data)))
+    else:
+        return data
 
 
 def write_to_csv(filename, data,
                  header={
-                     'PEPI': 'PEPI',
-                     'Stave': 0,
-                     'Flex': 0,
-                     'Hybrid': 0,
-                     'ASIC index': 0,
-                     'BP index (alpha/beta/gamma)': 0,
-                     'BP type (true/mirrored)': 0,
-                     'DCB index': 0,
-                     'GBTx index': 0,
-                     'GBTx channels (GBT frame bytes)': 0,
+                     'PEPI': 'pepi',
+                     'Stave': 'stv_ut',
+                     'Flex': 'stv_bp',
+                     'Hybrid': 'hybrid',
+                     'ASIC index': 'asic_idx',
+                     'BP index (alpha/beta/gamma)': 'bp_abg',
+                     'BP type (true/mirrored)': 'bp_type',
+                     'DCB index': 'dcb_idx',
+                     'GBTx index': 'gbtx_idx',
+                     'GBTx channels (GBT frame bytes)': 'gbtx_chs',
                  },
                  mode='w', eol='\n'):
     with open(filename, mode) as f:
         f.write(','.join(header.keys()) + eol)
+        for entry in data:
+            row = [entry[k] for _, k in header.items()]
+            f.write(','.join(row) + eol)
 
 
 ##########################
@@ -283,4 +320,5 @@ for _, i in all_elk_descr.items():
 # Output to csv #
 #################
 
-write_to_csv(elk_mapping_output_filename, all_elk_descr)
+elk_data = generate_descr_for_all_pepi(all_elk_descr)
+write_to_csv(elk_mapping_output_filename, elk_data)
