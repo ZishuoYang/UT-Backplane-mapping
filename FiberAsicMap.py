@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 12:43 PM -0500
+# Last Change: Thu Feb 07, 2019 at 01:04 PM -0500
 
 import re
 
@@ -69,7 +69,7 @@ def filter_by_signal_id(keywords):
     return filter_functor
 
 
-def find_matching_entries(flattened, ref, functor):
+def find_matching_entries(flattened, ref, functor, continue_on_error=False):
     result = []
 
     for i in filter(functor, flattened):
@@ -81,11 +81,14 @@ def find_matching_entries(flattened, ref, functor):
                 result.append(i)
 
         except Exception as e:
-            print('{} occured while processing DCB connector {}, pin {}'.format(
-                e.__class__.__name__, jd, jd_pin))
-            print('The Pigtail side Signal ID is: {}'.format(
-                i['Signal ID']))
-            break
+            if continue_on_error:
+                continue
+            else:
+                print('{} occured while processing DCB connector {}, pin {}'.format(
+                    e.__class__.__name__, jd, jd_pin))
+                print('The Pigtail side Signal ID is: {}'.format(
+                    i['Signal ID']))
+                break
 
     return result
 
@@ -133,7 +136,7 @@ def find_slot_idx(d, key='Pigtail slot'):
 
 # Regularize output ############################################################
 
-def combine_asic_channels(asic_descr):
+def combine_asic_elk_channels(asic_descr):
     for flex, flex_descr in asic_descr.items():
         for asic, asic_chs in flex_descr.items():
             # Error checking: Make sure ASIC elinks are connected to the same
@@ -308,7 +311,7 @@ all_elk_descr = make_all_descr(
     [elks_descr_alpha, elks_descr_beta, elks_descr_gamma])
 
 for _, i in all_elk_descr.items():
-    combine_asic_channels(i)
+    combine_asic_elk_channels(i)
 
 
 #############################
@@ -316,7 +319,8 @@ for _, i in all_elk_descr.items():
 #############################
 
 filter_ctrl = filter_by_signal_id([r'_CLK_', r'_I2C_', r'_RESET_', r'_TFC_'])
-ctrl_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto, filter_elk)
+ctrl_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto,
+                                   filter_ctrl, continue_on_error=True)
 
 # For control signals, we have to use the positive legs, because frequently,
 # negative legs are connected to the ground.
@@ -333,26 +337,23 @@ ctrls_descr_beta  = defaultdict(lambda: defaultdict(list))
 ctrls_descr_gamma = defaultdict(lambda: defaultdict(list))
 
 for ctrl in ctrl_proto_p:
-    # Find flex type, this is used for all backplanes.
     flex = find_proto_flex_type(ctrl)
 
     hybrid, asic_idx, asic_ch = find_hybrid_asic_info(ctrl)
     gbtx_idx, gbtx_ch = find_gbtx_info(ctrl)
 
-    # 8-ASIC is seperated into WEST/EAST for sorting.
     asic_bp_id = find_asic_bp_id(hybrid, asic_idx, flex)
 
-    # Unconditionally append to alpha type backplane.
     ctrls_descr_alpha[flex][asic_bp_id].append({
         'hybrid': hybrid,
         'asic_idx': asic_idx,
         'asic_ch': asic_ch,
         'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
         'gbtx_idx': gbtx_idx,
-        'gbtx_ch': gbtx_ch
+        'gbtx_ch': gbtx_ch,
+        'ctrl_signal_type': ctrl['DCB signal ID']
     })
 
-    # Now depopulate to beta type.
     if ctrl['Note'] != 'Alpha only':
         ctrls_descr_beta[flex][asic_bp_id].append({
             'hybrid': hybrid,
@@ -360,10 +361,10 @@ for ctrl in ctrl_proto_p:
             'asic_ch': asic_ch,
             'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
             'gbtx_idx': gbtx_idx,
-            'gbtx_ch': gbtx_ch
+            'gbtx_ch': gbtx_ch,
+            'ctrl_signal_type': ctrl['DCB signal ID']
         })
 
-        # Finally, depopulate further to gamma.
         if find_slot_idx(ctrl) < 8:
             ctrls_descr_gamma[flex][asic_bp_id].append({
                 'hybrid': hybrid,
@@ -371,7 +372,8 @@ for ctrl in ctrl_proto_p:
                 'asic_ch': asic_ch,
                 'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
                 'gbtx_idx': gbtx_idx,
-                'gbtx_ch': gbtx_ch
+                'gbtx_ch': gbtx_ch,
+                'ctrl_signal_type': ctrl['DCB signal ID']
             })
 
 
