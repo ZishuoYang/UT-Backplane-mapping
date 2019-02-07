@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 12:08 PM -0500
+# Last Change: Thu Feb 07, 2019 at 12:43 PM -0500
 
 import re
 
@@ -198,12 +198,7 @@ def generate_descr_for_all_pepi(all_descr):
                 # with gamma type backplane.
                 pass
 
-    # Error check: unitarity
-    if len(data) != 4192:
-        raise ValueError(
-            'Length of output data is {}, which is not 4192'.format(len(data)))
-    else:
-        return data
+    return data
 
 
 def write_to_csv(filename, data,
@@ -259,7 +254,7 @@ elks_proto_p = find_matching_entries(elks_proto, dcb_ref_proto, filter_positive)
 #       because signal type moves with flex type (e.g. 'X-0-M'), not pigtail
 #       connector label.
 
-# Initialize elink mapppings
+# Initialize elink mappings
 elks_descr_alpha = defaultdict(lambda: defaultdict(list))
 elks_descr_beta  = defaultdict(lambda: defaultdict(list))
 elks_descr_gamma = defaultdict(lambda: defaultdict(list))
@@ -316,9 +311,81 @@ for _, i in all_elk_descr.items():
     combine_asic_channels(i)
 
 
+#############################
+# Find ASIC control entries #
+#############################
+
+filter_ctrl = filter_by_signal_id([r'_CLK_', r'_I2C_', r'_RESET_', r'_TFC_'])
+ctrl_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto, filter_elk)
+
+# For control signals, we have to use the positive legs, because frequently,
+# negative legs are connected to the ground.
+ctrl_proto_p = find_matching_entries(ctrl_proto, dcb_ref_proto, filter_positive)
+
+
+##############################################################
+# Generate ASIC control fiber mapping for a single backplane #
+##############################################################
+
+# Initialize control mappings
+ctrls_descr_alpha = defaultdict(lambda: defaultdict(list))
+ctrls_descr_beta  = defaultdict(lambda: defaultdict(list))
+ctrls_descr_gamma = defaultdict(lambda: defaultdict(list))
+
+for ctrl in ctrl_proto_p:
+    # Find flex type, this is used for all backplanes.
+    flex = find_proto_flex_type(ctrl)
+
+    hybrid, asic_idx, asic_ch = find_hybrid_asic_info(ctrl)
+    gbtx_idx, gbtx_ch = find_gbtx_info(ctrl)
+
+    # 8-ASIC is seperated into WEST/EAST for sorting.
+    asic_bp_id = find_asic_bp_id(hybrid, asic_idx, flex)
+
+    # Unconditionally append to alpha type backplane.
+    ctrls_descr_alpha[flex][asic_bp_id].append({
+        'hybrid': hybrid,
+        'asic_idx': asic_idx,
+        'asic_ch': asic_ch,
+        'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
+        'gbtx_idx': gbtx_idx,
+        'gbtx_ch': gbtx_ch
+    })
+
+    # Now depopulate to beta type.
+    if ctrl['Note'] != 'Alpha only':
+        ctrls_descr_beta[flex][asic_bp_id].append({
+            'hybrid': hybrid,
+            'asic_idx': asic_idx,
+            'asic_ch': asic_ch,
+            'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
+            'gbtx_idx': gbtx_idx,
+            'gbtx_ch': gbtx_ch
+        })
+
+        # Finally, depopulate further to gamma.
+        if find_slot_idx(ctrl) < 8:
+            ctrls_descr_gamma[flex][asic_bp_id].append({
+                'hybrid': hybrid,
+                'asic_idx': asic_idx,
+                'asic_ch': asic_ch,
+                'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
+                'gbtx_idx': gbtx_idx,
+                'gbtx_ch': gbtx_ch
+            })
+
+
+all_ctrl_descr = make_all_descr(
+    [ctrls_descr_alpha, ctrls_descr_beta, ctrls_descr_gamma])
+
+
 #################
 # Output to csv #
 #################
 
 elk_data = generate_descr_for_all_pepi(all_elk_descr)
-write_to_csv(elk_mapping_output_filename, elk_data)
+if len(elk_data) != 4192:
+    raise ValueError(
+        'Length of output data is {}, which is not 4192'.format(len(elk_data)))
+else:
+    write_to_csv(elk_mapping_output_filename, elk_data)
