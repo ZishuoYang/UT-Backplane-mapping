@@ -1,53 +1,93 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Jan 23, 2019 at 03:31 PM -0500
+# Last Change: Thu Feb 07, 2019 at 04:58 PM -0500
 
+import re
+
+from datetime import datetime
 from pathlib import Path
-from os import environ
+from os.path import basename
 
 import sys
 sys.path.insert(0, './pyUTM')
 
-from pyUTM.io import PcadBackPlaneReader, PcadBackPlaneReaderCached
+from pyUTM.legacy import PcadBackPlaneReader
 from pyUTM.selection import SelectorNet, RuleNet
-from pyUTM.datatype import GenericNetNode
 from pyUTM.datatype import NetNode  # for debugging
-from AltiumNetlistGen import input_dir
 from AltiumNetlistGen import pt_result_true, dcb_result_true
+from AltiumNetlistGen import pt_result_true_depop_aux
 
-netlist = input_dir / Path("backplane_netlists") / Path(
-    'backplane_true_type.net')
-cache_dir = 'cache'
+log_dir = Path('log')
 
+
+###########
+# Helpers #
+###########
+
+# Use first argument as netlist filename.
+netlist = sys.argv[1]
+
+# Combine Pigtail and DCB rules into a larger set of rules
 pt_result_true.update(dcb_result_true)
+
+
+def generate_log_filename(time_format="%Y-%m-%d_%H%M%S", file_extension='.log'):
+    header, _ = basename(__file__).split('.', 1)
+    filename = sys.argv[1].lower()
+
+    if 'true' in filename:
+        type = 'true'
+    elif 'mirror' in filename:
+        type = 'mirror'
+    else:
+        type = 'unknown'
+
+    time = datetime.now().strftime(time_format)
+
+    return log_dir / Path(header+'-'+type+'-'+time+file_extension)
+
+
+def write_to_log(filename, data, mode='w', eol='\n'):
+    with open(filename, mode) as f:
+        for section in sorted(data.keys()):
+            f.write('========{}========'.format(section) + eol)
+            for entry in data[section]:
+                f.write(entry + eol)
+            f.write(eol)
 
 
 ####################################
 # Read info from backplane netlist #
 ####################################
 
-if 'IN_TRAVIS_CI' in environ:
-    print('Travis CI builder detected. Skip caching.')
-    NetReader = PcadBackPlaneReader(netlist)
-else:
-    NetReader = PcadBackPlaneReaderCached(cache_dir, netlist)
+NetLegacyReader = PcadBackPlaneReader(netlist)
 
-node_dict, netlist_dict = NetReader.read()
+node_dict, netlist_dict = NetLegacyReader.read()
 node_list = list(node_dict.keys())
 
 
-########################################
-# Cross-checking rules for DCB/PigTail #
-########################################
+##########################################
+# Check differential signal depopulation #
+##########################################
 
-class RuleNet_DCB_DCB(RuleNet):
-    def match(self, node):
-        if isinstance(node, GenericNetNode):
-            return True
-        else:
-            return False
+all_diff_nets = []
+for jp in pt_result_true_depop_aux.keys():
+    for node in pt_result_true_depop_aux[jp]['Depopulation: ELK']:
+        all_diff_nets.append(
+            pt_result_true_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
+        )
 
+print("Checking depopulated differential pairs...")
+for diff_net in all_diff_nets:
+    components = netlist_dict[diff_net]
+    if True not in map(lambda x: bool(re.search(r'^R\d+', x)), components):
+        print("No resistor found in {}".format(diff_net))
+
+
+########################################
+# Cross-checking rules for DCB/Pigtail #
+########################################
 
 class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
     def match(self, node):
@@ -91,7 +131,7 @@ class RuleNet_DCB_Or_PT_NetName_Equal_Cavalier(RuleNet):
     def match(self, node):
         if self.reference[node]['NETNAME'] == \
                 self.node_dict[node]['NETNAME'].replace('EAST_LV', 'WEST_LV'):
-                # ^Seems that 'WEST_LV' and 'EAST_LV' are always equivalent
+            # ^Seems that 'WEST_LV' and 'EAST_LV' are always equivalent
             return True
         else:
             return False
@@ -115,7 +155,7 @@ class RuleNet_Node_NotIn(RuleNet):
 
 class RuleNet_ForRefOnly(RuleNet):
     def match(self, node):
-        if self.reference[node]['ATTR'] is '_FRO_':
+        if self.reference[node]['ATTR'] == '_FRO_':
             return True
         else:
             return False
@@ -204,11 +244,11 @@ for rule in net_rules:
     rule.debug_node = NetNode('JD8', 'A1')
 
 NetSelector = SelectorNet(pt_result_true, net_rules)
-print('====ERRORS for true-type backplane connections====')
 net_result = NetSelector.do()
 
-for section in sorted(net_result.keys()):
-    print('========{}========'.format(section))
-    for entry in net_result[section]:
-        print(entry)
-    print('')
+try:
+    log_filename = sys.argv[2]
+except IndexError:
+    log_filename = generate_log_filename()
+
+write_to_log(log_filename, net_result)
