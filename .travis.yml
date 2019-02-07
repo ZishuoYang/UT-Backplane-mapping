@@ -12,7 +12,6 @@ install:
     - pip install -r ./pyUTM/requirements.txt
 
 script:
-    - mkdir output
     - travis_wait 50 python ./NetlistCheck.py | tee ./WARNINGS.log
 
 deploy:
