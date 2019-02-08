@@ -346,12 +346,30 @@ class RulePT_UnusedToGND(RulePD):
 # Define rules for DCB Altium list #
 ####################################
 
+# This needs to be placed at the end of the rules list.  It only handles
+# entries that are not matched and therfore should become FRO.
 class RuleDCB_Default(RulePD):
     def match(self, data, jd):
         return True
 
     def process(self, data, jd):
         net_name = jd + '_' + data['Signal ID']
+        return (
+            NetNode(DCB=jd, DCB_PIN=data['SEAM pin']),
+            self.prop_gen(net_name, attr='_FRO_'))
+
+
+# This needs to be placed SECOND to the end of the rules list.  It only selects
+# entries that should become FRO AND are ELK input signals (for termination).
+class RuleDCB_FRO_ELK(RulePD):
+    def match(self, data, jd):
+        if 'ELK' in data['Signal ID']:
+            # Select GBTx data ELK or secondary-ctrl data-input ELK
+            if 'DC' in data['Signal ID'] or '_SEC_DIN_' in data['Signal ID']:
+                return True
+
+    def process(self, data, jd):
+        net_name = jd + '_FRO_ELK_' + data['Signal ID'][-1]
         return (
             NetNode(DCB=jd, DCB_PIN=data['SEAM pin']),
             self.prop_gen(net_name, attr='_FRO_'))
@@ -533,6 +551,7 @@ dcb_rules = [
     RuleDCB_1V5(brkoutbrd_pin_assignments),
     RuleDCB_2V5(brkoutbrd_pin_assignments),
     RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
+    RuleDCB_FRO_ELK(),
     RuleDCB_Default()
 ]
 
