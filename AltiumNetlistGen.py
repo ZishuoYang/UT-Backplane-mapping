@@ -360,7 +360,7 @@ class RuleDCB_Default(RulePD):
 
 
 # This needs to be placed SECOND to the end of the rules list.  It only selects
-# entries that should become FRO AND are ELK input signals (for termination).
+# entries that should become FRO AND are ELK input signals (for proper biasing)
 class RuleDCB_FRO_ELK(RulePD):
     def match(self, data, jd):
         if 'ELK' in data['Signal ID']:
