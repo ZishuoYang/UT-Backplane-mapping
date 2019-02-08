@@ -1,14 +1,14 @@
 JPL0:
 - '1':
-    Signal ID: JD3_JPL0_1V5_M
+    Signal ID: JD3_JPL0_1V5
 - '2':
-    Signal ID: JD3_JPL0_1V5_S
+    Signal ID: JD3_JPL0_1V5
 - '3':
     Signal ID: JD3_2_JPL0_2V5
 - '4':
-    Signal ID: JD2_JPL0_1V5_M
+    Signal ID: JD2_JPL0_1V5
 - '5':
-    Signal ID: JD2_JPL0_1V5_S
+    Signal ID: JD2_JPL0_1V5
 - '6':
     Signal ID: JP0_JPL0_P4_LV_SOURCE
 - '7':
@@ -20,15 +20,15 @@ JPL0:
 - '10':
     Signal ID: GND
 - '11':
-    Signal ID: JD1_JPL0_1V5_M
+    Signal ID: JD1_JPL0_1V5
 - '12':
-    Signal ID: JD1_JPL0_1V5_S
+    Signal ID: JD1_JPL0_1V5
 - '13':
     Signal ID: JD1_0_JPL0_2V5
 - '14':
-    Signal ID: JD0_JPL0_1V5_M
+    Signal ID: JD0_JPL0_1V5
 - '15':
-    Signal ID: JD0_JPL0_1V5_S
+    Signal ID: JD0_JPL0_1V5
 - '16':
     Signal ID: GND
 - '17':
@@ -61,15 +61,15 @@ JPL0:
     Signal ID: GND
 JPL1:
 - '1':
-    Signal ID: JD7_JPL1_1V5_M
+    Signal ID: JD7_JPL1_1V5
 - '2':
-    Signal ID: JD7_JPL1_1V5_S
+    Signal ID: JD7_JPL1_1V5
 - '3':
     Signal ID: JD7_6_JPL1_2V5
 - '4':
-    Signal ID: JD6_JPL1_1V5_M
+    Signal ID: JD6_JPL1_1V5
 - '5':
-    Signal ID: JD6_JPL1_1V5_S
+    Signal ID: JD6_JPL1_1V5
 - '6':
     Signal ID: JP3_JPL1_P4_LV_SOURCE
 - '7':
@@ -81,15 +81,15 @@ JPL1:
 - '10':
     Signal ID: GND
 - '11':
-    Signal ID: JD5_JPL1_1V5_M
+    Signal ID: JD5_JPL1_1V5
 - '12':
-    Signal ID: JD5_JPL1_1V5_S
+    Signal ID: JD5_JPL1_1V5
 - '13':
     Signal ID: JD5_4_JPL1_2V5
 - '14':
-    Signal ID: JD4_JPL1_1V5_M
+    Signal ID: JD4_JPL1_1V5
 - '15':
-    Signal ID: JD4_JPL1_1V5_S
+    Signal ID: JD4_JPL1_1V5
 - '16':
     Signal ID: GND
 - '17':
@@ -122,15 +122,15 @@ JPL1:
     Signal ID: GND
 JPL2:
 - '1':
-    Signal ID: JD11_JPL2_1V5_M
+    Signal ID: JD11_JPL2_1V5
 - '2':
-    Signal ID: JD11_JPL2_1V5_S
+    Signal ID: JD11_JPL2_1V5
 - '3':
     Signal ID: JD11_10_JPL2_2V5
 - '4':
-    Signal ID: JD10_JPL2_1V5_M
+    Signal ID: JD10_JPL2_1V5
 - '5':
-    Signal ID: JD10_JPL2_1V5_S
+    Signal ID: JD10_JPL2_1V5
 - '6':
     Signal ID: JP8_JPL2_P4_LV_SOURCE
 - '7':
@@ -142,15 +142,15 @@ JPL2:
 - '10':
     Signal ID: GND
 - '11':
-    Signal ID: JD9_JPL2_1V5_M
+    Signal ID: JD9_JPL2_1V5
 - '12':
-    Signal ID: JD9_JPL2_1V5_S
+    Signal ID: JD9_JPL2_1V5
 - '13':
     Signal ID: JD9_8_JPL2_2V5
 - '14':
-    Signal ID: JD8_JPL2_1V5_M
+    Signal ID: JD8_JPL2_1V5
 - '15':
-    Signal ID: JD8_JPL2_1V5_S
+    Signal ID: JD8_JPL2_1V5
 - '16':
     Signal ID: GND
 - '17':
