@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 01:04 PM -0500
+# Last Change: Fri Feb 08, 2019 at 01:09 AM -0500
 
 import re
 
@@ -117,7 +117,7 @@ def find_gbtx_info(d):
 
 
 # NOTE: asic_bp_id is used for sorting
-def find_asic_bp_id(hybrid, asic_idx, flex):
+def gen_asic_bp_id(hybrid, asic_idx, flex):
     if hybrid == 'P1' or hybrid == 'P2':
         if asic_idx <= 3:
             asic_bp_id = hybrid + '_WEST' + '_ASIC_' +  str(asic_idx)
@@ -162,8 +162,6 @@ def combine_asic_elk_channels(asic_descr):
             }
 
 
-# Swapping JD/JP connectors for true/mirror type from backplane proto
-
 # Output #######################################################################
 
 def make_all_descr(descr, header=['inner', 'middle', 'outer']):
@@ -204,20 +202,20 @@ def generate_descr_for_all_pepi(all_descr):
     return data
 
 
-def write_to_csv(filename, data,
-                 header={
-                     'PEPI': 'pepi',
-                     'Stave': 'stv_ut',
-                     'Flex': 'stv_bp',
-                     'Hybrid': 'hybrid',
-                     'ASIC index': 'asic_idx',
-                     'BP index (alpha/beta/gamma)': 'bp_abg',
-                     'BP type (true/mirrored)': 'bp_type',
-                     'DCB index': 'dcb_idx',
-                     'GBTx index': 'gbtx_idx',
-                     'GBTx channels (GBT frame bytes)': 'gbtx_chs',
-                 },
-                 mode='w', eol='\n'):
+def write_mapping_to_csv(filename, data,
+                         header={
+                             'PEPI': 'pepi',
+                             'Stave': 'stv_ut',
+                             'Flex': 'stv_bp',
+                             'Hybrid': 'hybrid',
+                             'ASIC index': 'asic_idx',
+                             'BP index (alpha/beta/gamma)': 'bp_abg',
+                             'BP type (true/mirrored)': 'bp_type',
+                             'DCB index': 'dcb_idx',
+                             'GBTx index': 'gbtx_idx',
+                             'GBTx channels (GBT frame bytes)': 'gbtx_chs',
+                         },
+                         mode='w', eol='\n'):
     with open(filename, mode) as f:
         f.write(','.join(header.keys()) + eol)
         for entry in data:
@@ -270,7 +268,7 @@ for elk in elks_proto_p:
     gbtx_idx, gbtx_ch = find_gbtx_info(elk)
 
     # 8-ASIC is seperated into WEST/EAST for sorting.
-    asic_bp_id = find_asic_bp_id(hybrid, asic_idx, flex)
+    asic_bp_id = gen_asic_bp_id(hybrid, asic_idx, flex)
 
     # Unconditionally append to alpha type backplane.
     elks_descr_alpha[flex][asic_bp_id].append({
@@ -342,7 +340,7 @@ for ctrl in ctrl_proto_p:
     hybrid, asic_idx, asic_ch = find_hybrid_asic_info(ctrl)
     gbtx_idx, gbtx_ch = find_gbtx_info(ctrl)
 
-    asic_bp_id = find_asic_bp_id(hybrid, asic_idx, flex)
+    asic_bp_id = gen_asic_bp_id(hybrid, asic_idx, flex)
 
     ctrls_descr_alpha[flex][asic_bp_id].append({
         'hybrid': hybrid,
@@ -390,4 +388,4 @@ if len(elk_data) != 4192:
     raise ValueError(
         'Length of output data is {}, which is not 4192'.format(len(elk_data)))
 else:
-    write_to_csv(elk_mapping_output_filename, elk_data)
+    write_mapping_to_csv(elk_mapping_output_filename, elk_data)
