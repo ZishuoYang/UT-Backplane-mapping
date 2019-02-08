@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 08, 2019 at 09:55 AM -0500
+# Last Change: Fri Feb 08, 2019 at 09:59 AM -0500
 
 from pathlib import Path
 from copy import deepcopy
@@ -525,7 +525,7 @@ class RuleDCB_RefToSense(RulePD):
             jp_pin = 'J24'
             net_name = jp + 'J24' + '_' + 'P1_WEST_LV_SENSE_GND'
         elif 'REF15' in signal:
-            jp_pin = 'F05'
+            jp_pin = 'F5'
             net_name = jp + 'F05' + '_' + 'P2_EAST_LV_SENSE_GND'
         else:
             raise ValueError(
