@@ -24,11 +24,11 @@ pt_filename = input_dir / Path('backplane_mapping_PT.yml')
 dcb_filename = input_dir / Path('backplane_mapping_DCB.yml')
 
 pt_true_output_filename = output_dir / Path(
-    'temp_AltiumNetlist_PT_Full_TrueType.csv')
+    'AltiumNetlist_PT_Full_TrueType.csv')
 dcb_true_output_filename = output_dir / Path(
-    'temp_AltiumNetlist_DCB_Full_TrueType.csv')
+    'AltiumNetlist_DCB_Full_TrueType.csv')
 pt_result_true_depop_aux_output_filename = output_dir / Path(
-    'temp_AuxList_PT_Full_TrueType.csv'
+    'AuxList_PT_Full_TrueType.csv'
 )
 
 
@@ -371,14 +371,24 @@ class RuleDCB_FRO_ELK(RulePD):
                 return True
 
     def process(self, data, jd):
-        if 'SEC_DIN' in data['Signal ID'] or 'EC_SEC_CLK' in data['Signal ID']:
-            net_name = jd + '_SEC_ELK_' + data['Signal ID'][-1]
-        else:
-            net_name = jd + '_ELK_' + data['Signal ID'][-1]
-
+        net_name = jd + '_ELK_' + data['Signal ID'][-1]
         return (
             NetNode(DCB=jd, DCB_PIN=data['SEAM pin']),
             self.prop_gen(net_name, attr='_FRO_'))
+
+
+# This needs to be placed SECOND to the end of the rules list.  It only selects
+# entries that should become FRO AND are REMOTE_RESETB
+class RuleDCB_REMOTE_RESET(RulePD):
+    def match(self, data, jd):
+        if 'REMOTE_RESETB' in data['Signal ID']:
+            return True
+
+    def process(self, data, jd):
+        net_name = jd + '_' + data['Signal ID']
+        return (
+            NetNode(DCB=jd, DCB_PIN=data['SEAM pin']),
+            self.prop_gen(net_name))
 
 
 class RuleDCB_PathFinder(RulePD):
@@ -592,6 +602,7 @@ dcb_rules = [
     RuleDCB_2V5(brkoutbrd_pin_assignments),
     RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
     RuleDCB_FRO_ELK(),
+    RuleDCB_REMOTE_RESET(),
     RuleDCB_Default()
 ]
 
