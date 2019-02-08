@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Jan 23, 2019 at 03:17 PM -0500
+# Last Change: Fri Feb 08, 2019 at 09:55 AM -0500
 
 from pathlib import Path
 from copy import deepcopy
@@ -507,6 +507,36 @@ class RuleDCB_AGND(RuleDCB_GND):
             self.prop_gen(net_name))
 
 
+class RuleDCB_RefToSense(RulePD):
+    def match(self, data, jd):
+        if 'EC_ADC_REF' in data['Signal ID']:
+            return True
+        else:
+            return False
+
+    def process(self, data, jd):
+        jp = jd.replace('D', 'P')
+        signal = data['Signal ID']
+
+        if 'REF13' in signal:
+            jp_pin = 'A16'
+            net_name = jp + 'A16' + '_' + 'P3_LV_SENSE_GND'
+        elif 'REF14' in signal:
+            jp_pin = 'J24'
+            net_name = jp + 'J24' + '_' + 'P1_WEST_LV_SENSE_GND'
+        elif 'REF15' in signal:
+            jp_pin = 'F05'
+            net_name = jp + 'F05' + '_' + 'P2_EAST_LV_SENSE_GND'
+        else:
+            raise ValueError(
+                'EC_ADC_REF: {} detected but not belongs to any known case'.format(
+                    signal
+                ))
+        return (
+            NetNode(DCB=jd, DCB_PIN=data['SEAM pin'], PT=jp, PT_PIN=jp_pin),
+            self.prop_gen(net_name))
+
+
 ###############################
 # Define rules to be applied  #
 ###############################
@@ -528,6 +558,7 @@ pt_rules = [
 dcb_rules = [
     RuleDCB_GND(),
     RuleDCB_AGND(),
+    RuleDCB_RefToSense(),
     RuleDCB_PTSingleToDiff(),
     RuleDCB_PT(),
     RuleDCB_1V5(brkoutbrd_pin_assignments),
