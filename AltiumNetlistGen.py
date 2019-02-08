@@ -24,11 +24,11 @@ pt_filename = input_dir / Path('backplane_mapping_PT.yml')
 dcb_filename = input_dir / Path('backplane_mapping_DCB.yml')
 
 pt_true_output_filename = output_dir / Path(
-    'AltiumNetlist_PT_Full_TrueType.csv')
+    'temp_AltiumNetlist_PT_Full_TrueType.csv')
 dcb_true_output_filename = output_dir / Path(
-    'AltiumNetlist_DCB_Full_TrueType.csv')
+    'temp_AltiumNetlist_DCB_Full_TrueType.csv')
 pt_result_true_depop_aux_output_filename = output_dir / Path(
-    'AuxList_PT_Full_TrueType.csv'
+    'temp_AuxList_PT_Full_TrueType.csv'
 )
 
 
@@ -366,12 +366,16 @@ class RuleDCB_FRO_ELK(RulePD):
         if 'ELK' in data['Signal ID']:
             # Select GBTx data ELK or secondary-ctrl data-input ELK
             if 'DC' in data['Signal ID'] or \
-                    '_SEC_DIN_' in data['Signal ID'] or \
-                    'EC_SEC_CLK_ELK' in data['Signal ID']:
+                    'SEC_DIN' in data['Signal ID'] or \
+                    'EC_SEC_CLK' in data['Signal ID']:
                 return True
 
     def process(self, data, jd):
-        net_name = jd + '_ELK_' + data['Signal ID'][-1]
+        if 'SEC_DIN' in data['Signal ID'] or 'EC_SEC_CLK' in data['Signal ID']:
+            net_name = jd + '_SEC_ELK_' + data['Signal ID'][-1]
+        else:
+            net_name = jd + '_ELK_' + data['Signal ID'][-1]
+
         return (
             NetNode(DCB=jd, DCB_PIN=data['SEAM pin']),
             self.prop_gen(net_name, attr='_FRO_'))
