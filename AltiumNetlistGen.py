@@ -365,7 +365,9 @@ class RuleDCB_FRO_ELK(RulePD):
     def match(self, data, jd):
         if 'ELK' in data['Signal ID']:
             # Select GBTx data ELK or secondary-ctrl data-input ELK
-            if 'DC' in data['Signal ID'] or '_SEC_DIN_' in data['Signal ID']:
+            if 'DC' in data['Signal ID'] or \
+                    '_SEC_DIN_' in data['Signal ID'] or \
+                    'EC_SEC_CLK_ELK' in data['Signal ID']:
                 return True
 
     def process(self, data, jd):
