@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 08, 2019 at 09:59 AM -0500
+# Last Change: Fri Feb 08, 2019 at 10:00 AM -0500
 
 from pathlib import Path
 from copy import deepcopy
@@ -520,11 +520,13 @@ class RuleDCB_RefToSense(RulePD):
 
         if 'REF13' in signal:
             jp_pin = 'A16'
-            net_name = jp + 'A16' + '_' + 'P3_LV_SENSE_GND'
+            net_name = jp + jp_pin + '_' + 'P3_LV_SENSE_GND'
         elif 'REF14' in signal:
             jp_pin = 'J24'
-            net_name = jp + 'J24' + '_' + 'P1_WEST_LV_SENSE_GND'
+            net_name = jp + jp_pin + '_' + 'P1_WEST_LV_SENSE_GND'
         elif 'REF15' in signal:
+            # NOTE: This is a special case, because in the netname, the pin
+            # number is padded!
             jp_pin = 'F5'
             net_name = jp + 'F05' + '_' + 'P2_EAST_LV_SENSE_GND'
         else:
@@ -532,6 +534,7 @@ class RuleDCB_RefToSense(RulePD):
                 'EC_ADC_REF: {} detected but not belongs to any known case'.format(
                     signal
                 ))
+
         return (
             NetNode(DCB=jd, DCB_PIN=data['SEAM pin'], PT=jp, PT_PIN=jp_pin),
             self.prop_gen(net_name))
