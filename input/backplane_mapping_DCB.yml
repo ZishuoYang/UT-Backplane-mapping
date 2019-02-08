@@ -1963,7 +1963,7 @@ JD0:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -3964,7 +3964,7 @@ JD1:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -5965,7 +5965,7 @@ JD2:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -7966,7 +7966,7 @@ JD3:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -9967,7 +9967,7 @@ JD4:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -11968,7 +11968,7 @@ JD5:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -13969,7 +13969,7 @@ JD6:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -15970,7 +15970,7 @@ JD7:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -17971,7 +17971,7 @@ JD8:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -19972,7 +19972,7 @@ JD9:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -21973,7 +21973,7 @@ JD10:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
@@ -23974,7 +23974,7 @@ JD11:
     GBTx ID: null
     Pigtail pin: null
     Pigtail slot: null
-    Signal ID: GND
+    Signal ID: REMOTE_RESETB
 - H44:
     GBTx ID: null
     Pigtail pin: null
