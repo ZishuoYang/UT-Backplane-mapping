@@ -371,7 +371,10 @@ class RuleDCB_FRO_ELK(RulePD):
                 return True
 
     def process(self, data, jd):
-        net_name = jd + '_ELK_' + data['Signal ID'][-1]
+        if 'SEC_DIN' in data['Signal ID'] or 'EC_SEC_CLK' in data['Signal ID']:
+            net_name = jd + '_SEC_ELK_' + data['Signal ID'][-1]
+        else:
+            net_name = jd + '_ELK_' + data['Signal ID'][-1]
         return (
             NetNode(DCB=jd, DCB_PIN=data['SEAM pin']),
             self.prop_gen(net_name, attr='_FRO_'))
