@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 07, 2019 at 06:51 PM -0500
+# Last Change: Fri Feb 08, 2019 at 01:09 AM -0500
 
 import re
 
@@ -117,7 +117,7 @@ def find_gbtx_info(d):
 
 
 # NOTE: asic_bp_id is used for sorting
-def find_asic_bp_id(hybrid, asic_idx, flex):
+def gen_asic_bp_id(hybrid, asic_idx, flex):
     if hybrid == 'P1' or hybrid == 'P2':
         if asic_idx <= 3:
             asic_bp_id = hybrid + '_WEST' + '_ASIC_' +  str(asic_idx)
@@ -268,7 +268,7 @@ for elk in elks_proto_p:
     gbtx_idx, gbtx_ch = find_gbtx_info(elk)
 
     # 8-ASIC is seperated into WEST/EAST for sorting.
-    asic_bp_id = find_asic_bp_id(hybrid, asic_idx, flex)
+    asic_bp_id = gen_asic_bp_id(hybrid, asic_idx, flex)
 
     # Unconditionally append to alpha type backplane.
     elks_descr_alpha[flex][asic_bp_id].append({
@@ -340,7 +340,7 @@ for ctrl in ctrl_proto_p:
     hybrid, asic_idx, asic_ch = find_hybrid_asic_info(ctrl)
     gbtx_idx, gbtx_ch = find_gbtx_info(ctrl)
 
-    asic_bp_id = find_asic_bp_id(hybrid, asic_idx, flex)
+    asic_bp_id = gen_asic_bp_id(hybrid, asic_idx, flex)
 
     ctrls_descr_alpha[flex][asic_bp_id].append({
         'hybrid': hybrid,
