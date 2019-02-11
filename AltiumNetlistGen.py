@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 08, 2019 at 10:00 AM -0500
+# Last Change: Fri Feb 08, 2019 at 04:07 PM -0500
 
 from pathlib import Path
 from copy import deepcopy
@@ -90,7 +90,6 @@ def aux_list_gen(pt_result):
         'Depopulation: HYB': {},
         'Depopulation: LV_SOURCE': {},
         'Depopulation: LV_RETURN': {},
-        'Depopulation: LV_SENSE_GND': {},
         'Depopulation: LV_SENSE_N/P': {},
         'Depopulation: THERM': {},
         'Depopulation: EC_RESET': {},
@@ -114,8 +113,6 @@ def aux_list_gen(pt_result):
                 result[node.PT]['Depopulation: LV_SOURCE'][node] = prop
             elif 'LV_RETURN' in prop['NETNAME']:
                 result[node.PT]['Depopulation: LV_RETURN'][node] = prop
-            elif 'LV_SENSE_GND' in prop['NETNAME']:
-                result[node.PT]['Depopulation: LV_SENSE_GND'][node] = prop
             elif 'LV_SENSE' in prop['NETNAME']:
                 result[node.PT]['Depopulation: LV_SENSE_N/P'][node] = prop
             elif 'THERM' in prop['NETNAME']:
