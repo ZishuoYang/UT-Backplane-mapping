@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 08, 2019 at 03:14 PM -0500
+# Last Change: Mon Feb 11, 2019 at 03:28 PM -0500
 
 import re
 
@@ -63,7 +63,35 @@ def write_to_log(filename, data, mode='w', eol='\n'):
 
 NetLegacyReader = PcadBackPlaneReader(netlist)
 
-node_dict, netlist_dict = NetLegacyReader.read()
+# FIXME: Because CERN people didn't use the correct connector, we manually
+# swapping connector pins for now. This should be removed once the CERN people
+# start to use the correct libraries.
+node_dict_orig, netlist_dict_orig = NetLegacyReader.read()
+
+node_dict = {}
+netlist_dict = {}
+
+for node in node_dict_orig.keys():
+    if type(node) == NetNode and node.PT_PIN is not None and node.PT_PIN.startswith('J'):
+        new_node = NetNode(node.DCB, node.DCB_PIN, node.PT, 'I'+node.PT_PIN[1:])
+        node_dict[new_node] = node_dict_orig[node]
+    elif type(node) == NetNode and node.PT_PIN is not None and node.PT_PIN.startswith('K'):
+        new_node = NetNode(node.DCB, node.DCB_PIN, node.PT, 'J'+node.PT_PIN[1:])
+        node_dict[new_node] = node_dict_orig[node]
+    else:
+        node_dict[node] = node_dict_orig[node]
+
+for netname, nodes in netlist_dict_orig.items():
+    new_nodes = []
+    for n in nodes:
+        new_n = list(n)
+        if n[1].startswith('J'):
+            new_n[1] = 'I' + n[1][1:]
+        if n[1].startswith('K'):
+            new_n[1] = 'J' + n[1][1:]
+        new_nodes.append(new_n)
+    netlist_dict[netname] = new_nodes
+
 node_list = list(node_dict.keys())
 
 
@@ -71,18 +99,18 @@ node_list = list(node_dict.keys())
 # Check differential signal depopulation #
 ##########################################
 
-all_diff_nets = []
-for jp in pt_result_true_depop_aux.keys():
-    for node in pt_result_true_depop_aux[jp]['Depopulation: ELK']:
-        all_diff_nets.append(
-            pt_result_true_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
-        )
+# all_diff_nets = []
+# for jp in pt_result_true_depop_aux.keys():
+    # for node in pt_result_true_depop_aux[jp]['Depopulation: ELK']:
+        # all_diff_nets.append(
+            # pt_result_true_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
+        # )
 
-print("Checking depopulated differential pairs...")
-for diff_net in all_diff_nets:
-    components = netlist_dict[diff_net]
-    if True not in map(lambda x: bool(re.search(r'^R\d+', x[0])), components):
-        print("No resistor found in {}".format(diff_net))
+# print("Checking depopulated differential pairs...")
+# for diff_net in all_diff_nets:
+    # components = netlist_dict[diff_net]
+    # if True not in map(lambda x: bool(re.search(r'^R\d+', x[0])), components):
+        # print("No resistor found in {}".format(diff_net))
 
 
 ########################################
@@ -240,8 +268,8 @@ net_rules = [
 ]
 
 # Debug
-for rule in net_rules:
-    rule.debug_node = NetNode('JD8', 'A1')
+# for rule in net_rules:
+    # rule.debug_node = NetNode(None, None, 'JP10', 'H26')
 
 NetSelector = SelectorNet(pt_result_true, net_rules)
 net_result = NetSelector.do()
