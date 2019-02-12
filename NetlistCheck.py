@@ -66,6 +66,7 @@ NetLegacyReader = PcadBackPlaneReader(netlist)
 # FIXME: Because CERN people didn't use the correct connector, we manually
 # swapping connector pins for now. This should be removed once the CERN people
 # start to use the correct libraries.
+print('Warning: using the temporary fix to handle the pin letter swap')
 node_dict_orig, netlist_dict_orig = NetLegacyReader.read()
 
 node_dict = {}
