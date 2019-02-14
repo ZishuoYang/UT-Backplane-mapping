@@ -120,6 +120,17 @@ for diff_net in all_diff_nets:
             print("No depopulation component found in {}".format(diff_net))
 
 
+###############################
+# Check never-used FRO Elinks #
+###############################
+
+print("Checking never-used FRO ELKs...")
+for net_name in netlist_dict.keys():
+    if '_FRO_' in net_name and '_ELK_' in net_name:
+        net = netlist_dict[net_name]
+        if True not in map(lambda x: bool(re.search(r'^R\d+', x[0])), net):
+            print("No biasing resistor found in {}".format(net_name))
+
 ########################################
 # Cross-checking rules for DCB/Pigtail #
 ########################################
