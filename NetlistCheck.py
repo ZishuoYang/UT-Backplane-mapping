@@ -100,18 +100,18 @@ node_list = list(node_dict.keys())
 # Check differential signal depopulation #
 ##########################################
 
-# all_diff_nets = []
-# for jp in pt_result_true_depop_aux.keys():
-    # for node in pt_result_true_depop_aux[jp]['Depopulation: ELK']:
-        # all_diff_nets.append(
-            # pt_result_true_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
-        # )
+all_diff_nets = []
+for jp in pt_result_true_depop_aux.keys():
+    for node in pt_result_true_depop_aux[jp]['Depopulation: ELK']:
+        all_diff_nets.append(
+            pt_result_true_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
+        )
 
-# print("Checking depopulated differential pairs...")
-# for diff_net in all_diff_nets:
-    # components = netlist_dict[diff_net]
-    # if True not in map(lambda x: bool(re.search(r'^R\d+', x[0])), components):
-        # print("No resistor found in {}".format(diff_net))
+print("Checking depopulated differential pairs...")
+for diff_net in all_diff_nets:
+    components = netlist_dict[diff_net]
+    if True not in map(lambda x: bool(re.search(r'^R\d+|^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])), components):
+        print("No resistor found in {}".format(diff_net))
 
 
 ########################################
