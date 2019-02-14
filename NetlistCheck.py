@@ -110,8 +110,14 @@ for jp in pt_result_true_depop_aux.keys():
 print("Checking depopulated differential pairs...")
 for diff_net in all_diff_nets:
     components = netlist_dict[diff_net]
-    if True not in map(lambda x: bool(re.search(r'^R\d+|^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])), components):
-        print("No resistor found in {}".format(diff_net))
+    # for Gamma (Beta special) variant:
+    if True in map(lambda x: bool(re.search(r'^JP8|^JP9|^JP10|^JP11', x[0])), components):
+        if True not in map(lambda x: bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])), components):
+            print("No depopulation component found in {}".format(diff_net))
+    # for Beta variant:
+    else:
+        if True not in map(lambda x: bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])), components):
+            print("No depopulation component found in {}".format(diff_net))
 
 
 ########################################
