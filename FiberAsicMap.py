@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 08, 2019 at 01:09 AM -0500
+# Last Change: Fri Feb 15, 2019 at 02:16 PM -0500
 
 import re
 
@@ -17,8 +17,7 @@ from pyUTM.common import jp_flex_type_proto, all_pepis
 from AltiumNetlistGen import pt_descr, dcb_descr
 
 output_dir = Path('output')
-elk_mapping_output_filename = output_dir / Path('AsicToElkFiberMapping.csv')
-ctrl_mapping_output_filename = output_dir / Path('AsicToCtrlFiberMapping.csv')
+mapping_output_filename = output_dir / Path('AsicToFiberMapping.csv')
 
 
 ###########
@@ -388,4 +387,4 @@ if len(elk_data) != 4192:
     raise ValueError(
         'Length of output data is {}, which is not 4192'.format(len(elk_data)))
 else:
-    write_mapping_to_csv(elk_mapping_output_filename, elk_data)
+    write_mapping_to_csv(mapping_output_filename, elk_data)
