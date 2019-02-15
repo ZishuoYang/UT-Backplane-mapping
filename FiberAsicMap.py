@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 15, 2019 at 03:09 PM -0500
+# Last Change: Fri Feb 15, 2019 at 03:13 PM -0500
 
 import re
 
@@ -370,10 +370,6 @@ for ctrl in ctrl_proto_p:
                 'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
                 'ctrl_signal_type': ctrl['DCB signal ID']
             })
-
-
-all_ctrl_descr = make_all_descr(
-    [ctrls_descr_alpha, ctrls_descr_beta, ctrls_descr_gamma])
 
 
 #################
