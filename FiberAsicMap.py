@@ -122,8 +122,9 @@ def find_gbtx_info(d):
 
 def find_hybrid_info(d):
     pt_signal_id = d['Signal ID']
-    hybrid, _ = pt_signal_id.split('_', 1)
-
+    hybrid, east_west, _ = pt_signal_id.split('_', 2)
+    if east_west in ['EAST', 'WEST']:
+        hybrid = hybrid + '_' + east_west
     return hybrid
 
 
@@ -203,6 +204,12 @@ def generate_descr_for_all_pepi(all_descr):
                     entry['dcb_idx'] = str(asic_descr['dcb_idx'])
                     entry['gbtx_idx'] = str(asic_descr['gbtx_idx'])
                     entry['gbtx_chs'] = asic_descr['gbtx_chs']
+                    entry['DC_OUT_RCLK'] = asic_descr['DC_OUT_RCLK']
+                    entry['MC_TFC'] = asic_descr['MC_TFC']
+                    entry['EC_HYB_I2C_SCL'] = asic_descr['EC_HYB_i2C_SCL']
+                    entry['EC_HYB_I2C_SDA'] = asic_descr['EC_HYB_i2C_SDA']
+                    entry['EC_RESET_GPIO'] = asic_descr['EC_RESET_GPIO']
+                    entry['EC_ADC'] = asic_descr['EC_ADC']
                     data.append(entry)
 
             else:
@@ -225,6 +232,12 @@ def write_mapping_to_csv(filename, data,
                              'DCB index': 'dcb_idx',
                              'GBTx index': 'gbtx_idx',
                              'GBTx channels (GBT frame bytes)': 'gbtx_chs',
+                             'DC_OUT_RCLK': 'DC_OUT_RCLK',
+                             'MC_TFC': 'MC_TFC',
+                             'EC_HYB_I2C_SCL': 'EC_HYB_I2C_SCL',
+                             'EC_HYB_I2C_SDA': 'EC_HYB_I2C_SDA',
+                             'EC_RESET_GPIO': 'EC_RESET_GPIO',
+                             'EC_ADC': 'EC_ADC',
                          },
                          mode='w', eol='\n'):
     with open(filename, mode) as f:
@@ -327,7 +340,7 @@ for _, i in all_elk_descr.items():
 # Find ASIC control entries #
 #############################
 
-filter_ctrl = filter_by_signal_id([r'_CLK_', r'_I2C_', r'_RESET_', r'_TFC_',
+filter_ctrl = filter_by_signal_id([r'_CLK_', r'_I2C_S', r'_RESET_', r'_TFC_',
                                    '_THERMISTOR_'])
 ctrl_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto,
                                    filter_ctrl, continue_on_error=True)
@@ -336,40 +349,37 @@ ctrl_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto,
 # negative legs are connected to the ground.
 ctrl_proto_p = find_matching_entries(ctrl_proto, dcb_ref_proto, filter_positive)
 
+# Reformat some signal types
+for ctrl in ctrl_proto_p:
+    sig_id = ctrl['DCB signal ID']
+    if 'DC_OUT_RCLK' in sig_id or 'MC_TFC' in sig_id:
+        # e.g. DC_OUT_RCLK2_P
+        ctrl['DCB signal ID'] = sig_id[:-3] + '_' + sig_id[-3]
 
 ##############################################################
 # Generate ASIC control fiber mapping for a single backplane #
 ##############################################################
 
-# Initialize control mappings
-ctrls_descr_alpha = defaultdict(lambda: defaultdict(list))
-ctrls_descr_beta  = defaultdict(lambda: defaultdict(list))
-ctrls_descr_gamma = defaultdict(lambda: defaultdict(list))
-
 for ctrl in ctrl_proto_p:
     flex = find_proto_flex_type(ctrl)
     hybrid = find_hybrid_info(ctrl)
-    asic_bp_id = gen_asic_bp_id(hybrid, asic_idx, flex)
-
-    ctrls_descr_alpha[flex][asic_bp_id].append({
-        'hybrid': hybrid,
-        'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
-        'ctrl_signal_type': ctrl['DCB signal ID']
-    })
-
+    # Alpha
+    for asic_bp_id in elks_descr_alpha[flex].keys():
+        if hybrid in asic_bp_id:
+            signal, channel = ctrl['DCB signal ID'].rsplit('_', 1)
+            elks_descr_alpha[flex][asic_bp_id][signal] = channel
+    # Beta
     if ctrl['Note'] != 'Alpha only':
-        ctrls_descr_beta[flex][asic_bp_id].append({
-            'hybrid': hybrid,
-            'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
-            'ctrl_signal_type': ctrl['DCB signal ID']
-        })
-
+        for asic_bp_id in elks_descr_beta[flex].keys():
+            if hybrid in asic_bp_id:
+                signal, channel = ctrl['DCB signal ID'].rsplit('_', 1)
+            elks_descr_beta[flex][asic_bp_id][signal] = channel
+        # Gamma
         if find_slot_idx(ctrl) < 8:
-            ctrls_descr_gamma[flex][asic_bp_id].append({
-                'hybrid': hybrid,
-                'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
-                'ctrl_signal_type': ctrl['DCB signal ID']
-            })
+            for asic_bp_id in elks_descr_gamma[flex].keys():
+                if hybrid in asic_bp_id:
+                    signal, channel = ctrl['DCB signal ID'].rsplit('_', 1)
+                    elks_descr_gamma[flex][asic_bp_id][signal] = channel
 
 
 #################
