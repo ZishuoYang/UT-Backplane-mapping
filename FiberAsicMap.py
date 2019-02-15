@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 08, 2019 at 01:09 AM -0500
+# Last Change: Fri Feb 15, 2019 at 03:13 PM -0500
 
 import re
 
@@ -17,8 +17,7 @@ from pyUTM.common import jp_flex_type_proto, all_pepis
 from AltiumNetlistGen import pt_descr, dcb_descr
 
 output_dir = Path('output')
-elk_mapping_output_filename = output_dir / Path('AsicToElkFiberMapping.csv')
-ctrl_mapping_output_filename = output_dir / Path('AsicToCtrlFiberMapping.csv')
+mapping_output_filename = output_dir / Path('AsicToFiberMapping.csv')
 
 
 ###########
@@ -102,10 +101,15 @@ def find_proto_flex_type(d):
 
 def find_hybrid_asic_info(d):
     pt_signal_id = d['Signal ID']
-    hybrid, _, asic_idx, asic_ch, _ = pt_signal_id.split('_')
-    asic_idx = int(asic_idx)
-    asic_ch = int(asic_ch[2:])
-    return (hybrid, asic_idx, asic_ch)
+
+    try:
+        hybrid, _, asic_idx, asic_ch, _ = pt_signal_id.split('_')
+        asic_idx = int(asic_idx)
+        asic_ch = int(asic_ch[2:])
+        return (hybrid, asic_idx, asic_ch)
+
+    except Exception:
+        raise ValueError("Can't parse signal ID: {}".format(pt_signal_id))
 
 
 def find_gbtx_info(d):
@@ -114,6 +118,13 @@ def find_gbtx_info(d):
     gbtx_idx = int(gbtx_idx[2:])
     gbtx_ch = int(gbtx_ch[2:])
     return (gbtx_idx, gbtx_ch)
+
+
+def find_hybrid_info(d):
+    pt_signal_id = d['Signal ID']
+    hybrid, _ = pt_signal_id.split('_', 1)
+
+    return hybrid
 
 
 # NOTE: asic_bp_id is used for sorting
@@ -316,7 +327,8 @@ for _, i in all_elk_descr.items():
 # Find ASIC control entries #
 #############################
 
-filter_ctrl = filter_by_signal_id([r'_CLK_', r'_I2C_', r'_RESET_', r'_TFC_'])
+filter_ctrl = filter_by_signal_id([r'_CLK_', r'_I2C_', r'_RESET_', r'_TFC_',
+                                   '_THERMISTOR_'])
 ctrl_proto = find_matching_entries(pt_descr_flattend, dcb_ref_proto,
                                    filter_ctrl, continue_on_error=True)
 
@@ -336,47 +348,28 @@ ctrls_descr_gamma = defaultdict(lambda: defaultdict(list))
 
 for ctrl in ctrl_proto_p:
     flex = find_proto_flex_type(ctrl)
-
-    hybrid, asic_idx, asic_ch = find_hybrid_asic_info(ctrl)
-    gbtx_idx, gbtx_ch = find_gbtx_info(ctrl)
-
+    hybrid = find_hybrid_info(ctrl)
     asic_bp_id = gen_asic_bp_id(hybrid, asic_idx, flex)
 
     ctrls_descr_alpha[flex][asic_bp_id].append({
         'hybrid': hybrid,
-        'asic_idx': asic_idx,
-        'asic_ch': asic_ch,
         'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
-        'gbtx_idx': gbtx_idx,
-        'gbtx_ch': gbtx_ch,
         'ctrl_signal_type': ctrl['DCB signal ID']
     })
 
     if ctrl['Note'] != 'Alpha only':
         ctrls_descr_beta[flex][asic_bp_id].append({
             'hybrid': hybrid,
-            'asic_idx': asic_idx,
-            'asic_ch': asic_ch,
             'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
-            'gbtx_idx': gbtx_idx,
-            'gbtx_ch': gbtx_ch,
             'ctrl_signal_type': ctrl['DCB signal ID']
         })
 
         if find_slot_idx(ctrl) < 8:
             ctrls_descr_gamma[flex][asic_bp_id].append({
                 'hybrid': hybrid,
-                'asic_idx': asic_idx,
-                'asic_ch': asic_ch,
                 'dcb_idx': find_slot_idx(ctrl, key='DCB slot'),
-                'gbtx_idx': gbtx_idx,
-                'gbtx_ch': gbtx_ch,
                 'ctrl_signal_type': ctrl['DCB signal ID']
             })
-
-
-all_ctrl_descr = make_all_descr(
-    [ctrls_descr_alpha, ctrls_descr_beta, ctrls_descr_gamma])
 
 
 #################
@@ -388,4 +381,4 @@ if len(elk_data) != 4192:
     raise ValueError(
         'Length of output data is {}, which is not 4192'.format(len(elk_data)))
 else:
-    write_mapping_to_csv(elk_mapping_output_filename, elk_data)
+    write_mapping_to_csv(mapping_output_filename, elk_data)
