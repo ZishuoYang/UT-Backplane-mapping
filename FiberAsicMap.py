@@ -387,8 +387,19 @@ for ctrl in ctrl_proto_p:
 #################
 
 elk_data = generate_descr_for_all_pepi(all_elk_descr)
+# Unitarity test
 if len(elk_data) != 4192:
     raise ValueError(
         'Length of output data is {}, which is not 4192'.format(len(elk_data)))
+# Unit tests
+elif (elk_data[0]['dcb_idx'] != '2' or
+      elk_data[0]['DC_OUT_RCLK'] != '5' or
+      elk_data[0]['MC_TFC'] != '5' or
+      elk_data[0]['EC_HYB_I2C_SCL'] != '5' or
+      elk_data[0]['EC_HYB_I2C_SDA'] != '5' or
+      elk_data[0]['EC_RESET_GPIO'] != '5' or
+      elk_data[0]['EC_ADC'] != '7'):
+    raise ValueError('Unit test failed: {}'.format(elk_data[0]))
+# Write to csv
 else:
     write_mapping_to_csv(mapping_output_filename, elk_data)
