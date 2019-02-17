@@ -373,7 +373,7 @@ for ctrl in ctrl_proto_p:
         for asic_bp_id in elks_descr_beta[flex].keys():
             if hybrid in asic_bp_id:
                 signal, channel = ctrl['DCB signal ID'].rsplit('_', 1)
-            elks_descr_beta[flex][asic_bp_id][signal] = channel
+                elks_descr_beta[flex][asic_bp_id][signal] = channel
         # Gamma
         if find_slot_idx(ctrl) < 8:
             for asic_bp_id in elks_descr_gamma[flex].keys():
