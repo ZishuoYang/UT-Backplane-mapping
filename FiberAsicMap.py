@@ -400,6 +400,14 @@ elif (elk_data[0]['dcb_idx'] != '2' or
       elk_data[0]['EC_RESET_GPIO'] != '5' or
       elk_data[0]['EC_ADC'] != '7'):
     raise ValueError('Unit test failed: {}'.format(elk_data[0]))
+elif (elk_data[224]['dcb_idx'] != '4' or
+      elk_data[224]['DC_OUT_RCLK'] != '4' or
+      elk_data[224]['MC_TFC'] != '4' or
+      elk_data[224]['EC_HYB_I2C_SCL'] != '4' or
+      elk_data[224]['EC_HYB_I2C_SDA'] != '4' or
+      elk_data[224]['EC_RESET_GPIO'] != '4' or
+      elk_data[224]['EC_ADC'] != '6'):
+    raise ValueError('Unit test failed: {}'.format(elk_data[224]))
 # Write to csv
 else:
     write_mapping_to_csv(mapping_output_filename, elk_data)
