@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 15, 2019 at 03:13 PM -0500
+# Last Change: Mon Feb 18, 2019 at 01:47 PM -0500
 
 import re
 
@@ -189,12 +189,12 @@ def generate_descr_for_all_pepi(all_descr):
 
             # FIXME: Currently we are using 'inner', etc as version, but we
             # should use 'alpha' etc.
-            bp_type = pepi['bp_var']
+            bp_variant = pepi['bp_var']
 
             flex_type = pepi['stv_bp'] + flex_type_suffix
 
-            if flex_type in all_descr[bp_type].keys():
-                pointer = all_descr[bp_type][flex_type]
+            if flex_type in all_descr[bp_variant].keys():
+                pointer = all_descr[bp_variant][flex_type]
                 for asic_type in sorted(pointer.keys()):
                     asic_descr = pointer[asic_type]
                     entry = deepcopy(pepi)
