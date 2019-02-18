@@ -427,6 +427,14 @@ elif (elk_data[224]['dcb_idx'] != '1' or
       elk_data[224]['EC_RESET_GPIO'] != '4' or
       elk_data[224]['EC_ADC'] != '6'):
     raise ValueError('Unit test failed: {}'.format(elk_data[224]))
+elif (elk_data[3000]['dcb_idx'] != '11' or
+      elk_data[3000]['DC_OUT_RCLK'] != '0' or
+      elk_data[3000]['stv_bp'] != 'X-2-S' or
+      elk_data[3000]['stv_ut'] != 'UTbX_6A' or
+      elk_data[3000]['bp_var'] != 'beta' or
+      elk_data[3000]['bp_idx'] != 'middle' or
+      elk_data[3000]['bp_type'] != 'm'):
+    raise ValueError('Unit test failed: {}'.format(elk_data[3000]))
 
 # Write to csv
 else:
