@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Feb 18, 2019 at 01:52 AM -0500
+# Last Change: Mon Feb 18, 2019 at 02:09 AM -0500
 
 import re
 
@@ -15,7 +15,6 @@ sys.path.insert(0, './pyUTM')
 from pyUTM.io import PcadNaiveReader
 from pyUTM.io import NetNodeGen
 from pyUTM.selection import SelectorNet, RuleNet
-from pyUTM.datatype import NetNode  # for debugging
 from AltiumNetlistGen import pt_result_true, dcb_result_true
 from AltiumNetlistGen import pt_result_true_depop_aux
 
@@ -63,38 +62,30 @@ def write_to_log(filename, data, mode='w', eol='\n'):
 ####################################
 
 NetReader = PcadNaiveReader(netlist)
+netlist_dict = NetReader.read()
 
 # FIXME: Because CERN people didn't use the correct connector, we manually
 # swapping connector pins for now. This should be removed once the CERN people
 # start to use the correct libraries.
-print('Warning: using the temporary fix to handle the pin letter swap')
-netlist_dict_orig = NetReader.read()
-node_dict_orig = NetNodeGen().do(netlist_dict_orig)
+print('Warning: Using the temporary fix to handle the pin letter swap.')
 
-node_dict = {}
-netlist_dict = {}
-
-for node in node_dict_orig.keys():
-    if type(node) == NetNode and node.PT_PIN is not None and node.PT_PIN.startswith('J'):
-        new_node = NetNode(node.DCB, node.DCB_PIN, node.PT, 'I'+node.PT_PIN[1:])
-        node_dict[new_node] = node_dict_orig[node]
-    elif type(node) == NetNode and node.PT_PIN is not None and node.PT_PIN.startswith('K'):
-        new_node = NetNode(node.DCB, node.DCB_PIN, node.PT, 'J'+node.PT_PIN[1:])
-        node_dict[new_node] = node_dict_orig[node]
-    else:
-        node_dict[node] = node_dict_orig[node]
-
-for netname, nodes in netlist_dict_orig.items():
+for netname, nodes in netlist_dict.items():
     new_nodes = []
+
     for n in nodes:
         new_n = list(n)
+
         if n[1].startswith('J'):
             new_n[1] = 'I' + n[1][1:]
+
         if n[1].startswith('K'):
             new_n[1] = 'J' + n[1][1:]
-        new_nodes.append(new_n)
+
+        new_nodes.append(tuple(new_n))
+
     netlist_dict[netname] = new_nodes
 
+node_dict = NetNodeGen().do(netlist_dict)
 node_list = list(node_dict.keys())
 
 
