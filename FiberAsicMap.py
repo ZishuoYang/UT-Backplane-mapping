@@ -356,6 +356,7 @@ for ctrl in ctrl_proto_p:
         # e.g. DC_OUT_RCLK2_P
         ctrl['DCB signal ID'] = sig_id[:-3] + '_' + sig_id[-3]
 
+
 ##############################################################
 # Generate ASIC control fiber mapping for a single backplane #
 ##############################################################
