@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Feb 18, 2019 at 01:47 PM -0500
+# Last Change: Mon Feb 18, 2019 at 02:28 PM -0500
 
 import re
 
@@ -14,6 +14,7 @@ sys.path.insert(0, './pyUTM')
 
 from pyUTM.common import unflatten
 from pyUTM.common import jp_flex_type_proto, all_pepis
+from pyUTM.common import jd_swapping_true, jd_swapping_mirror
 from AltiumNetlistGen import pt_descr, dcb_descr
 
 output_dir = Path('output')
@@ -180,6 +181,19 @@ def make_all_descr(descr, header=['inner', 'middle', 'outer']):
     return dict(zip(header, descr))
 
 
+def find_dcb_idx_based_on_bp_type(idx, bp_type):
+    jd_connector = 'JD' + str(idx)
+
+    if bp_type == 't':
+        ref = jd_swapping_true
+    elif bp_type == 'm':
+        ref = jd_swapping_mirror
+    else:
+        raise ValueError('Unknown backplane type: {}'.format(bp_type))
+
+    return ref[jd_connector][2:]
+
+
 def generate_descr_for_all_pepi(all_descr):
     flattened_all_pepis = flatten_descr(all_pepis, header='pepi')
     data = []
@@ -201,7 +215,12 @@ def generate_descr_for_all_pepi(all_descr):
                     entry['stv_bp'] = flex_type
                     entry['hybrid'] = asic_descr['hybrid']
                     entry['asic_idx'] = str(asic_descr['asic_idx'])
-                    entry['dcb_idx'] = str(asic_descr['dcb_idx'])
+
+                    # Handle the only true-mirror difference here.
+                    entry['dcb_idx'] = find_dcb_idx_based_on_bp_type(
+                        asic_descr['dcb_idx'], pepi['bp_type']
+                    )
+
                     entry['gbtx_idx'] = str(asic_descr['gbtx_idx'])
                     entry['gbtx_chs'] = asic_descr['gbtx_chs']
                     entry['DC_OUT_RCLK'] = asic_descr['DC_OUT_RCLK']
@@ -391,6 +410,7 @@ elk_data = generate_descr_for_all_pepi(all_elk_descr)
 if len(elk_data) != 4192:
     raise ValueError(
         'Length of output data is {}, which is not 4192'.format(len(elk_data)))
+
 # Unit tests
 elif (elk_data[0]['dcb_idx'] != '2' or
       elk_data[0]['DC_OUT_RCLK'] != '5' or
@@ -400,7 +420,7 @@ elif (elk_data[0]['dcb_idx'] != '2' or
       elk_data[0]['EC_RESET_GPIO'] != '5' or
       elk_data[0]['EC_ADC'] != '7'):
     raise ValueError('Unit test failed: {}'.format(elk_data[0]))
-elif (elk_data[224]['dcb_idx'] != '4' or
+elif (elk_data[224]['dcb_idx'] != '1' or
       elk_data[224]['DC_OUT_RCLK'] != '4' or
       elk_data[224]['MC_TFC'] != '4' or
       elk_data[224]['EC_HYB_I2C_SCL'] != '4' or
@@ -408,6 +428,7 @@ elif (elk_data[224]['dcb_idx'] != '4' or
       elk_data[224]['EC_RESET_GPIO'] != '4' or
       elk_data[224]['EC_ADC'] != '6'):
     raise ValueError('Unit test failed: {}'.format(elk_data[224]))
+
 # Write to csv
 else:
     write_mapping_to_csv(mapping_output_filename, elk_data)
