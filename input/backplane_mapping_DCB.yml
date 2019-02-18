@@ -5958,8 +5958,8 @@ JD2:
     Signal ID: EC_ADC_4
 - H42:
     GBTx ID: null
-    Pigtail pin: J12
-    Pigtail slot: JP1
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_5
 - H43:
     GBTx ID: null
@@ -5978,8 +5978,8 @@ JD2:
     Signal ID: EC_ADC_6
 - H46:
     GBTx ID: null
-    Pigtail pin: J12
-    Pigtail slot: JP0
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_7
 - H47:
     GBTx ID: null
@@ -7939,8 +7939,8 @@ JD3:
     Signal ID: EC_ADC_2
 - H38:
     GBTx ID: null
-    Pigtail pin: J12
-    Pigtail slot: JP3
+    Pigtail pin: null 
+    Pigtail slot: null 
     Signal ID: EC_ADC_3
 - H39:
     GBTx ID: null
@@ -7959,8 +7959,8 @@ JD3:
     Signal ID: EC_ADC_4
 - H42:
     GBTx ID: null
-    Pigtail pin: B39
-    Pigtail slot: JP2
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_5
 - H43:
     GBTx ID: null
@@ -7979,8 +7979,8 @@ JD3:
     Signal ID: EC_ADC_6
 - H46:
     GBTx ID: null
-    Pigtail pin: J12
-    Pigtail slot: JP2
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_7
 - H47:
     GBTx ID: null
@@ -9935,8 +9935,8 @@ JD4:
     Signal ID: GND
 - H37:
     GBTx ID: null
-    Pigtail pin: J12
-    Pigtail slot: JP5
+    Pigtail pin: null 
+    Pigtail slot: null
     Signal ID: EC_ADC_2
 - H38:
     GBTx ID: null
@@ -9960,8 +9960,8 @@ JD4:
     Signal ID: EC_ADC_4
 - H42:
     GBTx ID: null
-    Pigtail pin: C24
-    Pigtail slot: JP0
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_5
 - H43:
     GBTx ID: null
@@ -11936,8 +11936,8 @@ JD5:
     Signal ID: GND
 - H37:
     GBTx ID: null
-    Pigtail pin: J12
-    Pigtail slot: JP6
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_2
 - H38:
     GBTx ID: null
@@ -11956,8 +11956,8 @@ JD5:
     Signal ID: AGND
 - H41:
     GBTx ID: null
-    Pigtail pin: C24
-    Pigtail slot: JP3
+    Pigtail pin: null
+    Pigtail slot: null 
     Signal ID: EC_ADC_4
 - H42:
     GBTx ID: null
@@ -13942,8 +13942,8 @@ JD6:
     Signal ID: EC_ADC_2
 - H38:
     GBTx ID: null
-    Pigtail pin: J12
-    Pigtail slot: JP4
+    Pigtail pin: null 
+    Pigtail slot: null
     Signal ID: EC_ADC_3
 - H39:
     GBTx ID: null
@@ -17979,8 +17979,8 @@ JD8:
     Signal ID: GND
 - H45:
     GBTx ID: null
-    Pigtail pin: C24
-    Pigtail slot: JP4
+    Pigtail pin: null 
+    Pigtail slot: null
     Signal ID: EC_ADC_6
 - H46:
     GBTx ID: null
@@ -19960,8 +19960,8 @@ JD9:
     Signal ID: AGND
 - H41:
     GBTx ID: null
-    Pigtail pin: C24
-    Pigtail slot: JP7
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_4
 - H42:
     GBTx ID: null
@@ -21966,8 +21966,8 @@ JD10:
     Signal ID: EC_ADC_4
 - H42:
     GBTx ID: null
-    Pigtail pin: C24
-    Pigtail slot: JP8
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_5
 - H43:
     GBTx ID: null
@@ -23942,8 +23942,8 @@ JD11:
     Signal ID: GND
 - H37:
     GBTx ID: null
-    Pigtail pin: C24
-    Pigtail slot: JP11
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_2
 - H38:
     GBTx ID: null
