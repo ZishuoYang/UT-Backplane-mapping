@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Feb 18, 2019 at 02:28 PM -0500
+# Last Change: Mon Feb 18, 2019 at 02:40 PM -0500
 
 import re
 
@@ -177,7 +177,7 @@ def combine_asic_elk_channels(asic_descr):
 
 # Output #######################################################################
 
-def make_all_descr(descr, header=['inner', 'middle', 'outer']):
+def make_all_descr(descr, header=['alpha', 'beta', 'gamma']):
     return dict(zip(header, descr))
 
 
@@ -201,10 +201,7 @@ def generate_descr_for_all_pepi(all_descr):
     for pepi in flattened_all_pepis:
         for flex_type_suffix in ['-M', '-S']:
 
-            # FIXME: Currently we are using 'inner', etc as version, but we
-            # should use 'alpha' etc.
             bp_variant = pepi['bp_var']
-
             flex_type = pepi['stv_bp'] + flex_type_suffix
 
             if flex_type in all_descr[bp_variant].keys():
@@ -246,7 +243,8 @@ def write_mapping_to_csv(filename, data,
                              'Flex': 'stv_bp',
                              'Hybrid': 'hybrid',
                              'ASIC index': 'asic_idx',
-                             'BP index (alpha/beta/gamma)': 'bp_abg',
+                             'BP variant (alpha/beta/gamma)': 'bp_var',
+                             'BP index (inner/middle/outer)': 'bp_idx',
                              'BP type (true/mirrored)': 'bp_type',
                              'DCB index': 'dcb_idx',
                              'GBTx index': 'gbtx_idx',
