@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Feb 11, 2019 at 03:28 PM -0500
+# Last Change: Mon Feb 18, 2019 at 01:52 AM -0500
 
 import re
 
@@ -12,7 +12,8 @@ from os.path import basename
 import sys
 sys.path.insert(0, './pyUTM')
 
-from pyUTM.legacy import PcadBackPlaneReader
+from pyUTM.io import PcadNaiveReader
+from pyUTM.io import NetNodeGen
 from pyUTM.selection import SelectorNet, RuleNet
 from pyUTM.datatype import NetNode  # for debugging
 from AltiumNetlistGen import pt_result_true, dcb_result_true
@@ -61,13 +62,14 @@ def write_to_log(filename, data, mode='w', eol='\n'):
 # Read info from backplane netlist #
 ####################################
 
-NetLegacyReader = PcadBackPlaneReader(netlist)
+NetReader = PcadNaiveReader(netlist)
 
 # FIXME: Because CERN people didn't use the correct connector, we manually
 # swapping connector pins for now. This should be removed once the CERN people
 # start to use the correct libraries.
 print('Warning: using the temporary fix to handle the pin letter swap')
-node_dict_orig, netlist_dict_orig = NetLegacyReader.read()
+netlist_dict_orig = NetReader.read()
+node_dict_orig = NetNodeGen().do(netlist_dict_orig)
 
 node_dict = {}
 netlist_dict = {}
@@ -130,6 +132,7 @@ for net_name in netlist_dict.keys():
         net = netlist_dict[net_name]
         if True not in map(lambda x: bool(re.search(r'^R\d+', x[0])), net):
             print("No biasing resistor found in {}".format(net_name))
+
 
 ########################################
 # Cross-checking rules for DCB/Pigtail #
@@ -285,9 +288,6 @@ net_rules = [
                                            pt_result_true),
 ]
 
-# Debug
-# for rule in net_rules:
-    # rule.debug_node = NetNode(None, None, 'JP10', 'H26')
 
 NetSelector = SelectorNet(pt_result_true, net_rules)
 net_result = NetSelector.do()
