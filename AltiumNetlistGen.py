@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 08, 2019 at 04:07 PM -0500
+# Last Change: Tue Feb 19, 2019 at 02:41 PM -0500
 
 from pathlib import Path
 from copy import deepcopy
@@ -100,7 +100,7 @@ def aux_list_gen(pt_result):
 
     for node in pt_result:
         prop = pt_result[node]
-        if prop['NOTE'] == 'Alpha only':
+        if prop['NOTE'] is not None and 'Alpha only' in prop['NOTE']:
             if 'ELK' in prop['NETNAME']:
                 result[node.PT]['Depopulation: ELK'][node] = prop
             elif 'RCLK' in prop['NETNAME']:
@@ -337,6 +337,32 @@ class RulePT_UnusedToGND(RulePD):
         return (
             NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
             self.prop_gen('GND', data['Note']))
+
+
+# This needs to be placed above RulePT_NotConnected
+class RulePT_PTThermistorSpecial(RulePD):
+    def match(self, data, jp):
+        if data['Note'] is not None and 'Therm to JT' in data['Note']:
+            return True
+        else:
+            return False
+
+    def process(self, data, jp):
+        netname = jp + '_' + self.find_jt(jp) + '_' + data['Signal ID'].replace(
+            'THERMISTOR', 'THERM')
+        return (
+            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
+            self.prop_gen(netname, data['Note']))
+
+    @staticmethod
+    def find_jt(jp):
+        jp_idx = int(jp[2:])
+        if jp_idx < 4:
+            return 'JT0'
+        elif jp_idx < 8:
+            return 'JT1'
+        else:
+            return 'JT2'
 
 
 ####################################
@@ -583,6 +609,7 @@ pt_rules = [
     RulePT_PTSingleToDiffP(),
     RulePT_PTSingleToDiffN(),
     RulePT_UnusedToGND(),
+    RulePT_PTThermistorSpecial(),
     RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),
