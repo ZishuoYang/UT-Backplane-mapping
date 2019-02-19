@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Feb 19, 2019 at 02:37 PM -0500
+# Last Change: Tue Feb 19, 2019 at 02:41 PM -0500
 
 from pathlib import Path
 from copy import deepcopy
@@ -100,7 +100,7 @@ def aux_list_gen(pt_result):
 
     for node in pt_result:
         prop = pt_result[node]
-        if 'Alpha only' in prop['NOTE']:
+        if prop['NOTE'] is not None and 'Alpha only' in prop['NOTE']:
             if 'ELK' in prop['NETNAME']:
                 result[node.PT]['Depopulation: ELK'][node] = prop
             elif 'RCLK' in prop['NETNAME']:
@@ -342,7 +342,7 @@ class RulePT_UnusedToGND(RulePD):
 # This needs to be placed above RulePT_NotConnected
 class RulePT_PTThermistorSpecial(RulePD):
     def match(self, data, jp):
-        if 'Therm to JT' in data['Note']:
+        if data['Note'] is not None and 'Therm to JT' in data['Note']:
             return True
         else:
             return False
