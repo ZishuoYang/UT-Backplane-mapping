@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Feb 19, 2019 at 02:44 PM -0500
+# Last Change: Tue Feb 19, 2019 at 04:47 PM -0500
 
 import re
 
@@ -410,7 +410,20 @@ for ctrl in ctrl_proto_p:
 #################
 
 elk_data = generate_descr_for_all_pepi(all_elk_descr)
-# Unitarity test
+
+# Make sure total number of termistor 'None' channels makes sense
+total_therm_none = 0
+for i in elk_data:
+    if i['EC_ADC'] is None:
+        total_therm_none += 1
+try:
+    assert total_therm_none == 864
+except AssertionError:
+    print('Number of control links that do not go DCBs are: {}'.format(
+        total_therm_none
+    ))
+
+# Unitarity tests
 if len(elk_data) != 4192:
     raise ValueError(
         'Length of output data is {}, which is not 4192'.format(len(elk_data)))
@@ -440,6 +453,7 @@ elif (elk_data[3000]['dcb_idx'] != '11' or
       elk_data[3000]['bp_idx'] != 'middle' or
       elk_data[3000]['bp_type'] != 'm'):
     raise ValueError('Unit test failed: {}'.format(elk_data[3000]))
+
 
 # Write to csv
 else:
