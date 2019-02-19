@@ -380,7 +380,7 @@ JP0:
 - B24:
     DCB slot: null
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null
     Signal ID: P4_THERMISTOR_N
 - B25:
@@ -620,7 +620,7 @@ JP0:
 - C24:
     DCB slot: null
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null
     Signal ID: P4_THERMISTOR_P
 - C25:
@@ -1988,7 +1988,7 @@ JP0:
 - I12:
     DCB slot: null
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P1_EAST_THERMISTOR_N
 - I13:
@@ -2228,7 +2228,7 @@ JP0:
 - J12:
     DCB slot: null
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P1_EAST_THERMISTOR_P
 - J13:
@@ -4389,7 +4389,7 @@ JP1:
 - I12:
     DCB slot: null
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P1_EAST_THERMISTOR_N
 - I13:
@@ -4629,7 +4629,7 @@ JP1:
 - J12:
     DCB slot: null
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P1_EAST_THERMISTOR_P
 - J13:
@@ -5272,13 +5272,13 @@ JP2:
 - B39:
     DCB slot: null
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P2_WEST_THERMISTOR_P
 - B40:
     DCB slot: null
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P2_WEST_THERMISTOR_N
 - C1:
@@ -7030,7 +7030,7 @@ JP2:
 - J12:
     DCB slot: null
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P1_EAST_THERMISTOR_P
 - J13:
@@ -7583,7 +7583,7 @@ JP3:
 - B24:
     DCB slot: null 
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null 
     Signal ID: P4_THERMISTOR_N
 - B25:
@@ -7823,7 +7823,7 @@ JP3:
 - C24:
     DCB slot: null 
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null
     Signal ID: P4_THERMISTOR_P
 - C25:
@@ -9191,7 +9191,7 @@ JP3:
 - I12:
     DCB slot: null 
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P1_EAST_THERMISTOR_N
 - I13:
@@ -9431,7 +9431,7 @@ JP3:
 - J12:
     DCB slot: null 
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null 
     Signal ID: P1_EAST_THERMISTOR_P
 - J13:
@@ -9984,7 +9984,7 @@ JP4:
 - B24:
     DCB slot: null 
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null 
     Signal ID: P4_THERMISTOR_N
 - B25:
@@ -10224,7 +10224,7 @@ JP4:
 - C24:
     DCB slot: null 
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null
     Signal ID: P4_THERMISTOR_P
 - C25:
@@ -11592,7 +11592,7 @@ JP4:
 - I12:
     DCB slot: null 
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P1_EAST_THERMISTOR_N
 - I13:
@@ -11832,7 +11832,7 @@ JP4:
 - J12:
     DCB slot: null 
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P1_EAST_THERMISTOR_P
 - J13:
@@ -13993,7 +13993,7 @@ JP5:
 - I12:
     DCB slot: null 
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P1_EAST_THERMISTOR_N
 - I13:
@@ -16394,7 +16394,7 @@ JP6:
 - I12:
     DCB slot: null
     GBTx ID: null
-    Note: Alpha only
+    Note: Alpha only Therm to JT
     SEAM pin: null
     Signal ID: P1_EAST_THERMISTOR_N
 - I13:
@@ -17187,7 +17187,7 @@ JP7:
 - B24:
     DCB slot: null
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null
     Signal ID: P4_THERMISTOR_N
 - B25:
@@ -17427,7 +17427,7 @@ JP7:
 - C24:
     DCB slot: null
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null
     Signal ID: P4_THERMISTOR_P
 - C25:
@@ -19588,7 +19588,7 @@ JP8:
 - B24:
     DCB slot: null
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null
     Signal ID: P4_THERMISTOR_N
 - B25:
@@ -26791,7 +26791,7 @@ JP11:
 - B24:
     DCB slot: null
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null
     Signal ID: P4_THERMISTOR_N
 - B25:
@@ -27031,7 +27031,7 @@ JP11:
 - C24:
     DCB slot: null
     GBTx ID: null
-    Note: null
+    Note: Therm to JT
     SEAM pin: null
     Signal ID: P4_THERMISTOR_P
 - C25:
