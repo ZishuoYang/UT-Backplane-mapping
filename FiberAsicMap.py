@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Feb 19, 2019 at 01:35 PM -0500
+# Last Change: Tue Feb 19, 2019 at 02:39 PM -0500
 
 import re
 
@@ -327,7 +327,7 @@ for elk in elks_proto_p:
     })
 
     # Now depopulate to beta type.
-    if elk['Note'] != 'Alpha only':
+    if 'Alpha only' in elk['Note']:
         elks_descr_beta[flex][asic_bp_id].append({
             'hybrid': hybrid,
             'asic_idx': asic_idx,
@@ -392,7 +392,7 @@ for ctrl in ctrl_proto_p:
             signal, channel = ctrl['DCB signal ID'].rsplit('_', 1)
             elks_descr_alpha[flex][asic_bp_id][signal] = channel
     # Beta
-    if ctrl['Note'] != 'Alpha only':
+    if 'Alpha only' in ctrl['Note']:
         for asic_bp_id in elks_descr_beta[flex].keys():
             if hybrid in asic_bp_id:
                 signal, channel = ctrl['DCB signal ID'].rsplit('_', 1)
