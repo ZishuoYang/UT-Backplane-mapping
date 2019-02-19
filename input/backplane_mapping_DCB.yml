@@ -5938,8 +5938,8 @@ JD2:
     Signal ID: EC_ADC_2
 - H38:
     GBTx ID: null
-    Pigtail pin: B39
-    Pigtail slot: JP1
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_3
 - H39:
     GBTx ID: null
@@ -15943,8 +15943,8 @@ JD7:
     Signal ID: EC_ADC_2
 - H38:
     GBTx ID: null
-    Pigtail pin: J12
-    Pigtail slot: JP7
+    Pigtail pin: null
+    Pigtail slot: null
     Signal ID: EC_ADC_3
 - H39:
     GBTx ID: null
