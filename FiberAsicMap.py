@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Feb 18, 2019 at 02:40 PM -0500
+# Last Change: Tue Feb 19, 2019 at 01:35 PM -0500
 
 import re
 
@@ -225,7 +225,12 @@ def generate_descr_for_all_pepi(all_descr):
                     entry['EC_HYB_I2C_SCL'] = asic_descr['EC_HYB_i2C_SCL']
                     entry['EC_HYB_I2C_SDA'] = asic_descr['EC_HYB_i2C_SDA']
                     entry['EC_RESET_GPIO'] = asic_descr['EC_RESET_GPIO']
-                    entry['EC_ADC'] = asic_descr['EC_ADC']
+
+                    try:
+                        entry['EC_ADC'] = asic_descr['EC_ADC']
+                    except KeyError:
+                        entry['EC_ADC'] = None
+
                     data.append(entry)
 
             else:
@@ -260,7 +265,7 @@ def write_mapping_to_csv(filename, data,
     with open(filename, mode) as f:
         f.write(','.join(header.keys()) + eol)
         for entry in data:
-            row = [entry[k] for _, k in header.items()]
+            row = [str(entry[k]) for _, k in header.items()]
             f.write(','.join(row) + eol)
 
 
@@ -417,7 +422,7 @@ elif (elk_data[0]['dcb_idx'] != '2' or
       elk_data[0]['EC_HYB_I2C_SCL'] != '5' or
       elk_data[0]['EC_HYB_I2C_SDA'] != '5' or
       elk_data[0]['EC_RESET_GPIO'] != '5' or
-      elk_data[0]['EC_ADC'] != '7'):
+      elk_data[0]['EC_ADC'] is not None):
     raise ValueError('Unit test failed: {}'.format(elk_data[0]))
 elif (elk_data[224]['dcb_idx'] != '1' or
       elk_data[224]['DC_OUT_RCLK'] != '4' or

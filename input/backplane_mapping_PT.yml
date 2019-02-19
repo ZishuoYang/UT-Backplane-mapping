@@ -7581,7 +7581,7 @@ JP3:
     SEAM pin: E31
     Signal ID: P4_ASIC_3_CH2_N
 - B24:
-    DCB slot: null 
+    DCB slot: null
     GBTx ID: null
     Note: Therm to JT
     SEAM pin: null 
@@ -7821,7 +7821,7 @@ JP3:
     SEAM pin: E32
     Signal ID: P4_ASIC_3_CH2_P
 - C24:
-    DCB slot: null 
+    DCB slot: null
     GBTx ID: null
     Note: Therm to JT
     SEAM pin: null
@@ -9189,7 +9189,7 @@ JP3:
     SEAM pin: null
     Signal ID: P1_EAST_LV_SOURCE
 - I12:
-    DCB slot: null 
+    DCB slot: null
     GBTx ID: null
     Note: Alpha only Therm to JT
     SEAM pin: null
@@ -9429,7 +9429,7 @@ JP3:
     SEAM pin: null
     Signal ID: P1_EAST_LV_SOURCE
 - J12:
-    DCB slot: null 
+    DCB slot: null
     GBTx ID: null
     Note: Alpha only Therm to JT
     SEAM pin: null 
@@ -9982,7 +9982,7 @@ JP4:
     SEAM pin: E47
     Signal ID: P4_ASIC_3_CH2_N
 - B24:
-    DCB slot: null 
+    DCB slot: null
     GBTx ID: null
     Note: Therm to JT
     SEAM pin: null 
@@ -10222,7 +10222,7 @@ JP4:
     SEAM pin: E48
     Signal ID: P4_ASIC_3_CH2_P
 - C24:
-    DCB slot: null 
+    DCB slot: null
     GBTx ID: null
     Note: Therm to JT
     SEAM pin: null
@@ -11590,7 +11590,7 @@ JP4:
     SEAM pin: null
     Signal ID: P1_EAST_LV_SOURCE
 - I12:
-    DCB slot: null 
+    DCB slot: null
     GBTx ID: null
     Note: Alpha only Therm to JT
     SEAM pin: null
@@ -11830,7 +11830,7 @@ JP4:
     SEAM pin: null
     Signal ID: P1_EAST_LV_SOURCE
 - J12:
-    DCB slot: null 
+    DCB slot: null
     GBTx ID: null
     Note: Alpha only Therm to JT
     SEAM pin: null
@@ -13991,7 +13991,7 @@ JP5:
     SEAM pin: null
     Signal ID: P1_EAST_LV_SOURCE
 - I12:
-    DCB slot: null 
+    DCB slot: null
     GBTx ID: null
     Note: Alpha only Therm to JT
     SEAM pin: null
