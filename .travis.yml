@@ -3,9 +3,6 @@ python: 3.7.2
 dist: xenial
 sudo: true
 
-env:
-    - IN_TRAVIS_CI=yes
-
 cache: pip
 
 install:
