@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 22, 2019 at 02:08 PM -0500
+# Last Change: Fri Feb 22, 2019 at 02:33 PM -0500
 
 import re
 
@@ -186,6 +186,28 @@ PcadReader.make_equivalent_nets_identical(
 # Rules to check hopped netlist #
 #################################
 
+class RuleNetlistHopped_SingleToDiffN(RuleNetlist):
+    def match(self, netname, components):
+        matched = False
+        self.not_connected_to_gnd = []
+
+        if bool(re.match(
+                r'JD\d_JP\d_EC_(RESET_GPIO|HYB_i2C_SDA| HYB_i2C_SCL)_\d_N$',
+                netname
+        )):
+            for c in components:
+                if c not in self.ref_netlist['GND']:
+                    matched = True
+                    self.not_connected_to_gnd.append(netname)
+
+        return matched
+
+    def process(self, netname, components):
+        return (
+            '4. Not connected to GND',
+            'The following net is not connected to GND: {}'.format(netname)
+        )
+
 
 class RuleNetlistHopped_NonExistComp(RuleNetlist):
     def match(self, netname, components):
@@ -220,6 +242,7 @@ class RuleNetlistHopped_NonExistComp(RuleNetlist):
 ###################################
 
 hopped_net_rules = [
+    RuleNetlistHopped_SingleToDiffN(netlist_dict),
     RuleNetlistHopped_NonExistComp(backplane_netlist_result_true)
 ]
 
