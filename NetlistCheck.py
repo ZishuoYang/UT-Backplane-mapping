@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 22, 2019 at 02:33 PM -0500
+# Last Change: Fri Feb 22, 2019 at 02:47 PM -0500
 
 import re
 
@@ -188,25 +188,20 @@ PcadReader.make_equivalent_nets_identical(
 
 class RuleNetlistHopped_SingleToDiffN(RuleNetlist):
     def match(self, netname, components):
-        matched = False
-        self.not_connected_to_gnd = []
-
-        if bool(re.match(
-                r'JD\d_JP\d_EC_(RESET_GPIO|HYB_i2C_SDA| HYB_i2C_SCL)_\d_N$',
-                netname
-        )):
-            for c in components:
-                if c not in self.ref_netlist['GND']:
-                    matched = True
-                    self.not_connected_to_gnd.append(netname)
-
-        return matched
+        return bool(re.match(
+            r'JD\d_JP\d_EC_(RESET_GPIO|HYB_i2C_SDA|HYB_i2C_SCL)_\d_N$',
+            netname
+        ))
 
     def process(self, netname, components):
-        return (
-            '4. Not connected to GND',
-            'The following net is not connected to GND: {}'.format(netname)
-        )
+        jd_connector = netname[:3]
+        for c in components:
+            if c not in self.ref_netlist[jd_connector+'_AGND']:
+                return (
+                    '4. Not connected to AGND',
+                    'The following net is not connected to AGND: {}'.format(
+                        netname)
+                )
 
 
 class RuleNetlistHopped_NonExistComp(RuleNetlist):
@@ -265,7 +260,7 @@ class RuleNetlistCopyPaste_NonExistNet(RuleNetlist):
 
     def process(self, netname, components):
         return (
-            '4. Specified nets not exist',
+            '5. Specified nets not exist',
             'The following net is missing in the implementation: {}'.format(
                 netname)
         )
