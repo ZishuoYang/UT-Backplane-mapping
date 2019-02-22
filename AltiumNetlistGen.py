@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Feb 19, 2019 at 02:41 PM -0500
+# Last Change: Fri Feb 22, 2019 at 02:18 PM -0500
 
 from pathlib import Path
 from copy import deepcopy
@@ -634,9 +634,9 @@ dcb_rules = [
 ]
 
 
-###########################################
-# True-type signal manipulations (VOODOO) #
-###########################################
+######################
+# Proto -> True type #
+######################
 
 pt_descr_true = deepcopy(pt_descr)
 dcb_descr_true = {}
