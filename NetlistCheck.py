@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 22, 2019 at 02:47 PM -0500
+# Last Change: Fri Feb 22, 2019 at 02:51 PM -0500
 
 import re
 
@@ -194,12 +194,11 @@ class RuleNetlistHopped_SingleToDiffN(RuleNetlist):
         ))
 
     def process(self, netname, components):
-        jd_connector = netname[:3]
         for c in components:
-            if c not in self.ref_netlist[jd_connector+'_AGND']:
+            if c not in self.ref_netlist['GND']:
                 return (
                     '4. Not connected to AGND',
-                    'The following net is not connected to AGND: {}'.format(
+                    'The following net is not connected to GND: {}'.format(
                         netname)
                 )
 
