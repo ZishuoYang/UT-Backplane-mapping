@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 22, 2019 at 12:55 PM -0500
+# Last Change: Fri Feb 22, 2019 at 01:08 PM -0500
 
 import re
 
@@ -102,6 +102,8 @@ for jp in pt_result_true_depop_aux.keys():
 
 class RuleNetlist_DepopDiffElks(RuleNetlist):
     def match(self, netname, components):
+        matched = False
+
         if netname in self.ref_netlist:
             # For Gamma (Beta special) variant:
             if True in map(
@@ -111,7 +113,7 @@ class RuleNetlist_DepopDiffElks(RuleNetlist):
                         lambda x: bool(
                             re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])),
                         components):
-                    return True
+                    matched = True
 
             # For Beta variant:
             else:
@@ -119,10 +121,9 @@ class RuleNetlist_DepopDiffElks(RuleNetlist):
                         lambda x: bool(
                             re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])),
                         components):
-                    return True
+                    matched = True
 
-        else:
-            return False
+        return matched
 
     def process(self, netname, components):
         return (
@@ -131,28 +132,38 @@ class RuleNetlist_DepopDiffElks(RuleNetlist):
         )
 
 
+class RuleNetlist_NeverUsedFROElks(RuleNetlist):
+    def __init__(self):
+        pass
+
+    def match(self, netname, components):
+        matched = False
+
+        if '_FRO_' in netname and '_ELK_' in netname:
+            if True not in map(
+                    lambda x: bool(re.search(r'^R\d+', x[0])), components):
+                matched = True
+
+        return matched
+
+    def process(self, netname, components):
+        return (
+            '2. Never used elinks',
+            'No biasing resistor found in {}'.format(netname)
+        )
+
+
 ################################
 # Do checks on the raw netlist #
 ################################
 
 raw_net_rules = [
-    RuleNetlist_DepopDiffElks(all_diff_nets)
+    RuleNetlist_DepopDiffElks(all_diff_nets),
+    RuleNetlist_NeverUsedFROElks()
 ]
 
 RawNetChecker = SelectorNet(netlist_dict, raw_net_rules)
 result_check_raw_net = RawNetChecker.do()
-
-
-###############################
-# Check never-used FRO Elinks #
-###############################
-
-# print("Checking never-used FRO ELKs...")
-# for net_name in netlist_dict.keys():
-    # if '_FRO_' in net_name and '_ELK_' in net_name:
-        # net = netlist_dict[net_name]
-        # if True not in map(lambda x: bool(re.search(r'^R\d+', x[0])), net):
-            # print("No biasing resistor found in {}".format(net_name))
 
 
 # ########################################
