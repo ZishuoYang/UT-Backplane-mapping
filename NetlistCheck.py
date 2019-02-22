@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 22, 2019 at 01:08 PM -0500
+# Last Change: Fri Feb 22, 2019 at 01:43 PM -0500
 
 import re
 
@@ -12,9 +12,11 @@ from os.path import basename
 import sys
 sys.path.insert(0, './pyUTM')
 
-from pyUTM.io import PcadNaiveReader
+from pyUTM.io import PcadNaiveReader, PcadReader
 from pyUTM.io import NetNodeGen
-from pyUTM.selection import SelectorNet, RuleNet, RuleNetlist
+from pyUTM.io import netnode_to_netlist
+from pyUTM.sim import CurrentFlow
+from pyUTM.selection import SelectorNet, RuleNetlist
 from AltiumNetlistGen import pt_result_true, dcb_result_true
 from AltiumNetlistGen import pt_result_true_depop_aux
 
@@ -24,7 +26,10 @@ log_dir = Path('log')
 netlist = sys.argv[1]
 
 # Combine Pigtail and DCB rules into a larger set of rules
-pt_result_true.update(dcb_result_true)
+backplane_result_true = {**pt_result_true, **dcb_result_true}
+
+# Convert NetNode list to a parsed netlist
+backplane_netlist_result_true = netnode_to_netlist(backplane_result_true)
 
 
 ###########
@@ -166,172 +171,70 @@ RawNetChecker = SelectorNet(netlist_dict, raw_net_rules)
 result_check_raw_net = RawNetChecker.do()
 
 
-# ########################################
-# # Cross-checking rules for DCB/Pigtail #
-# ########################################
+#####################################
+# Do net hopping on the raw netlist #
+#####################################
 
-# class RuleNet_DCB_PT_NetName_Inconsistent(RuleNet):
-    # def match(self, node):
-        # if node.PT is not None and node.DCB is not None \
-                # and self.reference[node]['NETNAME'] != \
-                # self.node_dict[node]['NETNAME']:
-            # return True
-        # else:
-            # return False
-
-    # def process(self, node):
-        # return (
-            # '2. DCB-PT',
-            # "NETNAME inconsistent: Implemented: {}, Specified: {}, NODE: {}".format(
-                # self.node_dict[node]['NETNAME'],
-                # self.reference[node]['NETNAME'],
-                # self.node_to_str(node)
-            # )
-        # )
+NetHopper = CurrentFlow()
+PcadReader.make_equivalent_nets_identical(
+    netlist_dict, NetHopper.do(netlist_dict)
+)
 
 
-# class RuleNet_DCB_Or_PT_NetName_Inconsistent(RuleNet):
-    # def match(self, node):
-        # if self.reference[node]['NETNAME'] != self.node_dict[node]['NETNAME']:
-            # return True
-        # else:
-            # return False
-
-    # def process(self, node):
-        # return (
-            # '3. DCB-None or None-PT',
-            # "NETNAME inconsistent: Implemented: {}, Specified: {}, NODE: {}".format(
-                # self.node_dict[node]['NETNAME'],
-                # self.reference[node]['NETNAME'],
-                # self.node_to_str(node)
-            # )
-        # )
+#################################
+# Rules to check hopped netlist #
+#################################
 
 
-# class RuleNet_DCB_Or_PT_NetName_Equal_Cavalier(RuleNet):
-    # def match(self, node):
-        # if self.reference[node]['NETNAME'] == \
-                # self.node_dict[node]['NETNAME'].replace('EAST_LV', 'WEST_LV'):
-            # # ^Seems that 'WEST_LV' and 'EAST_LV' are always equivalent
-            # return True
-        # else:
-            # return False
+class RuleNetlistHopped_NonExistComp(RuleNetlist):
+    def match(self, netname, components):
+        matched = False
+        self.missing_components = []
+
+        if netname in self.ref_netlist.keys():
+            for ref_comp in self.ref_netlist[netname]:
+                if ref_comp[1] is None:
+                    ref_connector = ref_comp[0]
+                    if ref_connector not in map(lambda x: x[0], components):
+                        matched = True
+                        self.missing_components.append(ref_connector)
+
+                elif ref_comp not in components:
+                    matched = True
+                    self.missing_components.append('-'.join(ref_comp))
+
+        return matched
+
+    def process(self, netname, components):
+        missing_components_str = ', '.join(self.missing_components)
+        return (
+            '3. Components missing',
+            'The following components are missing in the expected net {}: {}'.format(
+                netname, missing_components_str)
+        )
 
 
-# class RuleNet_Node_NotIn(RuleNet):
-    # def match(self, node):
-        # if node not in self.node_list:
-            # return True
-        # else:
-            # return False
+###################################
+# Do checks on the hopped netlist #
+###################################
 
-    # def process(self, node):
-        # return (
-            # '1. Not Implemented',
-            # "NOT implemented: NET: {}, NODE: {}".format(
-                # self.reference[node]['NETNAME'], self.node_to_str(node)
-            # )
-        # )
+hopped_net_rules = [
+    RuleNetlistHopped_NonExistComp(backplane_netlist_result_true)
+]
 
-
-# class RuleNet_ForRefOnly(RuleNet):
-    # def match(self, node):
-        # if self.reference[node]['ATTR'] == '_FRO_':
-            # return True
-        # else:
-            # return False
-
-    # def process(self, node):
-        # return (
-            # '4. For Reference Only',
-            # "NOT populated: NETNAME: {}, NODE: {}".format(
-                # self.reference[node]['NETNAME'], self.node_to_str(node)
-            # )
-        # )
-
-
-# class RuleNet_One_To_N(RuleNet):
-    # def __init__(self, netlist_dict, *args):
-        # self.netlist_dict = netlist_dict
-        # super().__init__(*args)
-
-    # def match(self, node):
-        # netname_by_tom = self.node_dict[node]['NETNAME']
-        # netname_by_zishuo = self.reference[node]['NETNAME']
-
-        # if netname_by_tom.count('_') >= 2 \
-                # and netname_by_zishuo.count('_') >= 2:
-            # node1, node2, signal_id = netname_by_tom.split('_', 2)
-            # _, _, reference_signal_id = netname_by_zishuo.split('_', 2)
-
-            # if signal_id.replace('EAST_LV', 'WEST_LV') == reference_signal_id \
-                    # or signal_id == reference_signal_id \
-                    # or ('LV_RETURN' in signal_id and 'LV_RETURN' in
-                        # reference_signal_id):
-                # all_nodes_list = \
-                    # list(zip(*self.netlist_dict[netname_by_tom]))[0]
-                # node2 = self.replace_arabic_number_to_english(node2)
-
-                # if node1 in all_nodes_list:
-                    # for node in all_nodes_list:
-                        # # NOTE: If a connector includes 'JS_PT', assuming it is
-                        # # jumped to another correct component.
-                        # if 'JS_PT' in node:
-                            # return True
-
-                    # for node in all_nodes_list:
-                        # if node2 in node:
-                            # return True
-
-        # return False
-
-    # # This is needed because Tom is cavalier in picking names.
-    # @staticmethod
-    # def replace_arabic_number_to_english(node_name):
-        # number_replacement_rules = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR',
-                                    # 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE']
-
-        # splitted = node_name.split('JPU')
-        # if len(splitted) == 2:
-            # name, num = splitted
-            # return name + '_' + number_replacement_rules[int(num)]
-
-        # splitted = node_name.split('JPL')
-        # if len(splitted) == 2:
-            # name, num = splitted
-            # return name + '_' + number_replacement_rules[int(num)]
-
-        # return node_name
-
-
-# ################################################
-# # Compare Tom's connections with Zishuo's spec #
-# ################################################
-
-# net_rules = [
-    # RuleNet_ForRefOnly(node_dict, node_list, pt_result_true),
-    # RuleNet_Node_NotIn(node_dict, node_list, pt_result_true),
-    # RuleNet_DCB_PT_NetName_Inconsistent(node_dict, node_list,
-                                        # pt_result_true),
-    # RuleNet_One_To_N(netlist_dict, node_dict, node_list, pt_result_true),
-    # RuleNet_DCB_Or_PT_NetName_Equal_Cavalier(node_dict, node_list,
-                                             # pt_result_true),
-    # RuleNet_DCB_Or_PT_NetName_Inconsistent(node_dict, node_list,
-                                           # pt_result_true),
-# ]
-
-
-# NetSelector = SelectorNet(pt_result_true, net_rules)
-# net_result = NetSelector.do()
+HoppedNetChecker = SelectorNet(netlist_dict, hopped_net_rules)
+result_check_hopped_net = HoppedNetChecker.do()
 
 
 ##########
 # Output #
 ##########
 
+output_result = {**result_check_raw_net, **result_check_hopped_net}
+
 try:
     log_filename = sys.argv[2]
 except IndexError:
     log_filename = generate_log_filename()
 
-write_to_log(log_filename, result_check_raw_net)
+write_to_log(log_filename, output_result)
