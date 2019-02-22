@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 22, 2019 at 01:55 PM -0500
+# Last Change: Fri Feb 22, 2019 at 02:08 PM -0500
 
 import re
 
@@ -175,7 +175,8 @@ result_check_raw_net = RawNetChecker.do()
 # Do net hopping on the raw netlist #
 #####################################
 
-NetHopper = CurrentFlow([r'^R\d+', r'^C\d+', r'^NT\d+', r'CxRB_\d+'])
+NetHopper = CurrentFlow([r'^R\d+', r'^C\d+', r'^NT\d+', r'CxRB_\d+',
+                         r'^RB_\d+|^RBSP\d+|^RxCB_\d+'])
 PcadReader.make_equivalent_nets_identical(
     netlist_dict, NetHopper.do(netlist_dict)
 )
@@ -226,11 +227,46 @@ HoppedNetChecker = SelectorNet(netlist_dict, hopped_net_rules)
 result_check_hopped_net = HoppedNetChecker.do()
 
 
+################################
+# Rules for copy-paste netlist #
+################################
+
+class RuleNetlistCopyPaste_NonExistNet(RuleNetlist):
+    def match(self, netname, components):
+        matched = False
+
+        if netname not in self.ref_netlist.keys():
+            matched = True
+
+        return matched
+
+    def process(self, netname, components):
+        return (
+            '4. Specified nets not exist',
+            'The following net is missing in the implementation: {}'.format(
+                netname)
+        )
+
+
+#######################################
+# Do checks on the copy-paste netlist #
+#######################################
+
+copy_paste_net_rules = [
+    RuleNetlistCopyPaste_NonExistNet(netlist_dict)
+]
+
+CopyPasteNetChecker = SelectorNet(backplane_netlist_result_true,
+                                  copy_paste_net_rules)
+result_check_copy_paste_net = CopyPasteNetChecker.do()
+
+
 ##########
 # Output #
 ##########
 
-output_result = {**result_check_raw_net, **result_check_hopped_net}
+output_result = {**result_check_raw_net, **result_check_hopped_net,
+                 **result_check_copy_paste_net}
 
 try:
     log_filename = sys.argv[2]
