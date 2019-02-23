@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sat Feb 23, 2019 at 06:34 PM -0500
+# Last Change: Sat Feb 23, 2019 at 06:39 PM -0500
 
 import re
 
@@ -93,10 +93,6 @@ node_dict = NetNodeGen().do(netlist_dict)
 node_list = list(node_dict.keys())
 
 
-##############################
-# Rules to check raw netlist #
-##############################
-
 all_diff_nets = []
 for jp in pt_result_true_depop_aux.keys():
     for node in pt_result_true_depop_aux[jp]['Depopulation: ELK']:
@@ -105,11 +101,17 @@ for jp in pt_result_true_depop_aux.keys():
         )
 
 
+##############################
+# Rules to check raw netlist #
+##############################
+
 class RuleNetlist_DepopDiffElksGamma(RuleNetlist):
     def match(self, netname, components):
         if netname in self.ref_netlist and \
                 self.OR(map(
-                    lambda x: bool(re.search(r'^JP8|^JP9|^JP10|^JP11'), x[0]))):
+                    lambda x: bool(re.search(r'^JP8|^JP9|^JP10|^JP11', x[0])),
+                    components
+                )):
             return True
         else:
             return False
