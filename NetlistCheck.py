@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 22, 2019 at 02:51 PM -0500
+# Last Change: Sat Feb 23, 2019 at 06:34 PM -0500
 
 import re
 
@@ -105,35 +105,42 @@ for jp in pt_result_true_depop_aux.keys():
         )
 
 
-class RuleNetlist_DepopDiffElks(RuleNetlist):
+class RuleNetlist_DepopDiffElksGamma(RuleNetlist):
     def match(self, netname, components):
-        matched = False
-
-        if netname in self.ref_netlist:
-            # For Gamma (Beta special) variant:
-            if True in map(
-                    lambda x: bool(re.search(r'^JP8|^JP9|^JP10|^JP11', x[0])),
-                    components):
-                if True not in map(
-                        lambda x: bool(
-                            re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])),
-                        components):
-                    matched = True
-
-            # For Beta variant:
-            else:
-                if True not in map(
-                        lambda x: bool(
-                            re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])),
-                        components):
-                    matched = True
-
-        return matched
+        if netname in self.ref_netlist and \
+                self.OR(map(
+                    lambda x: bool(re.search(r'^JP8|^JP9|^JP10|^JP11'), x[0]))):
+            return True
+        else:
+            return False
 
     def process(self, netname, components):
-        return (
-            '1. Depopulated differential pairs biasing resistor',
-            'No depopulation component found in {}'.format(netname)
+        if self.comp_match(components):
+            return (
+                '1. Depopulated differential pairs biasing resistor',
+                'No depopulation component found in {}'.format(netname)
+            )
+
+    @classmethod
+    def comp_match(cls, components):
+        return cls.OR(
+            map(lambda x: bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])),
+                components)
+        )
+
+
+class RuleNetlist_DepopDiffElksBeta(RuleNetlist_DepopDiffElksGamma):
+    def match(self, netname, components):
+        if netname in self.ref_netlist:
+            return True
+        else:
+            return False
+
+    @classmethod
+    def comp_match(cls, components):
+        return cls.OR(
+            map(lambda x: bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])),
+                components)
         )
 
 
@@ -163,7 +170,8 @@ class RuleNetlist_NeverUsedFROElks(RuleNetlist):
 ################################
 
 raw_net_rules = [
-    RuleNetlist_DepopDiffElks(all_diff_nets),
+    RuleNetlist_DepopDiffElksGamma(all_diff_nets),
+    RuleNetlist_DepopDiffElksBeta(all_diff_nets),
     RuleNetlist_NeverUsedFROElks()
 ]
 
@@ -197,38 +205,56 @@ class RuleNetlistHopped_SingleToDiffN(RuleNetlist):
         for c in components:
             if c not in self.ref_netlist['GND']:
                 return (
-                    '4. Not connected to AGND',
+                    '4. Not connected to GND',
                     'The following net is not connected to GND: {}'.format(
                         netname)
                 )
 
 
-class RuleNetlistHopped_NonExistComp(RuleNetlist):
+class RuleNetlistHopped_NonExistConnector(RuleNetlist):
     def match(self, netname, components):
-        matched = False
-        self.missing_components = []
-
         if netname in self.ref_netlist.keys():
-            for ref_comp in self.ref_netlist[netname]:
-                if ref_comp[1] is None:
-                    ref_connector = ref_comp[0]
-                    if ref_connector not in map(lambda x: x[0], components):
-                        matched = True
-                        self.missing_components.append(ref_connector)
-
-                elif ref_comp not in components:
-                    matched = True
-                    self.missing_components.append('-'.join(ref_comp))
-
-        return matched
+            return self.OR(map(lambda x: x[1] is None,
+                               self.ref_netlist[netname]))
 
     def process(self, netname, components):
-        missing_components_str = ', '.join(self.missing_components)
-        return (
-            '3. Components missing',
-            'The following components are missing in the expected net {}: {}'.format(
-                netname, missing_components_str)
-        )
+        missing_components = []
+
+        for ref_comp in self.ref_netlist[netname]:
+            if ref_comp not in components:
+                missing_components.append('-'.join(ref_comp))
+
+        if len(missing_components) > 0:
+            missing_components_str = ', '.join(missing_components)
+            return (
+                '3. Components missing',
+                'The following components are missing in the expected net {}: {}'.format(
+                    netname, missing_components_str)
+            )
+
+
+class RuleNetlistHopped_NonExistComp(RuleNetlist):
+    def match(self, netname, components):
+        if netname in self.ref_netlist.keys():
+            return True
+
+        else:
+            return False
+
+    def process(self, netname, components):
+        missing_components = []
+
+        for ref_comp in self.ref_netlist[netname]:
+            if ref_comp not in components:
+                missing_components.append('-'.join(ref_comp))
+
+        if len(missing_components) > 0:
+            missing_components_str = ', '.join(missing_components)
+            return (
+                '3. Components missing',
+                'The following components are missing in the expected net {}: {}'.format(
+                    netname, missing_components_str)
+            )
 
 
 ###################################
