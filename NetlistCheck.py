@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sat Feb 23, 2019 at 06:39 PM -0500
+# Last Change: Sat Feb 23, 2019 at 06:59 PM -0500
 
 import re
 
@@ -93,14 +93,6 @@ node_dict = NetNodeGen().do(netlist_dict)
 node_list = list(node_dict.keys())
 
 
-all_diff_nets = []
-for jp in pt_result_true_depop_aux.keys():
-    for node in pt_result_true_depop_aux[jp]['Depopulation: ELK']:
-        all_diff_nets.append(
-            pt_result_true_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
-        )
-
-
 ##############################
 # Rules to check raw netlist #
 ##############################
@@ -171,6 +163,14 @@ class RuleNetlist_NeverUsedFROElks(RuleNetlist):
 # Do checks on the raw netlist #
 ################################
 
+all_diff_nets = []
+for jp in pt_result_true_depop_aux.keys():
+    for node in pt_result_true_depop_aux[jp]['Depopulation: ELK']:
+        all_diff_nets.append(
+            pt_result_true_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
+        )
+
+
 raw_net_rules = [
     RuleNetlist_DepopDiffElksGamma(all_diff_nets),
     RuleNetlist_DepopDiffElksBeta(all_diff_nets),
@@ -213,28 +213,6 @@ class RuleNetlistHopped_SingleToDiffN(RuleNetlist):
                 )
 
 
-class RuleNetlistHopped_NonExistConnector(RuleNetlist):
-    def match(self, netname, components):
-        if netname in self.ref_netlist.keys():
-            return self.OR(map(lambda x: x[1] is None,
-                               self.ref_netlist[netname]))
-
-    def process(self, netname, components):
-        missing_components = []
-
-        for ref_comp in self.ref_netlist[netname]:
-            if ref_comp not in components:
-                missing_components.append('-'.join(ref_comp))
-
-        if len(missing_components) > 0:
-            missing_components_str = ', '.join(missing_components)
-            return (
-                '3. Components missing',
-                'The following components are missing in the expected net {}: {}'.format(
-                    netname, missing_components_str)
-            )
-
-
 class RuleNetlistHopped_NonExistComp(RuleNetlist):
     def match(self, netname, components):
         if netname in self.ref_netlist.keys():
@@ -247,7 +225,11 @@ class RuleNetlistHopped_NonExistComp(RuleNetlist):
         missing_components = []
 
         for ref_comp in self.ref_netlist[netname]:
-            if ref_comp not in components:
+            if ref_comp[1] is None:  # Only the connector is specified,
+                if ref_comp[0] not in map(lambda x: x[0], components):
+                    missing_components.append(ref_comp[0])
+
+            elif ref_comp not in components:
                 missing_components.append('-'.join(ref_comp))
 
         if len(missing_components) > 0:
