@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sat Feb 23, 2019 at 07:33 PM -0500
+# Last Change: Sat Feb 23, 2019 at 07:35 PM -0500
 
 import re
 
@@ -170,6 +170,9 @@ raw_net_rules = [
     RuleNetlist_DepopDiffElksBeta(all_diff_nets),
     RuleNetlist_NeverUsedFROElks()
 ]
+
+for rule in raw_net_rules:
+    rule.debug_node = 'JD7_JP8_DC4_ELK_CH8_P'
 
 RawNetChecker = SelectorNet(netlist_dict, raw_net_rules)
 result_check_raw_net = RawNetChecker.do()
