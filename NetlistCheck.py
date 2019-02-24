@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sat Feb 23, 2019 at 07:24 PM -0500
+# Last Change: Sat Feb 23, 2019 at 07:33 PM -0500
 
 import re
 
@@ -13,7 +13,6 @@ import sys
 sys.path.insert(0, './pyUTM')
 
 from pyUTM.io import PcadNaiveReader, PcadReader
-from pyUTM.io import NetNodeGen
 from pyUTM.io import netnode_to_netlist
 from pyUTM.sim import CurrentFlow
 from pyUTM.selection import SelectorNet, RuleNetlist
@@ -88,9 +87,6 @@ for netname, nodes in netlist_dict.items():
         new_nodes.append(tuple(new_n))
 
     netlist_dict[netname] = new_nodes
-
-node_dict = NetNodeGen().do(netlist_dict)
-node_list = list(node_dict.keys())
 
 
 ##############################
