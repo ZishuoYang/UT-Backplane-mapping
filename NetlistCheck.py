@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sat Feb 23, 2019 at 06:59 PM -0500
+# Last Change: Sat Feb 23, 2019 at 07:24 PM -0500
 
 import re
 
@@ -100,10 +100,10 @@ node_list = list(node_dict.keys())
 class RuleNetlist_DepopDiffElksGamma(RuleNetlist):
     def match(self, netname, components):
         if netname in self.ref_netlist and \
-                self.OR(map(
-                    lambda x: bool(re.search(r'^JP8|^JP9|^JP10|^JP11', x[0])),
-                    components
-                )):
+                self.OR([
+                    bool(re.search(r'^JP8|^JP9|^JP10|^JP11', x[0]))
+                    for x in components
+                ]):
             return True
         else:
             return False
@@ -115,12 +115,11 @@ class RuleNetlist_DepopDiffElksGamma(RuleNetlist):
                 'No depopulation component found in {}'.format(netname)
             )
 
-    @classmethod
-    def comp_match(cls, components):
-        return cls.OR(
-            map(lambda x: bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])),
-                components)
-        )
+    def comp_match(self, components):
+        return self.OR([
+            bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0]))
+            for x in components
+        ])
 
 
 class RuleNetlist_DepopDiffElksBeta(RuleNetlist_DepopDiffElksGamma):
@@ -130,12 +129,11 @@ class RuleNetlist_DepopDiffElksBeta(RuleNetlist_DepopDiffElksGamma):
         else:
             return False
 
-    @classmethod
-    def comp_match(cls, components):
-        return cls.OR(
-            map(lambda x: bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])),
-                components)
-        )
+    def comp_match(self, components):
+        return self.OR([
+            bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0]))
+            for x in components
+        ])
 
 
 class RuleNetlist_NeverUsedFROElks(RuleNetlist):
