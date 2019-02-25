@@ -109,7 +109,7 @@ for diff_net in all_diff_nets:
             print("No depopulation component found in {}".format(diff_net))
     # for Beta variant:
     else:
-        if True not in map(lambda x: bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0])), components):
+        if True not in map(lambda x: bool(re.search(r'^RB_\d+|^RxCB_\d+', x[0])), components):
             print("No depopulation component found in {}".format(diff_net))
 
 
