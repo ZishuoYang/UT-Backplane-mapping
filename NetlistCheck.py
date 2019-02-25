@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Feb 25, 2019 at 03:25 PM -0500
+# Last Change: Mon Feb 25, 2019 at 03:51 PM -0500
 
 import re
 
@@ -139,20 +139,21 @@ class RuleNetlist_NeverUsedFROElks(RuleNetlist):
         pass
 
     def match(self, netname, components):
-        matched = False
-
         if '_FRO_' in netname and '_ELK_' in netname:
-            if True not in map(
-                    lambda x: bool(re.search(r'^R\d+', x[0])), components):
-                matched = True
-
-        return matched
+            return True
+        else:
+            return False
 
     def process(self, netname, components):
-        return (
-            '2. Never used elinks',
-            'No biasing resistor found in {}'.format(netname)
-        )
+        if not self.OR([
+                bool(re.search(r'^R\d+', x[0])) for x in components
+        ]):
+            return (
+                '2. Never used elinks',
+                'No biasing resistor found in {}'.format(netname)
+            )
+        else:
+            return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
 
 
 ################################
