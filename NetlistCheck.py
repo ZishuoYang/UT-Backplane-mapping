@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Feb 25, 2019 at 03:51 PM -0500
+# Last Change: Mon Feb 25, 2019 at 04:46 PM -0500
 
 import re
 
@@ -204,13 +204,18 @@ class RuleNetlistHopped_SingleToDiffN(RuleNetlist):
         ))
 
     def process(self, netname, components):
+        result = RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
+
         for c in components:
             if c not in self.ref_netlist['GND']:
-                return (
+                result = (
                     '4. Not connected to GND',
                     'The following net is not connected to GND: {}'.format(
                         netname)
                 )
+                break
+
+        return result
 
 
 class RuleNetlistHopped_NonExistComp(RuleNetlist):
@@ -239,6 +244,8 @@ class RuleNetlistHopped_NonExistComp(RuleNetlist):
                 'The following components are missing in the expected net {}: {}'.format(
                     netname, missing_components_str)
             )
+        else:
+            return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
 
 
 ###################################
