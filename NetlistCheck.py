@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Sun Feb 24, 2019 at 12:04 AM -0500
+# Last Change: Mon Feb 25, 2019 at 03:25 PM -0500
 
 import re
 
@@ -110,9 +110,11 @@ class RuleNetlist_DepopDiffElksGamma(RuleNetlist):
                 '1. Depopulated differential pairs biasing resistor',
                 'No depopulation component found in {}'.format(netname)
             )
+        else:
+            return self.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
 
     def comp_match(self, components):
-        return self.OR([
+        return not self.OR([
             bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0]))
             for x in components
         ])
@@ -126,8 +128,8 @@ class RuleNetlist_DepopDiffElksBeta(RuleNetlist_DepopDiffElksGamma):
             return False
 
     def comp_match(self, components):
-        return self.OR([
-            bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0]))
+        return not self.OR([
+            bool(re.search(r'^RB_\d+|^RxCB_\d+', x[0]))
             for x in components
         ])
 
