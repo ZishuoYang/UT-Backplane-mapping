@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Feb 25, 2019 at 04:46 PM -0500
+# Last Change: Tue Feb 26, 2019 at 02:56 PM -0500
 
 import re
 
@@ -185,7 +185,7 @@ result_check_raw_net = RawNetChecker.do()
 # Do net hopping on the raw netlist #
 #####################################
 
-NetHopper = CurrentFlow([r'^R\d+', r'^C\d+', r'^NT\d+', r'CxRB_\d+',
+NetHopper = CurrentFlow([r'^R\d+', r'^C\d+', r'^NT\d+', r'^CXRB_\d+',
                          r'^RB_\d+|^RBSP\d+|^RxCB_\d+'])
 PcadReader.make_equivalent_nets_identical(
     netlist_dict, NetHopper.do(netlist_dict)
