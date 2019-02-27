@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Feb 26, 2019 at 03:09 PM -0500
+# Last Change: Wed Feb 27, 2019 at 02:05 PM -0500
 
 import re
 
@@ -166,7 +166,6 @@ for jp in pt_result_true_depop_aux.keys():
         all_diff_nets.append(
             pt_result_true_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
         )
-
 
 raw_net_rules = [
     RuleNetlist_DepopDiffElksGamma(all_diff_nets),
