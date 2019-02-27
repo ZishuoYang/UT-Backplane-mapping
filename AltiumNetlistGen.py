@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Feb 22, 2019 at 02:18 PM -0500
+# Last Change: Wed Feb 27, 2019 at 05:09 PM -0500
 
 from pathlib import Path
+from collections import defaultdict
 from copy import deepcopy
 
 import sys
 sys.path.insert(0, './pyUTM')
 
-from pyUTM.io import write_to_csv, write_to_file
+from pyUTM.io import write_to_file
+from pyUTM.io import csv_line
 from pyUTM.io import YamlReader
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import NetNode
@@ -82,52 +84,34 @@ def match_dcb_side_signal_id(pt_descr, dcb_descr):
                         break
 
 
-def aux_list_gen(pt_result):
-    result = {'JP'+str(i): {
-        'Depopulation: ELK': {},
-        'Depopulation: RCLK': {},
-        'Depopulation: MC_TFC': {},
-        'Depopulation: HYB': {},
-        'Depopulation: LV_SOURCE': {},
-        'Depopulation: LV_RETURN': {},
-        'Depopulation: LV_SENSE_N/P': {},
-        'Depopulation: THERM': {},
-        'Depopulation: EC_RESET': {},
-        'All: EC_RESET': {},
-        'All: EC_HYB_i2C': {},
-        'All: LV_SENSE_GND': {},
-    } for i in range(0, 12)}
+def aux_dict_gen(
+        pt_result,
+        depopulation_keywords=[
+            'ELK', 'RCLK', 'TFC', 'HYB', 'LV_SOURCE', 'LV_RETURN', 'LV_SENSE',
+            'THERM'
+        ],
+        inclusive_keywords=[
+            'EC_RESET', 'EC_HYB_i2C', 'LV_SENSE_GND'
+        ]
+):
+    result = defaultdict(lambda: defaultdict(list))
 
     for node in pt_result:
         prop = pt_result[node]
+
         if prop['NOTE'] is not None and 'Alpha only' in prop['NOTE']:
-            if 'ELK' in prop['NETNAME']:
-                result[node.PT]['Depopulation: ELK'][node] = prop
-            elif 'RCLK' in prop['NETNAME']:
-                result[node.PT]['Depopulation: RCLK'][node] = prop
-            elif 'TFC' in prop['NETNAME']:
-                result[node.PT]['Depopulation: MC_TFC'][node] = prop
-            elif 'HYB' in prop['NETNAME']:
-                result[node.PT]['Depopulation: HYB'][node] = prop
-            elif 'LV_SOURCE' in prop['NETNAME']:
-                result[node.PT]['Depopulation: LV_SOURCE'][node] = prop
-            elif 'LV_RETURN' in prop['NETNAME']:
-                result[node.PT]['Depopulation: LV_RETURN'][node] = prop
-            elif 'LV_SENSE' in prop['NETNAME']:
-                result[node.PT]['Depopulation: LV_SENSE_N/P'][node] = prop
-            elif 'THERM' in prop['NETNAME']:
-                result[node.PT]['Depopulation: THERM'][node] = prop
-            else:
-                result[node.PT]['Depopulation: EC_RESET'][node] = prop
+            for kw in depopulation_keywords:
+                if kw in prop['NETNAME']:
+                    result[node.PT]['Depopulation: {}'.format(kw)].append(
+                        csv_line(node, prop)
+                    )
+                    break
 
-        if 'EC_RESET' in prop['NETNAME']:
-            result[node.PT]['All: EC_RESET'][node] = prop
-
-        if 'EC_HYB_i2C' in prop['NETNAME']:
-            result[node.PT]['All: EC_HYB_i2C'][node] = prop
-
-        if 'LV_SENSE_GND' in prop['NETNAME']:
-            result[node.PT]['All: LV_SENSE_GND'][node] = prop
+        for kw in inclusive_keywords:
+            if kw in prop['NETNAME']:
+                result[node.PT]['All: {}'.format(kw)].append(
+                    csv_line(node, prop)
+                )
 
     return result
 
@@ -666,24 +650,28 @@ pt_result_true = PtSelector.do()
 DcbSelector = SelectorPD(dcb_descr_true, dcb_rules)
 dcb_result_true = DcbSelector.do()
 
-write_to_csv(pt_true_output_filename, pt_result_true)
-write_to_csv(dcb_true_output_filename, dcb_result_true)
+pt_output_true = [csv_line(node, attr)
+                  for node, attr in pt_result_true.items()]
+dcb_output_true = [csv_line(node, attr)
+                   for node, attr in dcb_result_true.items()]
+
+write_to_file(pt_true_output_filename, pt_output_true)
+write_to_file(dcb_true_output_filename, dcb_output_true)
 
 
 ###############################################
 # Generate True-type backplane auxiliary list #
 ###############################################
 
-pt_result_true_depop_aux = aux_list_gen(pt_result_true)
+pt_result_true_depop_aux = aux_dict_gen(pt_result_true)
 
-# Always clear the content of the output file
-write_to_file(pt_result_true_depop_aux_output_filename,
-              'Aux PT list for True-type', mode='w')
+aux_output_true = ['Aux PT list for True-type']
+for jp, sections in sorted(pt_result_true_depop_aux.items()):
+    aux_output_true.append('# '+jp)
+    for title, data in sorted(sections.items()):
+        aux_output_true.append('## '+title)
+        for row in data:
+            aux_output_true.append(row)
+        aux_output_true.append('')
 
-for jp in pt_result_true_depop_aux.keys():
-    write_to_file(pt_result_true_depop_aux_output_filename, '# '+jp)
-    for sec in pt_result_true_depop_aux[jp].keys():
-        write_to_file(pt_result_true_depop_aux_output_filename, '## '+sec)
-        write_to_csv(pt_result_true_depop_aux_output_filename,
-                     pt_result_true_depop_aux[jp][sec], mode='a')
-        write_to_file(pt_result_true_depop_aux_output_filename, '')
+write_to_file(pt_result_true_depop_aux_output_filename, aux_output_true)
