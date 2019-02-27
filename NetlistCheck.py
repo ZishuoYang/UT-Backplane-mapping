@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Feb 27, 2019 at 02:05 PM -0500
+# Last Change: Wed Feb 27, 2019 at 02:08 PM -0500
 
 import re
 
@@ -115,7 +115,7 @@ class RuleNetlist_DepopDiffElksGamma(RuleNetlist):
 
     def comp_match(self, components):
         return not self.OR([
-            bool(re.search(r'^RB_\d+|^RBSP\d+|^RxCB_\d+', x[0]))
+            bool(re.search(r'^RB_\d+|^RBSP\d+|^CXRB_\d+', x[0]))
             for x in components
         ])
 
@@ -129,7 +129,7 @@ class RuleNetlist_DepopDiffElksBeta(RuleNetlist_DepopDiffElksGamma):
 
     def comp_match(self, components):
         return not self.OR([
-            bool(re.search(r'^RB_\d+|^RxCB_\d+', x[0]))
+            bool(re.search(r'^RB_\d+|^CXRB_\d+', x[0]))
             for x in components
         ])
 
