@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Feb 27, 2019 at 05:09 PM -0500
+# Last Change: Thu Feb 28, 2019 at 04:44 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -94,7 +94,8 @@ def aux_dict_gen(
             'EC_RESET', 'EC_HYB_i2C', 'LV_SENSE_GND'
         ]
 ):
-    result = defaultdict(lambda: defaultdict(list))
+    output = defaultdict(lambda: defaultdict(list))
+    result = defaultdict(lambda: defaultdict(dict))
 
     for node in pt_result:
         prop = pt_result[node]
@@ -102,18 +103,20 @@ def aux_dict_gen(
         if prop['NOTE'] is not None and 'Alpha only' in prop['NOTE']:
             for kw in depopulation_keywords:
                 if kw in prop['NETNAME']:
-                    result[node.PT]['Depopulation: {}'.format(kw)].append(
+                    output[node.PT]['Depopulation: {}'.format(kw)].append(
                         csv_line(node, prop)
                     )
+                    result[node.PT]['Depopulation: {}'.format(kw)][node] = prop
                     break
 
         for kw in inclusive_keywords:
             if kw in prop['NETNAME']:
-                result[node.PT]['All: {}'.format(kw)].append(
+                output[node.PT]['All: {}'.format(kw)].append(
                     csv_line(node, prop)
                 )
+                result[node.PT]['All: {}'.format(kw)][node] = prop
 
-    return result
+    return (output, result)
 
 
 #############################
@@ -663,10 +666,10 @@ write_to_file(dcb_true_output_filename, dcb_output_true)
 # Generate True-type backplane auxiliary list #
 ###############################################
 
-pt_result_true_depop_aux = aux_dict_gen(pt_result_true)
+aux_output_true_raw, pt_result_true_depop_aux = aux_dict_gen(pt_result_true)
 
 aux_output_true = ['Aux PT list for True-type']
-for jp, sections in sorted(pt_result_true_depop_aux.items()):
+for jp, sections in sorted(aux_output_true_raw.items()):
     aux_output_true.append('# '+jp)
     for title, data in sorted(sections.items()):
         aux_output_true.append('## '+title)

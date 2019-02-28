@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Feb 27, 2019 at 02:08 PM -0500
+# Last Change: Thu Feb 28, 2019 at 03:25 PM -0500
 
 import re
 
@@ -14,6 +14,7 @@ sys.path.insert(0, './pyUTM')
 
 from pyUTM.io import PcadNaiveReader, PcadReader
 from pyUTM.io import netnode_to_netlist
+from pyUTM.io import write_to_file
 from pyUTM.sim import CurrentFlow
 from pyUTM.selection import SelectorNet, RuleNetlist
 from AltiumNetlistGen import pt_result_true, dcb_result_true
@@ -51,13 +52,16 @@ def generate_log_filename(time_format="%Y-%m-%d_%H%M%S", file_extension='.log'):
     return log_dir / Path(header+'-'+type+'-'+time+file_extension)
 
 
-def write_to_log(filename, data, mode='w', eol='\n'):
-    with open(filename, mode) as f:
-        for section in sorted(data.keys()):
-            f.write('========{}========'.format(section) + eol)
-            for entry in data[section]:
-                f.write(entry + eol)
-            f.write(eol)
+def write_to_log(filename, data, **kwargs):
+    output = []
+
+    for section in sorted(data.keys()):
+        output.append('========{}========'.format(section))
+        for entry in data[section]:
+            output.append(entry)
+        output.append('')
+
+    write_to_file(filename, output, **kwargs)
 
 
 ####################################
