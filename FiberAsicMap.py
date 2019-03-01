@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Mar 01, 2019 at 02:28 PM -0500
+# Last Change: Fri Mar 01, 2019 at 02:50 PM -0500
 
 import re
 
@@ -55,18 +55,13 @@ def flatten_descr(descr, header='Pigtail slot'):
     return flattened
 
 
-# Make selections ##############################################################
+# Filtering ####################################################################
 
 def filter_by_signal_id(keywords):
     def filter_functor(entry):
-        matched = False
+        return True if True in [bool(re.search(kw, entry['Signal ID']))
+                                for kw in keywords] else False
 
-        for kw in keywords:
-            if bool(re.search(kw, entry['Signal ID'])):
-                matched = True
-                break
-
-        return matched
     return filter_functor
 
 
@@ -82,9 +77,7 @@ def find_matching_entries(flattened, ref, functor, continue_on_error=False):
                 result.append(i)
 
         except Exception as e:
-            if continue_on_error:
-                continue
-            else:
+            if not continue_on_error:
                 print('{} occured while processing DCB connector {}, pin {}'.format(
                     e.__class__.__name__, jd, jd_pin))
                 print('The Pigtail side Signal ID is: {}'.format(
