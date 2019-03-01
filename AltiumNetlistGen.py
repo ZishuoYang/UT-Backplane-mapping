@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 28, 2019 at 04:44 PM -0500
+# Last Change: Fri Mar 01, 2019 at 01:08 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -10,7 +10,7 @@ from copy import deepcopy
 import sys
 sys.path.insert(0, './pyUTM')
 
-from pyUTM.io import write_to_file
+from pyUTM.io import write_to_file, write_to_csv
 from pyUTM.io import csv_line
 from pyUTM.io import YamlReader
 from pyUTM.selection import SelectorPD, RulePD
@@ -653,13 +653,8 @@ pt_result_true = PtSelector.do()
 DcbSelector = SelectorPD(dcb_descr_true, dcb_rules)
 dcb_result_true = DcbSelector.do()
 
-pt_output_true = [csv_line(node, attr)
-                  for node, attr in pt_result_true.items()]
-dcb_output_true = [csv_line(node, attr)
-                   for node, attr in dcb_result_true.items()]
-
-write_to_file(pt_true_output_filename, pt_output_true)
-write_to_file(dcb_true_output_filename, dcb_output_true)
+write_to_csv(pt_true_output_filename, pt_result_true, csv_line)
+write_to_csv(dcb_true_output_filename, dcb_result_true, csv_line)
 
 
 ###############################################
