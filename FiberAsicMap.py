@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Mar 01, 2019 at 05:13 PM -0500
+# Last Change: Fri Mar 01, 2019 at 05:18 PM -0500
 
 import re
 
@@ -197,11 +197,6 @@ def generate_descr_for_all_pepi(all_descr):
                         entry['EC_ADC'] = None
 
                     data.append(entry)
-
-            else:
-                # This flex type is illegal---which means that we are dealing
-                # with gamma type backplane.
-                pass
 
     return data
 
