@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Mar 01, 2019 at 01:08 PM -0500
+# Last Change: Fri Mar 01, 2019 at 01:37 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -37,6 +37,8 @@ pt_result_true_depop_aux_output_filename = output_dir / Path(
 ###########
 # Helpers #
 ###########
+
+# Netname matching #############################################################
 
 def match_diff_pairs(pt_descr, dcb_descr):
     for jp in pt_descr.keys():
@@ -84,6 +86,8 @@ def match_dcb_side_signal_id(pt_descr, dcb_descr):
                         break
 
 
+# Output #######################################################################
+
 def aux_dict_gen(
         pt_result,
         depopulation_keywords=[
@@ -94,7 +98,6 @@ def aux_dict_gen(
             'EC_RESET', 'EC_HYB_i2C', 'LV_SENSE_GND'
         ]
 ):
-    output = defaultdict(lambda: defaultdict(list))
     result = defaultdict(lambda: defaultdict(dict))
 
     for node in pt_result:
@@ -103,20 +106,28 @@ def aux_dict_gen(
         if prop['NOTE'] is not None and 'Alpha only' in prop['NOTE']:
             for kw in depopulation_keywords:
                 if kw in prop['NETNAME']:
-                    output[node.PT]['Depopulation: {}'.format(kw)].append(
-                        csv_line(node, prop)
-                    )
                     result[node.PT]['Depopulation: {}'.format(kw)][node] = prop
                     break
 
         for kw in inclusive_keywords:
             if kw in prop['NETNAME']:
-                output[node.PT]['All: {}'.format(kw)].append(
-                    csv_line(node, prop)
-                )
                 result[node.PT]['All: {}'.format(kw)][node] = prop
 
-    return (output, result)
+    return result
+
+
+def aux_output_gen(aux_dict, title):
+    output = [title]
+
+    for jp, sections in sorted(aux_dict.items()):
+        output.append('# '+jp)
+        for title, data in sorted(sections.items()):
+            output.append('## '+title)
+            for node, prop in data.items():
+                output.append(csv_line(node, prop))
+            output.append('')
+
+    return output
 
 
 #############################
@@ -661,15 +672,8 @@ write_to_csv(dcb_true_output_filename, dcb_result_true, csv_line)
 # Generate True-type backplane auxiliary list #
 ###############################################
 
-aux_output_true_raw, pt_result_true_depop_aux = aux_dict_gen(pt_result_true)
+pt_result_true_depop_aux = aux_dict_gen(pt_result_true)
 
-aux_output_true = ['Aux PT list for True-type']
-for jp, sections in sorted(aux_output_true_raw.items()):
-    aux_output_true.append('# '+jp)
-    for title, data in sorted(sections.items()):
-        aux_output_true.append('## '+title)
-        for row in data:
-            aux_output_true.append(row)
-        aux_output_true.append('')
-
-write_to_file(pt_result_true_depop_aux_output_filename, aux_output_true)
+write_to_file(pt_result_true_depop_aux_output_filename,
+              aux_output_gen(pt_result_true_depop_aux,
+                             'Aux PT list for True-type'))
