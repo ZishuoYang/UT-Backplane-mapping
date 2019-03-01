@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Mar 01, 2019 at 02:50 PM -0500
+# Last Change: Fri Mar 01, 2019 at 05:13 PM -0500
 
 import re
 
@@ -12,7 +12,7 @@ from copy import deepcopy
 import sys
 sys.path.insert(0, './pyUTM')
 
-from pyUTM.common import unflatten
+from pyUTM.common import flatten_more, unflatten_all
 from pyUTM.common import jp_flex_type_proto, all_pepis
 from pyUTM.common import jd_swapping_true, jd_swapping_mirror
 from pyUTM.io import write_to_csv
@@ -25,35 +25,6 @@ mapping_output_filename = output_dir / Path('AsicToFiberMapping.csv')
 ###########
 # Helpers #
 ###########
-
-# Regularize input #############################################################
-
-def unpack_one_elem_dict(d):
-    return tuple(d.items())[0]
-
-
-def make_dcb_ref(dcb_descr):
-    dcb_ref = {}
-
-    for jd, entries in dcb_descr.items():
-        dcb_ref[jd] = {}
-        for i in unflatten(entries, 'SEAM pin'):
-            jd_pin, info = unpack_one_elem_dict(i)
-            dcb_ref[jd][jd_pin] = info
-
-    return dcb_ref
-
-
-def flatten_descr(descr, header='Pigtail slot'):
-    flattened = []
-
-    for key, items in descr.items():
-        for i in items:
-            i[header] = key
-            flattened.append(i)
-
-    return flattened
-
 
 # Filtering ####################################################################
 
@@ -189,7 +160,7 @@ def find_dcb_idx_based_on_bp_type(idx, bp_type):
 
 
 def generate_descr_for_all_pepi(all_descr):
-    flattened_all_pepis = flatten_descr(all_pepis, header='pepi')
+    flattened_all_pepis = flatten_more(all_pepis, header='pepi')
     data = []
 
     for pepi in flattened_all_pepis:
@@ -241,9 +212,9 @@ def generate_descr_for_all_pepi(all_descr):
 
 # Convert DCB description to a dictionary: We do this so that DCB entries can be
 # access via entries['JDX']['PINXX'].
-dcb_ref_proto = make_dcb_ref(dcb_descr)
+dcb_ref_proto = unflatten_all(dcb_descr, 'SEAM pin')
 
-pt_descr_flattend = flatten_descr(pt_descr)
+pt_descr_flattend = flatten_more(pt_descr, 'Pigtail slot')
 
 
 ###########################
