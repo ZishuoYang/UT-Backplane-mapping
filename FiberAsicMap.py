@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Feb 19, 2019 at 04:47 PM -0500
+# Last Change: Fri Mar 01, 2019 at 02:28 PM -0500
 
 import re
 
@@ -15,6 +15,7 @@ sys.path.insert(0, './pyUTM')
 from pyUTM.common import unflatten
 from pyUTM.common import jp_flex_type_proto, all_pepis
 from pyUTM.common import jd_swapping_true, jd_swapping_mirror
+from pyUTM.io import write_to_csv
 from AltiumNetlistGen import pt_descr, dcb_descr
 
 output_dir = Path('output')
@@ -241,34 +242,6 @@ def generate_descr_for_all_pepi(all_descr):
     return data
 
 
-def write_mapping_to_csv(filename, data,
-                         header={
-                             'PEPI': 'pepi',
-                             'Stave': 'stv_ut',
-                             'Flex': 'stv_bp',
-                             'Hybrid': 'hybrid',
-                             'ASIC index': 'asic_idx',
-                             'BP variant (alpha/beta/gamma)': 'bp_var',
-                             'BP index (inner/middle/outer)': 'bp_idx',
-                             'BP type (true/mirrored)': 'bp_type',
-                             'DCB index': 'dcb_idx',
-                             'GBTx index': 'gbtx_idx',
-                             'GBTx channels (GBT frame bytes)': 'gbtx_chs',
-                             'DC_OUT_RCLK': 'DC_OUT_RCLK',
-                             'MC_TFC': 'MC_TFC',
-                             'EC_HYB_I2C_SCL': 'EC_HYB_I2C_SCL',
-                             'EC_HYB_I2C_SDA': 'EC_HYB_I2C_SDA',
-                             'EC_RESET_GPIO': 'EC_RESET_GPIO',
-                             'EC_ADC': 'EC_ADC',
-                         },
-                         mode='w', eol='\n'):
-    with open(filename, mode) as f:
-        f.write(','.join(header.keys()) + eol)
-        for entry in data:
-            row = [str(entry[k]) for _, k in header.items()]
-            f.write(','.join(row) + eol)
-
-
 ##########################
 # Prepare for selections #
 ##########################
@@ -457,4 +430,21 @@ elif (elk_data[3000]['dcb_idx'] != '11' or
 
 # Write to csv
 else:
-    write_mapping_to_csv(mapping_output_filename, elk_data)
+    write_to_csv(mapping_output_filename, elk_data,
+                 {'PEPI': 'pepi',
+                  'Stave': 'stv_ut',
+                  'Flex': 'stv_bp',
+                  'Hybrid': 'hybrid',
+                  'ASIC index': 'asic_idx',
+                  'BP variant (alpha/beta/gamma)': 'bp_var',
+                  'BP index (inner/middle/outer)': 'bp_idx',
+                  'BP type (true/mirrored)': 'bp_type',
+                  'DCB index': 'dcb_idx',
+                  'GBTx index': 'gbtx_idx',
+                  'GBTx channels (GBT frame bytes)': 'gbtx_chs',
+                  'DC_OUT_RCLK': 'DC_OUT_RCLK',
+                  'MC_TFC': 'MC_TFC',
+                  'EC_HYB_I2C_SCL': 'EC_HYB_I2C_SCL',
+                  'EC_HYB_I2C_SDA': 'EC_HYB_I2C_SDA',
+                  'EC_RESET_GPIO': 'EC_RESET_GPIO',
+                  'EC_ADC': 'EC_ADC'})
