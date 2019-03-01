@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Feb 28, 2019 at 03:25 PM -0500
+# Last Change: Fri Mar 01, 2019 at 03:36 PM -0500
 
 import re
 
@@ -71,9 +71,9 @@ def write_to_log(filename, data, **kwargs):
 NetReader = PcadNaiveReader(netlist)
 netlist_dict = NetReader.read()
 
-# FIXME: Because CERN people didn't use the correct connector, we manually
+# FIXME: Because CERN people didn't use the correct connector, we are manually
 # swapping connector pins for now. This should be removed once the CERN people
-# start to use the correct libraries.
+# start to use the corrected libraries.
 print('Warning: Using the temporary fix to handle the pin letter swap.')
 
 for netname, nodes in netlist_dict.items():
@@ -176,9 +176,6 @@ raw_net_rules = [
     RuleNetlist_DepopDiffElksBeta(all_diff_nets),
     RuleNetlist_NeverUsedFROElks()
 ]
-
-for rule in raw_net_rules:
-    rule.debug_node = 'JD7_JP8_DC4_ELK_CH8_P'
 
 RawNetChecker = SelectorNet(netlist_dict, raw_net_rules)
 result_check_raw_net = RawNetChecker.do()
