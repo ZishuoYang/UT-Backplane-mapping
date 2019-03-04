@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Mar 01, 2019 at 01:37 PM -0500
+# Last Change: Fri Mar 01, 2019 at 05:21 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -100,9 +100,7 @@ def aux_dict_gen(
 ):
     result = defaultdict(lambda: defaultdict(dict))
 
-    for node in pt_result:
-        prop = pt_result[node]
-
+    for node, prop in pt_result.items():
         if prop['NOTE'] is not None and 'Alpha only' in prop['NOTE']:
             for kw in depopulation_keywords:
                 if kw in prop['NETNAME']:
