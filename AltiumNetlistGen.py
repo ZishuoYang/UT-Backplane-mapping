@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Mar 05, 2019 at 03:19 PM -0500
+# Last Change: Tue Mar 05, 2019 at 03:22 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -312,7 +312,11 @@ class RulePT_PTSingleToDiffN(RulePD):
 
     def process(self, data, jp):
         dcb_name, tail = data['Signal ID'].split('_', 1)
-        net_name = dcb_name + '_' + jp + '_' + tail
+        if 'EC_ADC' in data['Signal ID']:
+            # Becuase EC_ADC connects to Thermistor, add prefix THERM
+            net_name = dcb_name + '_' + jp + '_THERM_' + tail
+        else:
+            net_name = dcb_name + '_' + jp + '_' + tail
         return (
             NetNode(PT=jp, PT_PIN=data['Pigtail pin'],
                     DCB=data['DCB slot'], DCB_PIN=data['SEAM pin']),
