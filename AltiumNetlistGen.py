@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Mar 05, 2019 at 03:22 PM -0500
+# Last Change: Tue Mar 05, 2019 at 03:37 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -55,6 +55,13 @@ def match_diff_pairs(pt_descr, dcb_descr, net_name_ending):
                     pt_descr[jp]
             ):
                 jd = pt_ref['DCB slot']
+
+                # Quick and dirty error check to make sure both ends of the same
+                # differential pair are treated the same.
+                if pt['Note'] != pt_ref['Note']:
+                    raise ValueError('The following differential pair has different notes: {}, {}'.format(
+                        pt_ref['Signal ID'], pt['Signal ID']
+                    ))
 
                 for dcb in dcb_descr[jd]:
                     if pt_ref['SEAM pin'] == dcb['SEAM pin'] and \
