@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Mar 05, 2019 at 03:46 PM -0500
+# Last Change: Tue Mar 05, 2019 at 05:54 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -382,6 +382,20 @@ class RulePT_PTThermistorSpecial(RulePD):
             return 'JT2'
 
 
+class RulePT_PTLvSenseGnd(RulePD):
+    def match(self, data, jp):
+        if 'LV_SENSE_GND' in data['Signal ID']:
+            return True
+        else:
+            return False
+
+    def process(self, data, jp):
+        net_name = jp + data['Pigtail pin'] + '_' + data['Signal ID']
+        return (
+            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
+            self.prop_gen(net_name, data['Note'], None))
+
+
 ####################################
 # Define rules for DCB Altium list #
 ####################################
@@ -626,6 +640,7 @@ pt_rules = [
     RulePT_PTSingleToDiffP(),
     RulePT_PTSingleToDiffN(),
     RulePT_UnusedToGND(),
+    RulePT_PTLvSenseGnd(),
     RulePT_PTThermistorSpecial(),
     RulePT_NotConnected(),
     RulePT_DCB(),
