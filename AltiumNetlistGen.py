@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Mar 05, 2019 at 05:54 PM -0500
+# Last Change: Tue Mar 05, 2019 at 06:08 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -704,6 +704,11 @@ pt_result_true = PtSelector.do()
 
 DcbSelector = SelectorPD(dcb_descr_true, dcb_rules)
 dcb_result_true = DcbSelector.do()
+
+# See if we have any unused rule
+for rule in pt_rules:
+    print('The rule {} has been used {} times'.format(
+        rule.__class__.__name__, rule.counter))
 
 write_to_csv(pt_true_output_filename, pt_result_true, csv_line)
 write_to_csv(dcb_true_output_filename, dcb_result_true, csv_line)
