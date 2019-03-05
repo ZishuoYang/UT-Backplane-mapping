@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Mar 01, 2019 at 05:21 PM -0500
+# Last Change: Tue Mar 05, 2019 at 02:50 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -46,7 +46,8 @@ def match_diff_pairs(pt_descr, dcb_descr):
                 lambda x: x[1]['Signal ID'] is not None and (
                     x[1]['Signal ID'].endswith('SCL_N') or
                     x[1]['Signal ID'].endswith('SDA_N') or
-                    x[1]['Signal ID'].endswith('RESET_N')
+                    x[1]['Signal ID'].endswith('RESET_N') or
+                    x[1]['Signal ID'].endswith('THERMISTOR_N')
                 ),
                 enumerate(pt_descr[jp])
         ):
@@ -655,6 +656,10 @@ match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
 ############################################
 # Generate True-type backplane Altium list #
 ############################################
+
+# Debug
+for rule in pt_rules:
+    rule.debug_node = NetNode('JD1', 'H40', 'JP0', 'A5')
 
 PtSelector = SelectorPD(pt_descr_true, pt_rules)
 pt_result_true = PtSelector.do()
