@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Mar 05, 2019 at 02:50 PM -0500
+# Last Change: Tue Mar 05, 2019 at 03:19 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -40,15 +40,11 @@ pt_result_true_depop_aux_output_filename = output_dir / Path(
 
 # Netname matching #############################################################
 
-def match_diff_pairs(pt_descr, dcb_descr):
+def match_diff_pairs(pt_descr, dcb_descr, net_name_ending):
     for jp in pt_descr.keys():
         for idx, pt in filter(
-                lambda x: x[1]['Signal ID'] is not None and (
-                    x[1]['Signal ID'].endswith('SCL_N') or
-                    x[1]['Signal ID'].endswith('SDA_N') or
-                    x[1]['Signal ID'].endswith('RESET_N') or
-                    x[1]['Signal ID'].endswith('THERMISTOR_N')
-                ),
+                lambda x: x[1]['Signal ID'] is not None and
+                x[1]['Signal ID'].endswith(net_name_ending),
                 enumerate(pt_descr[jp])
         ):
             reference_id = pt['Signal ID'][:-1] + 'P'
@@ -647,7 +643,10 @@ for jp in pt_descr_true.keys():
             pt['DCB slot'] = jd_swapping_true[pt['DCB slot']]
 
 # Deal with differential pairs.
-match_diff_pairs(pt_descr_true, dcb_descr_true)
+match_diff_pairs(pt_descr_true, dcb_descr_true, 'SCL_N')
+match_diff_pairs(pt_descr_true, dcb_descr_true, 'SDA_N')
+match_diff_pairs(pt_descr_true, dcb_descr_true, 'RESET_N')
+match_diff_pairs(pt_descr_true, dcb_descr_true, 'THERMISTOR_N')
 
 # Replace 'Signal ID' to DCB side definitions.
 match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
@@ -658,8 +657,8 @@ match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
 ############################################
 
 # Debug
-for rule in pt_rules:
-    rule.debug_node = NetNode('JD1', 'H40', 'JP0', 'A5')
+# for rule in pt_rules:
+#     rule.debug_node = NetNode('JD1', 'H40', 'JP0', 'A5')
 
 PtSelector = SelectorPD(pt_descr_true, pt_rules)
 pt_result_true = PtSelector.do()
