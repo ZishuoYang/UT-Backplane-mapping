@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Mar 05, 2019 at 06:08 PM -0500
+# Last Change: Wed Mar 06, 2019 at 01:02 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -17,6 +17,7 @@ from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import NetNode
 from pyUTM.common import flatten, transpose
 from pyUTM.common import jd_swapping_true
+from pyUTM.legacy import PADDING
 
 input_dir = Path('input')
 output_dir = Path('output')
@@ -390,7 +391,7 @@ class RulePT_PTLvSenseGnd(RulePD):
             return False
 
     def process(self, data, jp):
-        net_name = jp + data['Pigtail pin'] + '_' + data['Signal ID']
+        net_name = jp + PADDING(data['Pigtail pin']) + '_' + data['Signal ID']
         return (
             NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
             self.prop_gen(net_name, data['Note'], None))
