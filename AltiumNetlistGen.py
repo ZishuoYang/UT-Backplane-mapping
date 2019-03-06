@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Mar 06, 2019 at 01:14 PM -0500
+# Last Change: Wed Mar 06, 2019 at 01:35 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -226,26 +226,6 @@ class RulePT_DCB(RulePD):
             self.prop_gen(net_name, data['Note']))
 
 
-class RulePT_NotConnected(RulePD):
-    def match(self, data, jp):
-        if data['SEAM pin'] is None and \
-                self.OR([
-                        'ASIC' in data['Signal ID'],
-                        '_CLK_' in data['Signal ID'],
-                        'TFC' in data['Signal ID'],
-                        'THERMISTOR' in data['Signal ID']
-                        ]):
-            # Which means that this PT pin is not connected to a DCB pin.
-            return True
-        else:
-            return False
-
-    def process(self, data, jp):
-        return (
-            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
-            self.prop_gen('GND', data['Note']))
-
-
 class RulePT_PTLvSource(RulePD):
     def __init__(self, brkoutbrd_rules):
         self.rules = brkoutbrd_rules
@@ -282,14 +262,6 @@ class RulePT_PTLvReturn(RulePT_PTLvSource):
 class RulePT_PTLvSense(RulePT_PTLvSource):
     def match(self, data, jp):
         if 'LV_SENSE' in data['Signal ID']:
-            return True
-        else:
-            return False
-
-
-class RulePT_PTThermistor(RulePT_PTLvSource):
-    def match(self, data, jp):
-        if 'THERMISTOR' in data['Signal ID']:
             return True
         else:
             return False
@@ -643,12 +615,10 @@ pt_rules = [
     RulePT_UnusedToGND(),
     RulePT_PTLvSenseGnd(),
     RulePT_PTThermistorSpecial(),
-    RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),
     RulePT_PTLvReturn(brkoutbrd_pin_assignments),
     RulePT_PTLvSense(brkoutbrd_pin_assignments),
-    RulePT_PTThermistor(brkoutbrd_pin_assignments),
     RulePT_Default()
 ]
 
