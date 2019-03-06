@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Mar 01, 2019 at 03:36 PM -0500
+# Last Change: Wed Mar 06, 2019 at 03:35 PM -0500
 
 import re
 
@@ -267,12 +267,11 @@ result_check_hopped_net = HoppedNetChecker.do()
 
 class RuleNetlistCopyPaste_NonExistNet(RuleNetlist):
     def match(self, netname, components):
-        matched = False
-
-        if netname not in self.ref_netlist.keys():
-            matched = True
-
-        return matched
+        if netname not in self.ref_netlist.keys() and \
+                True not in [x in netname for x in ['B1', 'B3', 'OUT']]:
+            return True
+        else:
+            return False
 
     def process(self, netname, components):
         return (
