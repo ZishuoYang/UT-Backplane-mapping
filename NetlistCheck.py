@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Mar 06, 2019 at 03:35 PM -0500
+# Last Change: Wed Mar 06, 2019 at 10:59 PM -0500
 
 import re
 
@@ -266,9 +266,13 @@ result_check_hopped_net = HoppedNetChecker.do()
 ################################
 
 class RuleNetlistCopyPaste_NonExistNet(RuleNetlist):
+    def __init__(self, ref_netlist, ignore):
+        self.ignore = ignore
+        super().__init__(ref_netlist)
+
     def match(self, netname, components):
         if netname not in self.ref_netlist.keys() and \
-                True not in [x in netname for x in ['B1', 'B3', 'OUT']]:
+                True not in [bool(re.match(x, netname)) for x in self.ignore]:
             return True
         else:
             return False
@@ -286,7 +290,12 @@ class RuleNetlistCopyPaste_NonExistNet(RuleNetlist):
 #######################################
 
 copy_paste_net_rules = [
-    RuleNetlistCopyPaste_NonExistNet(netlist_dict)
+    RuleNetlistCopyPaste_NonExistNet(
+        netlist_dict,
+        [r'JD\d+_FRO_B[13]',
+         r'JD\d+_FRO_MC_SEC_DOUT_ELK_[NP]',
+         r'JD\d+_FRO_DC_OUT_RCLK\d_[NP]'
+         ])
 ]
 
 CopyPasteNetChecker = SelectorNet(backplane_netlist_result_true,

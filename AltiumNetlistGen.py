@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Mar 06, 2019 at 01:35 PM -0500
+# Last Change: Wed Mar 06, 2019 at 10:51 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -677,7 +677,7 @@ DcbSelector = SelectorPD(dcb_descr_true, dcb_rules)
 dcb_result_true = DcbSelector.do()
 
 # See if we have any unused rule
-for rule in pt_rules:
+for rule in pt_rules+dcb_rules:
     print('The rule {} has been used {} times'.format(
         rule.__class__.__name__, rule.counter))
 
