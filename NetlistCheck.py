@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Mar 06, 2019 at 11:29 PM -0500
+# Last Change: Wed Mar 06, 2019 at 11:57 PM -0500
 
 import re
 
@@ -36,19 +36,20 @@ backplane_netlist_result_true = netnode_to_netlist(backplane_result_true)
 # Helpers #
 ###########
 
+def find_backplane_type(filename):
+    if 'true' in filename:
+        return 'true'
+    elif 'mirror' in filename:
+        return 'mirror'
+    else:
+        return 'unknown'
+
+
 def generate_log_filename(time_format="%Y-%m-%d_%H%M%S", file_extension='.log'):
     header, _ = basename(__file__).split('.', 1)
     filename = sys.argv[1].lower()
-
-    if 'true' in filename:
-        type = 'true'
-    elif 'mirror' in filename:
-        type = 'mirror'
-    else:
-        type = 'unknown'
-
+    type = find_backplane_type(filename)
     time = datetime.now().strftime(time_format)
-
     return log_dir / Path(header+'-'+type+'-'+time+file_extension)
 
 
