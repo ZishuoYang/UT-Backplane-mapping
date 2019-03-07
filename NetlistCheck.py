@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Mar 06, 2019 at 10:59 PM -0500
+# Last Change: Wed Mar 06, 2019 at 11:29 PM -0500
 
 import re
 
@@ -271,18 +271,24 @@ class RuleNetlistCopyPaste_NonExistNet(RuleNetlist):
         super().__init__(ref_netlist)
 
     def match(self, netname, components):
-        if netname not in self.ref_netlist.keys() and \
-                True not in [bool(re.match(x, netname)) for x in self.ignore]:
+        if netname not in self.ref_netlist.keys():
             return True
         else:
             return False
 
     def process(self, netname, components):
-        return (
-            '5. Specified nets not exist',
-            'The following net is missing in the implementation: {}'.format(
-                netname)
-        )
+        if True in [bool(re.match(x, netname)) for x in self.ignore]:
+            return (
+                '6. Specified nets not exist but ignored',
+                'The following net is missing in the implementation, but ignored: {}'.format(
+                    netname)
+            )
+        else:
+            return (
+                '5. Specified nets not exist',
+                'The following net is missing in the implementation: {}'.format(
+                    netname)
+            )
 
 
 #######################################
@@ -293,8 +299,9 @@ copy_paste_net_rules = [
     RuleNetlistCopyPaste_NonExistNet(
         netlist_dict,
         [r'JD\d+_FRO_B[13]',
-         r'JD\d+_FRO_MC_SEC_DOUT_ELK_[NP]',
-         r'JD\d+_FRO_DC_OUT_RCLK\d_[NP]'
+         r'JD\d+_FRO_(MC|EC)_SEC_DOUT_ELK_[NP]',
+         r'JD\d+_FRO_DC_OUT_RCLK\d_[NP]',
+         r'JD\d+_FRO_MC_SEC_CLK_ELK_[NP]'
          ])
 ]
 
