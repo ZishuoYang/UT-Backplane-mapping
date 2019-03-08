@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Mar 06, 2019 at 10:51 PM -0500
+# Last Change: Fri Mar 08, 2019 at 03:54 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -667,8 +667,8 @@ match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
 ############################################
 
 # Debug
-for rule in pt_rules:
-    rule.debug_node = NetNode(None, None, 'JP8', 'A30')
+# for rule in pt_rules:
+#     rule.debug_node = NetNode(None, None, 'JP8', 'A30')
 
 PtSelector = SelectorPD(pt_descr_true, pt_rules)
 pt_result_true = PtSelector.do()
