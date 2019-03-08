@@ -10,7 +10,7 @@ install:
 
 script:
     - ./FiberAsicMap.py
-    - travis_wait 30 ./NetlistCheck.py ./input/backplane_netlists/backplane_true_type_TomO_08Feb2019.net WARNINGS.log
+    - travis_wait 30 ./NetlistCheck.py ./input/backplane_netlists/backplane_true_type_ZSYang_22Feb2019.net WARNINGS.log
 
 deploy:
     provider: releases
