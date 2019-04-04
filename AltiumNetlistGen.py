@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Feb 19, 2019 at 02:41 PM -0500
+# Last Change: Fri Mar 08, 2019 at 03:54 PM -0500
 
 from pathlib import Path
+from collections import defaultdict
 from copy import deepcopy
 
 import sys
 sys.path.insert(0, './pyUTM')
 
-from pyUTM.io import write_to_csv, write_to_file
+from pyUTM.io import write_to_file, write_to_csv
+from pyUTM.io import csv_line
 from pyUTM.io import YamlReader
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import NetNode
 from pyUTM.common import flatten, transpose
 from pyUTM.common import jd_swapping_true
+from pyUTM.legacy import PADDING
 
 input_dir = Path('input')
 output_dir = Path('output')
@@ -36,14 +39,30 @@ pt_result_true_depop_aux_output_filename = output_dir / Path(
 # Helpers #
 ###########
 
-def match_diff_pairs(pt_descr, dcb_descr):
+# Netname matching #############################################################
+
+def check_diff_pairs_notes(pt_descr):
+    for jp in pt_descr.keys():
+        for pt in pt_descr[jp]:
+            reference_id = pt['Signal ID'][:-1] + 'P'
+
+            for pt_ref in filter(lambda x: x['Signal ID'] == reference_id and
+                                 x['SEAM pin'] is not None,
+                                 pt_descr[jp]):
+
+                # Quick and dirty error check to make sure both ends of the same
+                # differential pair are treated the same.
+                if pt['Note'] != pt_ref['Note']:
+                    raise ValueError('The following differential pair has different notes: {}, {}'.format(
+                        pt_ref['Signal ID'], pt['Signal ID']
+                    ))
+
+
+def match_diff_pairs(pt_descr, dcb_descr, net_name_ending):
     for jp in pt_descr.keys():
         for idx, pt in filter(
-                lambda x: x[1]['Signal ID'] is not None and (
-                    x[1]['Signal ID'].endswith('SCL_N') or
-                    x[1]['Signal ID'].endswith('SDA_N') or
-                    x[1]['Signal ID'].endswith('RESET_N')
-                ),
+                lambda x: x[1]['Signal ID'] is not None and
+                x[1]['Signal ID'].endswith(net_name_ending),
                 enumerate(pt_descr[jp])
         ):
             reference_id = pt['Signal ID'][:-1] + 'P'
@@ -82,54 +101,46 @@ def match_dcb_side_signal_id(pt_descr, dcb_descr):
                         break
 
 
-def aux_list_gen(pt_result):
-    result = {'JP'+str(i): {
-        'Depopulation: ELK': {},
-        'Depopulation: RCLK': {},
-        'Depopulation: MC_TFC': {},
-        'Depopulation: HYB': {},
-        'Depopulation: LV_SOURCE': {},
-        'Depopulation: LV_RETURN': {},
-        'Depopulation: LV_SENSE_N/P': {},
-        'Depopulation: THERM': {},
-        'Depopulation: EC_RESET': {},
-        'All: EC_RESET': {},
-        'All: EC_HYB_i2C': {},
-        'All: LV_SENSE_GND': {},
-    } for i in range(0, 12)}
+# Output #######################################################################
 
-    for node in pt_result:
-        prop = pt_result[node]
+def aux_dict_gen(
+        pt_result,
+        depopulation_keywords=[
+            'ELK', 'RCLK', 'TFC', 'HYB', 'LV_SOURCE', 'LV_RETURN', 'LV_SENSE',
+            'THERM'
+        ],
+        inclusive_keywords=[
+            'EC_RESET', 'EC_HYB_i2C', 'LV_SENSE_GND'
+        ]
+):
+    result = defaultdict(lambda: defaultdict(dict))
+
+    for node, prop in pt_result.items():
         if prop['NOTE'] is not None and 'Alpha only' in prop['NOTE']:
-            if 'ELK' in prop['NETNAME']:
-                result[node.PT]['Depopulation: ELK'][node] = prop
-            elif 'RCLK' in prop['NETNAME']:
-                result[node.PT]['Depopulation: RCLK'][node] = prop
-            elif 'TFC' in prop['NETNAME']:
-                result[node.PT]['Depopulation: MC_TFC'][node] = prop
-            elif 'HYB' in prop['NETNAME']:
-                result[node.PT]['Depopulation: HYB'][node] = prop
-            elif 'LV_SOURCE' in prop['NETNAME']:
-                result[node.PT]['Depopulation: LV_SOURCE'][node] = prop
-            elif 'LV_RETURN' in prop['NETNAME']:
-                result[node.PT]['Depopulation: LV_RETURN'][node] = prop
-            elif 'LV_SENSE' in prop['NETNAME']:
-                result[node.PT]['Depopulation: LV_SENSE_N/P'][node] = prop
-            elif 'THERM' in prop['NETNAME']:
-                result[node.PT]['Depopulation: THERM'][node] = prop
-            else:
-                result[node.PT]['Depopulation: EC_RESET'][node] = prop
+            for kw in depopulation_keywords:
+                if kw in prop['NETNAME']:
+                    result[node.PT]['Depopulation: {}'.format(kw)][node] = prop
+                    break
 
-        if 'EC_RESET' in prop['NETNAME']:
-            result[node.PT]['All: EC_RESET'][node] = prop
-
-        if 'EC_HYB_i2C' in prop['NETNAME']:
-            result[node.PT]['All: EC_HYB_i2C'][node] = prop
-
-        if 'LV_SENSE_GND' in prop['NETNAME']:
-            result[node.PT]['All: LV_SENSE_GND'][node] = prop
+        for kw in inclusive_keywords:
+            if kw in prop['NETNAME']:
+                result[node.PT]['All: {}'.format(kw)][node] = prop
 
     return result
+
+
+def aux_output_gen(aux_dict, title):
+    output = [title]
+
+    for jp, sections in sorted(aux_dict.items()):
+        output.append('# '+jp)
+        for title, data in sorted(sections.items()):
+            output.append('## '+title)
+            for node, prop in data.items():
+                output.append(csv_line(node, prop))
+            output.append('')
+
+    return output
 
 
 #############################
@@ -157,6 +168,9 @@ pt_descr = PtReader.read(flattener=lambda x: flatten(x, 'Pigtail pin'))
 # Read info from DCB #
 DcbReader = YamlReader(dcb_filename)
 dcb_descr = DcbReader.read(flattener=lambda x: flatten(x, 'SEAM pin'))
+
+# Make sure two ends of a single differential pair have the same note.
+check_diff_pairs_notes(pt_descr)
 
 
 ########################################
@@ -212,26 +226,6 @@ class RulePT_DCB(RulePD):
             self.prop_gen(net_name, data['Note']))
 
 
-class RulePT_NotConnected(RulePD):
-    def match(self, data, jp):
-        if data['SEAM pin'] is None and \
-                self.OR([
-                        'ASIC' in data['Signal ID'],
-                        '_CLK_' in data['Signal ID'],
-                        'TFC' in data['Signal ID'],
-                        'THERMISTOR' in data['Signal ID']
-                        ]):
-            # Which means that this PT pin is not connected to a DCB pin.
-            return True
-        else:
-            return False
-
-    def process(self, data, jp):
-        return (
-            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
-            self.prop_gen('GND', data['Note']))
-
-
 class RulePT_PTLvSource(RulePD):
     def __init__(self, brkoutbrd_rules):
         self.rules = brkoutbrd_rules
@@ -268,14 +262,6 @@ class RulePT_PTLvReturn(RulePT_PTLvSource):
 class RulePT_PTLvSense(RulePT_PTLvSource):
     def match(self, data, jp):
         if 'LV_SENSE' in data['Signal ID']:
-            return True
-        else:
-            return False
-
-
-class RulePT_PTThermistor(RulePT_PTLvSource):
-    def match(self, data, jp):
-        if 'THERMISTOR' in data['Signal ID']:
             return True
         else:
             return False
@@ -319,7 +305,11 @@ class RulePT_PTSingleToDiffN(RulePD):
 
     def process(self, data, jp):
         dcb_name, tail = data['Signal ID'].split('_', 1)
-        net_name = dcb_name + '_' + jp + '_' + tail
+        if 'EC_ADC' in data['Signal ID']:
+            # Becuase EC_ADC connects to Thermistor, add prefix THERM
+            net_name = dcb_name + '_' + jp + '_THERM_' + tail
+        else:
+            net_name = dcb_name + '_' + jp + '_' + tail
         return (
             NetNode(PT=jp, PT_PIN=data['Pigtail pin'],
                     DCB=data['DCB slot'], DCB_PIN=data['SEAM pin']),
@@ -363,6 +353,20 @@ class RulePT_PTThermistorSpecial(RulePD):
             return 'JT1'
         else:
             return 'JT2'
+
+
+class RulePT_PTLvSenseGnd(RulePD):
+    def match(self, data, jp):
+        if 'LV_SENSE_GND' in data['Signal ID']:
+            return True
+        else:
+            return False
+
+    def process(self, data, jp):
+        net_name = jp + PADDING(data['Pigtail pin']) + '_' + data['Signal ID']
+        return (
+            NetNode(PT=jp, PT_PIN=data['Pigtail pin']),
+            self.prop_gen(net_name, data['Note'], None))
 
 
 ####################################
@@ -609,13 +613,12 @@ pt_rules = [
     RulePT_PTSingleToDiffP(),
     RulePT_PTSingleToDiffN(),
     RulePT_UnusedToGND(),
+    RulePT_PTLvSenseGnd(),
     RulePT_PTThermistorSpecial(),
-    RulePT_NotConnected(),
     RulePT_DCB(),
     RulePT_PTLvSource(brkoutbrd_pin_assignments),
     RulePT_PTLvReturn(brkoutbrd_pin_assignments),
     RulePT_PTLvSense(brkoutbrd_pin_assignments),
-    RulePT_PTThermistor(brkoutbrd_pin_assignments),
     RulePT_Default()
 ]
 
@@ -634,9 +637,9 @@ dcb_rules = [
 ]
 
 
-###########################################
-# True-type signal manipulations (VOODOO) #
-###########################################
+######################
+# Proto -> True type #
+######################
 
 pt_descr_true = deepcopy(pt_descr)
 dcb_descr_true = {}
@@ -650,7 +653,10 @@ for jp in pt_descr_true.keys():
             pt['DCB slot'] = jd_swapping_true[pt['DCB slot']]
 
 # Deal with differential pairs.
-match_diff_pairs(pt_descr_true, dcb_descr_true)
+match_diff_pairs(pt_descr_true, dcb_descr_true, 'SCL_N')
+match_diff_pairs(pt_descr_true, dcb_descr_true, 'SDA_N')
+match_diff_pairs(pt_descr_true, dcb_descr_true, 'RESET_N')
+match_diff_pairs(pt_descr_true, dcb_descr_true, 'THERMISTOR_N')
 
 # Replace 'Signal ID' to DCB side definitions.
 match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
@@ -660,30 +666,31 @@ match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
 # Generate True-type backplane Altium list #
 ############################################
 
+# Debug
+# for rule in pt_rules:
+#     rule.debug_node = NetNode(None, None, 'JP8', 'A30')
+
 PtSelector = SelectorPD(pt_descr_true, pt_rules)
 pt_result_true = PtSelector.do()
 
 DcbSelector = SelectorPD(dcb_descr_true, dcb_rules)
 dcb_result_true = DcbSelector.do()
 
-write_to_csv(pt_true_output_filename, pt_result_true)
-write_to_csv(dcb_true_output_filename, dcb_result_true)
+# See if we have any unused rule
+for rule in pt_rules+dcb_rules:
+    print('The rule {} has been used {} times'.format(
+        rule.__class__.__name__, rule.counter))
+
+write_to_csv(pt_true_output_filename, pt_result_true, csv_line)
+write_to_csv(dcb_true_output_filename, dcb_result_true, csv_line)
 
 
 ###############################################
 # Generate True-type backplane auxiliary list #
 ###############################################
 
-pt_result_true_depop_aux = aux_list_gen(pt_result_true)
+pt_result_true_depop_aux = aux_dict_gen(pt_result_true)
 
-# Always clear the content of the output file
 write_to_file(pt_result_true_depop_aux_output_filename,
-              'Aux PT list for True-type', mode='w')
-
-for jp in pt_result_true_depop_aux.keys():
-    write_to_file(pt_result_true_depop_aux_output_filename, '# '+jp)
-    for sec in pt_result_true_depop_aux[jp].keys():
-        write_to_file(pt_result_true_depop_aux_output_filename, '## '+sec)
-        write_to_csv(pt_result_true_depop_aux_output_filename,
-                     pt_result_true_depop_aux[jp][sec], mode='a')
-        write_to_file(pt_result_true_depop_aux_output_filename, '')
+              aux_output_gen(pt_result_true_depop_aux,
+                             'Aux PT list for True-type'))

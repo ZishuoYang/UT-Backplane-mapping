@@ -162,7 +162,7 @@ JPL2:
 - '20':
     Signal ID: GND
 - '21':
-    Signal ID: JP8_JPU2_P4_LV_RETURN
+    Signal ID: JP8_JPL2_P4_LV_RETURN
 - '22':
     Signal ID: JP11_JPL2_P3_LV_RETURN
 - '23':
