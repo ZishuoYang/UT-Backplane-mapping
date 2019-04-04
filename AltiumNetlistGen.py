@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Mar 08, 2019 at 03:54 PM -0500
+# Last Change: Thu Apr 04, 2019 at 05:04 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -17,6 +17,7 @@ from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import NetNode
 from pyUTM.common import flatten, transpose
 from pyUTM.common import jd_swapping_true
+from pyUTM.common import jd_swapping_mirror, jp_swapping_mirror
 from pyUTM.legacy import PADDING
 
 input_dir = Path('input')
@@ -32,6 +33,14 @@ dcb_true_output_filename = output_dir / Path(
     'AltiumNetlist_DCB_Full_TrueType.csv')
 pt_result_true_depop_aux_output_filename = output_dir / Path(
     'AuxList_PT_Full_TrueType.csv'
+)
+
+pt_mirror_output_filename = output_dir / Path(
+    'AltiumNetlist_PT_Full_MirrorType.csv')
+dcb_mirror_output_filename = output_dir / Path(
+    'AltiumNetlist_DCB_Full_MirrorType.csv')
+pt_result_mirror_depop_aux_output_filename = output_dir / Path(
+    'AuxList_PT_Full_MirrorType.csv'
 )
 
 
@@ -641,11 +650,10 @@ dcb_rules = [
 # Proto -> True type #
 ######################
 
-pt_descr_true = deepcopy(pt_descr)
-dcb_descr_true = {}
+dcb_descr_true = {jd: dcb_descr[jd_swapping_true[jd]]
+                  for jd in dcb_descr.keys()}
 
-for jd in dcb_descr.keys():
-    dcb_descr_true[jd] = dcb_descr[jd_swapping_true[jd]]
+pt_descr_true = deepcopy(pt_descr)
 
 for jp in pt_descr_true.keys():
     for pt in pt_descr_true[jp]:
@@ -670,11 +678,11 @@ match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
 # for rule in pt_rules:
 #     rule.debug_node = NetNode(None, None, 'JP8', 'A30')
 
-PtSelector = SelectorPD(pt_descr_true, pt_rules)
-pt_result_true = PtSelector.do()
+PtSelectorTrue = SelectorPD(pt_descr_true, pt_rules)
+pt_result_true = PtSelectorTrue.do()
 
-DcbSelector = SelectorPD(dcb_descr_true, dcb_rules)
-dcb_result_true = DcbSelector.do()
+DcbSelectorTrue = SelectorPD(dcb_descr_true, dcb_rules)
+dcb_result_true = DcbSelectorTrue.do()
 
 # See if we have any unused rule
 for rule in pt_rules+dcb_rules:
@@ -694,3 +702,61 @@ pt_result_true_depop_aux = aux_dict_gen(pt_result_true)
 write_to_file(pt_result_true_depop_aux_output_filename,
               aux_output_gen(pt_result_true_depop_aux,
                              'Aux PT list for True-type'))
+
+
+########################
+# Proto -> Mirror type #
+########################
+
+dcb_descr_mirror = {jd: dcb_descr[jd_swapping_mirror[jd]]
+                    for jd in dcb_descr.keys()}
+
+# NOTE: We don't want to modify the content of pt_descr in-place.
+pt_descr_copy = deepcopy(pt_descr)
+
+pt_descr_mirror = {jp: pt_descr_copy[jp_swapping_mirror[jp]]
+                   for jp in pt_descr_copy.keys()}
+
+for jp in pt_descr_mirror.keys():
+    for pt in pt_descr_mirror[jp]:
+        if pt['DCB slot'] is not None:
+            pt['DCB slot'] = jd_swapping_mirror[pt['DCB slot']]
+
+# Deal with differential pairs.
+match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'SCL_N')
+match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'SDA_N')
+match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'RESET_N')
+match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'THERMISTOR_N')
+
+# Replace 'Signal ID' to DCB side definitions.
+match_dcb_side_signal_id(pt_descr_mirror, dcb_descr_mirror)
+
+
+##############################################
+# Generate Mirror-type backplane Altium list #
+##############################################
+
+PtSelectorMirror = SelectorPD(pt_descr_true, pt_rules)
+pt_result_mirror = PtSelectorMirror.do()
+
+DcbSelectorMirror = SelectorPD(dcb_descr_true, dcb_rules)
+dcb_result_mirror = DcbSelectorMirror.do()
+
+# See if we have any unused rule
+for rule in pt_rules+dcb_rules:
+    print('The rule {} has been used {} times'.format(
+        rule.__class__.__name__, rule.counter))
+
+write_to_csv(pt_mirror_output_filename, pt_result_mirror, csv_line)
+write_to_csv(dcb_mirror_output_filename, dcb_result_mirror, csv_line)
+
+
+#################################################
+# Generate Mirror-type backplane auxiliary list #
+#################################################
+
+pt_result_mirror_depop_aux = aux_dict_gen(pt_result_mirror)
+
+write_to_file(pt_result_mirror_depop_aux_output_filename,
+              aux_output_gen(pt_result_mirror_depop_aux,
+                             'Aux PT list for Mirror-type'))
