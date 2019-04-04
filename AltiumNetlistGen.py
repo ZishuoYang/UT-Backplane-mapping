@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Apr 04, 2019 at 05:22 PM -0400
+# Last Change: Thu Apr 04, 2019 at 05:38 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -708,12 +708,18 @@ write_to_file(pt_result_true_depop_aux_output_filename,
 # Proto -> Mirror type #
 ########################
 
-dcb_descr_mirror = {jd: dcb_descr[jd_swapping_mirror[jd]]
-                    for jd in dcb_descr.keys()}
+# NOTE: We don't want to modify the content of dcb_descr in-place.
+dcb_descr_copy = deepcopy(dcb_descr)
+dcb_descr_mirror = {jd: dcb_descr_copy[jd_swapping_mirror[jd]]
+                    for jd in dcb_descr_copy.keys()}
+
+for jd in dcb_descr_mirror.keys():
+    for dcb in dcb_descr_mirror[jd]:
+        if dcb['Pigtail slot'] is not None:
+            dcb['Pigtail slot'] = jp_swapping_mirror[dcb['Pigtail slot']]
 
 # NOTE: We don't want to modify the content of pt_descr in-place.
 pt_descr_copy = deepcopy(pt_descr)
-
 pt_descr_mirror = {jp: pt_descr_copy[jp_swapping_mirror[jp]]
                    for jp in pt_descr_copy.keys()}
 
