@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Apr 04, 2019 at 04:40 PM -0400
+# Last Change: Thu Apr 04, 2019 at 04:57 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -670,31 +670,6 @@ match_diff_pairs(pt_descr_true, dcb_descr_true, 'THERMISTOR_N')
 match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
 
 
-########################
-# Proto -> Mirror type #
-########################
-
-dcb_descr_mirror = {jd: dcb_descr[jd_swapping_mirror[jd]]
-                    for jd in dcb_descr.keys()}
-
-pt_descr_mirror = {jp: pt_descr[jp_swapping_mirror[jp]]
-                   for jp in pt_descr.keys()}
-
-for jp in pt_descr_mirror.keys():
-    for pt in pt_descr_mirror[jp]:
-        if pt['DCB slot'] is not None:
-            pt['DCB slot'] = jd_swapping_mirror[pt['DCB slot']]
-
-# Deal with differential pairs.
-match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'SCL_N')
-match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'SDA_N')
-match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'RESET_N')
-match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'THERMISTOR_N')
-
-# Replace 'Signal ID' to DCB side definitions.
-match_dcb_side_signal_id(pt_descr_mirror, dcb_descr_mirror)
-
-
 ############################################
 # Generate True-type backplane Altium list #
 ############################################
@@ -727,6 +702,31 @@ pt_result_true_depop_aux = aux_dict_gen(pt_result_true)
 write_to_file(pt_result_true_depop_aux_output_filename,
               aux_output_gen(pt_result_true_depop_aux,
                              'Aux PT list for True-type'))
+
+
+########################
+# Proto -> Mirror type #
+########################
+
+dcb_descr_mirror = {jd: dcb_descr[jd_swapping_mirror[jd]]
+                    for jd in dcb_descr.keys()}
+
+pt_descr_mirror = {jp: pt_descr[jp_swapping_mirror[jp]]
+                   for jp in pt_descr.keys()}
+
+for jp in pt_descr_mirror.keys():
+    for pt in pt_descr_mirror[jp]:
+        if pt['DCB slot'] is not None:
+            pt['DCB slot'] = jd_swapping_mirror[pt['DCB slot']]
+
+# Deal with differential pairs.
+match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'SCL_N')
+match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'SDA_N')
+match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'RESET_N')
+match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'THERMISTOR_N')
+
+# Replace 'Signal ID' to DCB side definitions.
+match_dcb_side_signal_id(pt_descr_mirror, dcb_descr_mirror)
 
 
 ##############################################
