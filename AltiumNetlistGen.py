@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Apr 04, 2019 at 05:04 PM -0400
+# Last Change: Thu Apr 04, 2019 at 05:06 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -685,9 +685,9 @@ DcbSelectorTrue = SelectorPD(dcb_descr_true, dcb_rules)
 dcb_result_true = DcbSelectorTrue.do()
 
 # See if we have any unused rule
-for rule in pt_rules+dcb_rules:
-    print('The rule {} has been used {} times'.format(
-        rule.__class__.__name__, rule.counter))
+# for rule in pt_rules+dcb_rules:
+#     print('The rule {} has been used {} times'.format(
+#         rule.__class__.__name__, rule.counter))
 
 write_to_csv(pt_true_output_filename, pt_result_true, csv_line)
 write_to_csv(dcb_true_output_filename, dcb_result_true, csv_line)
@@ -741,11 +741,6 @@ pt_result_mirror = PtSelectorMirror.do()
 
 DcbSelectorMirror = SelectorPD(dcb_descr_true, dcb_rules)
 dcb_result_mirror = DcbSelectorMirror.do()
-
-# See if we have any unused rule
-for rule in pt_rules+dcb_rules:
-    print('The rule {} has been used {} times'.format(
-        rule.__class__.__name__, rule.counter))
 
 write_to_csv(pt_mirror_output_filename, pt_result_mirror, csv_line)
 write_to_csv(dcb_mirror_output_filename, dcb_result_mirror, csv_line)
