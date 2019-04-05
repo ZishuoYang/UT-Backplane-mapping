@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Apr 05, 2019 at 01:16 PM -0400
+# Last Change: Fri Apr 05, 2019 at 02:04 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -721,10 +721,11 @@ pt_descr_copy = deepcopy(pt_descr)
 pt_descr_mirror = {jp: pt_descr_copy[jp_swapping_mirror[jp]]
                    for jp in pt_descr_copy.keys()}
 
+jd_swapping_mirror_inverse = {v: k for k, v in jd_swapping_mirror.items()}
 for jp in pt_descr_mirror.keys():
     for pt in pt_descr_mirror[jp]:
         if pt['DCB slot'] is not None:
-            pt['DCB slot'] = jd_swapping_mirror[pt['DCB slot']]
+            pt['DCB slot'] = jd_swapping_mirror_inverse[pt['DCB slot']]
 
 # Deal with differential pairs.
 match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'SCL_N')
