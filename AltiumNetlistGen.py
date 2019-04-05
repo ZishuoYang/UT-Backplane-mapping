@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Apr 04, 2019 at 05:22 PM -0400
+# Last Change: Fri Apr 05, 2019 at 02:04 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -613,12 +613,11 @@ class RuleDCB_RefToSense(RulePD):
             self.prop_gen(net_name))
 
 
-###############################
-# Define rules to be applied  #
-###############################
+#############################################################
+# Define rules to be applied to both True- and Mirror-type  #
+#############################################################
 
 pt_rules = [
-    # RulePT_PathFinder(),
     RulePT_PTSingleToDiffP(),
     RulePT_PTSingleToDiffN(),
     RulePT_UnusedToGND(),
@@ -645,9 +644,8 @@ dcb_rules = [
     RuleDCB_Default()
 ]
 
-
 ######################
-# Proto -> True type #
+# Proto -> True-type #
 ######################
 
 dcb_descr_true = {jd: dcb_descr[jd_swapping_true[jd]]
@@ -674,7 +672,7 @@ match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
 # Generate True-type backplane Altium list #
 ############################################
 
-# Debug
+# DEBUG
 # for rule in pt_rules:
 #     rule.debug_node = NetNode(None, None, 'JP8', 'A30')
 
@@ -705,22 +703,29 @@ write_to_file(pt_result_true_depop_aux_output_filename,
 
 
 ########################
-# Proto -> Mirror type #
+# Proto -> Mirror-type #
 ########################
 
-dcb_descr_mirror = {jd: dcb_descr[jd_swapping_mirror[jd]]
-                    for jd in dcb_descr.keys()}
+# NOTE: We don't want to modify the content of dcb_descr in-place.
+dcb_descr_copy = deepcopy(dcb_descr)
+dcb_descr_mirror = {jd: dcb_descr_copy[jd_swapping_mirror[jd]]
+                    for jd in dcb_descr_copy.keys()}
+
+for jd in dcb_descr_mirror.keys():
+    for dcb in dcb_descr_mirror[jd]:
+        if dcb['Pigtail slot'] is not None:
+            dcb['Pigtail slot'] = jp_swapping_mirror[dcb['Pigtail slot']]
 
 # NOTE: We don't want to modify the content of pt_descr in-place.
 pt_descr_copy = deepcopy(pt_descr)
-
 pt_descr_mirror = {jp: pt_descr_copy[jp_swapping_mirror[jp]]
                    for jp in pt_descr_copy.keys()}
 
+jd_swapping_mirror_inverse = {v: k for k, v in jd_swapping_mirror.items()}
 for jp in pt_descr_mirror.keys():
     for pt in pt_descr_mirror[jp]:
         if pt['DCB slot'] is not None:
-            pt['DCB slot'] = jd_swapping_mirror[pt['DCB slot']]
+            pt['DCB slot'] = jd_swapping_mirror_inverse[pt['DCB slot']]
 
 # Deal with differential pairs.
 match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'SCL_N')
@@ -735,6 +740,10 @@ match_dcb_side_signal_id(pt_descr_mirror, dcb_descr_mirror)
 ##############################################
 # Generate Mirror-type backplane Altium list #
 ##############################################
+
+# DEBUG
+for rule in pt_rules:
+    rule.debug_node = NetNode('JD5', 'H15', 'JP2', 'A10')
 
 PtSelectorMirror = SelectorPD(pt_descr_mirror, pt_rules)
 pt_result_mirror = PtSelectorMirror.do()
