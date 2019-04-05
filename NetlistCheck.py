@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Mar 06, 2019 at 11:57 PM -0500
+# Last Change: Fri Apr 05, 2019 at 02:15 PM -0400
 
 import re
 
@@ -19,17 +19,13 @@ from pyUTM.sim import CurrentFlow
 from pyUTM.selection import SelectorNet, RuleNetlist
 from AltiumNetlistGen import pt_result_true, dcb_result_true
 from AltiumNetlistGen import pt_result_true_depop_aux
+from AltiumNetlistGen import pt_result_mirror, dcb_result_mirror
+from AltiumNetlistGen import pt_result_mirror_depop_aux
 
 log_dir = Path('log')
 
 # Use first argument as netlist filename.
 netlist = sys.argv[1]
-
-# Combine Pigtail and DCB rules into a larger set of rules
-backplane_result_true = {**pt_result_true, **dcb_result_true}
-
-# Convert NetNode list to a parsed netlist
-backplane_netlist_result_true = netnode_to_netlist(backplane_result_true)
 
 
 ###########
@@ -37,6 +33,7 @@ backplane_netlist_result_true = netnode_to_netlist(backplane_result_true)
 ###########
 
 def find_backplane_type(filename):
+    filename = filename.lower()
     if 'true' in filename:
         return 'true'
     elif 'mirror' in filename:
@@ -47,8 +44,7 @@ def find_backplane_type(filename):
 
 def generate_log_filename(time_format="%Y-%m-%d_%H%M%S", file_extension='.log'):
     header, _ = basename(__file__).split('.', 1)
-    filename = sys.argv[1].lower()
-    type = find_backplane_type(filename)
+    type = find_backplane_type(netlist)
     time = datetime.now().strftime(time_format)
     return log_dir / Path(header+'-'+type+'-'+time+file_extension)
 
@@ -63,6 +59,23 @@ def write_to_log(filename, data, **kwargs):
         output.append('')
 
     write_to_file(filename, output, **kwargs)
+
+
+#########################################################
+# Generate reference descriptions to be checked against #
+#########################################################
+
+# Combine Pigtail and DCB rules into a larger set of rules
+if find_backplane_type(netlist) == 'true':
+    backplane_result = {**pt_result_true, **dcb_result_true}
+    pt_result_depop_aux = pt_result_true_depop_aux
+
+elif find_backplane_type(netlist) == 'mirror':
+    backplane_result = {**pt_result_mirror, **dcb_result_mirror}
+    pt_result_depop_aux = pt_result_mirror_depop_aux
+
+# Convert NetNode list to a parsed netlist
+backplane_netlist_result = netnode_to_netlist(backplane_result)
 
 
 ####################################
@@ -166,10 +179,10 @@ class RuleNetlist_NeverUsedFROElks(RuleNetlist):
 ################################
 
 all_diff_nets = []
-for jp in pt_result_true_depop_aux.keys():
-    for node in pt_result_true_depop_aux[jp]['Depopulation: ELK']:
+for jp in pt_result_depop_aux.keys():
+    for node in pt_result_depop_aux[jp]['Depopulation: ELK']:
         all_diff_nets.append(
-            pt_result_true_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
+            pt_result_depop_aux[jp]['Depopulation: ELK'][node]['NETNAME']
         )
 
 raw_net_rules = [
@@ -255,7 +268,7 @@ class RuleNetlistHopped_NonExistComp(RuleNetlist):
 
 hopped_net_rules = [
     RuleNetlistHopped_SingleToDiffN(netlist_dict),
-    RuleNetlistHopped_NonExistComp(backplane_netlist_result_true)
+    RuleNetlistHopped_NonExistComp(backplane_netlist_result)
 ]
 
 HoppedNetChecker = SelectorNet(netlist_dict, hopped_net_rules)
@@ -306,7 +319,7 @@ copy_paste_net_rules = [
          ])
 ]
 
-CopyPasteNetChecker = SelectorNet(backplane_netlist_result_true,
+CopyPasteNetChecker = SelectorNet(backplane_netlist_result,
                                   copy_paste_net_rules)
 result_check_copy_paste_net = CopyPasteNetChecker.do()
 
