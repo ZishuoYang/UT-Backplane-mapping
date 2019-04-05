@@ -10,7 +10,7 @@ install:
 
 script:
     - ./FiberAsicMap.py
-    - travis_wait 30 ./NetlistCheck.py ./input/backplane_netlists/backplane_mirror_type_PhoebeH_26March2018.net Warnings_MirrorType.log
+    - travis_wait 30 ./NetlistCheck.py ./input/backplane_netlists/backplane_mirror_type_PhoebeH_26March2019.net Warnings_MirrorType.log
 
 deploy:
     provider: releases
