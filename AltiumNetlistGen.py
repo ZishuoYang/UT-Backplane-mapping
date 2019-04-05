@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Apr 04, 2019 at 05:38 PM -0400
+# Last Change: Fri Apr 05, 2019 at 12:29 PM -0400
+
+import re
 
 from pathlib import Path
 from collections import defaultdict
@@ -613,41 +615,8 @@ class RuleDCB_RefToSense(RulePD):
             self.prop_gen(net_name))
 
 
-###############################
-# Define rules to be applied  #
-###############################
-
-pt_rules = [
-    # RulePT_PathFinder(),
-    RulePT_PTSingleToDiffP(),
-    RulePT_PTSingleToDiffN(),
-    RulePT_UnusedToGND(),
-    RulePT_PTLvSenseGnd(),
-    RulePT_PTThermistorSpecial(),
-    RulePT_DCB(),
-    RulePT_PTLvSource(brkoutbrd_pin_assignments),
-    RulePT_PTLvReturn(brkoutbrd_pin_assignments),
-    RulePT_PTLvSense(brkoutbrd_pin_assignments),
-    RulePT_Default()
-]
-
-dcb_rules = [
-    RuleDCB_GND(),
-    RuleDCB_AGND(),
-    RuleDCB_RefToSense(),
-    RuleDCB_PTSingleToDiff(),
-    RuleDCB_PT(),
-    RuleDCB_1V5(brkoutbrd_pin_assignments),
-    RuleDCB_2V5(brkoutbrd_pin_assignments),
-    RuleDCB_1V5Sense(brkoutbrd_pin_assignments),
-    RuleDCB_FRO_ELK(),
-    RuleDCB_REMOTE_RESET(),
-    RuleDCB_Default()
-]
-
-
 ######################
-# Proto -> True type #
+# Proto -> True-type #
 ######################
 
 dcb_descr_true = {jd: dcb_descr[jd_swapping_true[jd]]
@@ -671,6 +640,41 @@ match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
 
 
 ############################################
+# Define rules to be applied to True-type  #
+############################################
+
+# Define an alias to indicate that here we are dealing with true-type.
+brkoutbrd_pin_assignments_true = brkoutbrd_pin_assignments
+
+pt_rules_true = [
+    RulePT_PTSingleToDiffP(),
+    RulePT_PTSingleToDiffN(),
+    RulePT_UnusedToGND(),
+    RulePT_PTLvSenseGnd(),
+    RulePT_PTThermistorSpecial(),
+    RulePT_DCB(),
+    RulePT_PTLvSource(brkoutbrd_pin_assignments_true),
+    RulePT_PTLvReturn(brkoutbrd_pin_assignments_true),
+    RulePT_PTLvSense(brkoutbrd_pin_assignments_true),
+    RulePT_Default()
+]
+
+dcb_rules_true = [
+    RuleDCB_GND(),
+    RuleDCB_AGND(),
+    RuleDCB_RefToSense(),
+    RuleDCB_PTSingleToDiff(),
+    RuleDCB_PT(),
+    RuleDCB_1V5(brkoutbrd_pin_assignments_true),
+    RuleDCB_2V5(brkoutbrd_pin_assignments_true),
+    RuleDCB_1V5Sense(brkoutbrd_pin_assignments_true),
+    RuleDCB_FRO_ELK(),
+    RuleDCB_REMOTE_RESET(),
+    RuleDCB_Default()
+]
+
+
+############################################
 # Generate True-type backplane Altium list #
 ############################################
 
@@ -678,10 +682,10 @@ match_dcb_side_signal_id(pt_descr_true, dcb_descr_true)
 # for rule in pt_rules:
 #     rule.debug_node = NetNode(None, None, 'JP8', 'A30')
 
-PtSelectorTrue = SelectorPD(pt_descr_true, pt_rules)
+PtSelectorTrue = SelectorPD(pt_descr_true, pt_rules_true)
 pt_result_true = PtSelectorTrue.do()
 
-DcbSelectorTrue = SelectorPD(dcb_descr_true, dcb_rules)
+DcbSelectorTrue = SelectorPD(dcb_descr_true, dcb_rules_true)
 dcb_result_true = DcbSelectorTrue.do()
 
 # See if we have any unused rule
@@ -705,7 +709,7 @@ write_to_file(pt_result_true_depop_aux_output_filename,
 
 
 ########################
-# Proto -> Mirror type #
+# Proto -> Mirror-type #
 ########################
 
 # NOTE: We don't want to modify the content of dcb_descr in-place.
@@ -739,13 +743,56 @@ match_dcb_side_signal_id(pt_descr_mirror, dcb_descr_mirror)
 
 
 ##############################################
+# Define rules to be applied to Mirror-type  #
+##############################################
+
+# We need to replace Pigtail names on the power breakout board for the mirror-
+# type.
+brkoutbrd_pin_assignments_mirror = []
+for signal in brkoutbrd_pin_assignments:
+    jp = re.match(r'(^JP\d+)', signal)
+    if jp is not None:
+        brkoutbrd_pin_assignments_mirror.append(
+            re.sub(jp.group(1), jp_swapping_mirror[jp.group(1)], signal))
+    else:
+        brkoutbrd_pin_assignments_mirror.append(signal)
+
+pt_rules_mirror = [
+    RulePT_PTSingleToDiffP(),
+    RulePT_PTSingleToDiffN(),
+    RulePT_UnusedToGND(),
+    RulePT_PTLvSenseGnd(),
+    RulePT_PTThermistorSpecial(),
+    RulePT_DCB(),
+    RulePT_PTLvSource(brkoutbrd_pin_assignments_mirror),
+    RulePT_PTLvReturn(brkoutbrd_pin_assignments_mirror),
+    RulePT_PTLvSense(brkoutbrd_pin_assignments_mirror),
+    RulePT_Default()
+]
+
+dcb_rules_mirror = [
+    RuleDCB_GND(),
+    RuleDCB_AGND(),
+    RuleDCB_RefToSense(),
+    RuleDCB_PTSingleToDiff(),
+    RuleDCB_PT(),
+    RuleDCB_1V5(brkoutbrd_pin_assignments_mirror),
+    RuleDCB_2V5(brkoutbrd_pin_assignments_mirror),
+    RuleDCB_1V5Sense(brkoutbrd_pin_assignments_mirror),
+    RuleDCB_FRO_ELK(),
+    RuleDCB_REMOTE_RESET(),
+    RuleDCB_Default()
+]
+
+
+##############################################
 # Generate Mirror-type backplane Altium list #
 ##############################################
 
-PtSelectorMirror = SelectorPD(pt_descr_mirror, pt_rules)
+PtSelectorMirror = SelectorPD(pt_descr_mirror, pt_rules_mirror)
 pt_result_mirror = PtSelectorMirror.do()
 
-DcbSelectorMirror = SelectorPD(dcb_descr_mirror, dcb_rules)
+DcbSelectorMirror = SelectorPD(dcb_descr_mirror, dcb_rules_mirror)
 dcb_result_mirror = DcbSelectorMirror.do()
 
 write_to_csv(pt_mirror_output_filename, pt_result_mirror, csv_line)
