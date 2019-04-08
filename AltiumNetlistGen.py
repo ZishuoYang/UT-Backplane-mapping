@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Apr 05, 2019 at 02:04 PM -0400
+# Last Change: Mon Apr 08, 2019 at 02:27 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -170,7 +170,7 @@ brkoutbrd_nested_signals = list(map(
 brkoutbrd_pin_assignments = [item for sublist in brkoutbrd_nested_signals
                              for item in sublist]
 
-# Read info from PigTail #
+# Read info from Pigtail #
 PtReader = YamlReader(pt_filename)
 pt_descr = PtReader.read(flattener=lambda x: flatten(x, 'Pigtail pin'))
 
@@ -183,7 +183,7 @@ check_diff_pairs_notes(pt_descr)
 
 
 ########################################
-# Define rules for PigTail Altium list #
+# Define rules for Pigtail Altium list #
 ########################################
 
 # This needs to be placed at the end of the rules list.  It always returns
