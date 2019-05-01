@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Mon Apr 08, 2019 at 02:53 PM -0400
-
-import re
+# Last Change: Wed May 01, 2019 at 02:46 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -747,21 +745,7 @@ match_dcb_side_signal_id(pt_descr_mirror, dcb_descr_mirror)
 # Define rules to be applied to Mirror-type  #
 ##############################################
 
-# We need to replace Pigtail names on the power breakout board for the mirror-
-# type.
-brkoutbrd_pin_assignments_mirror = []
-for signal in brkoutbrd_pin_assignments:
-    jp = re.match(r'(^JP\d+)', signal)
-    # jd = re.match(r'(^JD\d+)', signal)
-
-    if jp is not None:
-        brkoutbrd_pin_assignments_mirror.append(
-            re.sub(jp.group(1), jp_swapping_mirror[jp.group(1)], signal))
-    # elif jd is not None:
-    #     brkoutbrd_pin_assignments_mirror.append(
-    #         re.sub(jd.group(1), jd_swapping_mirror[jd.group(1)], signal))
-    else:
-        brkoutbrd_pin_assignments_mirror.append(signal)
+brkoutbrd_pin_assignments_mirror = brkoutbrd_pin_assignments_true
 
 pt_rules_mirror = [
     RulePT_PTSingleToDiffP(),
@@ -794,6 +778,10 @@ dcb_rules_mirror = [
 ##############################################
 # Generate Mirror-type backplane Altium list #
 ##############################################
+
+# Debug
+# for rule in pt_rules_mirror:
+#     rule.debug_node = NetNode(None, None, 'JP0', 'A18')
 
 PtSelectorMirror = SelectorPD(pt_descr_mirror, pt_rules_mirror)
 pt_result_mirror = PtSelectorMirror.do()
