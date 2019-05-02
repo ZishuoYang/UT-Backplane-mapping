@@ -7,6 +7,7 @@ from pathlib import Path
 from collections import defaultdict
 from copy import deepcopy
 
+import re
 import sys
 sys.path.insert(0, './pyUTM')
 
@@ -745,7 +746,19 @@ match_dcb_side_signal_id(pt_descr_mirror, dcb_descr_mirror)
 # Define rules to be applied to Mirror-type  #
 ##############################################
 
-brkoutbrd_pin_assignments_mirror = brkoutbrd_pin_assignments_true
+brkoutbrd_pin_assignments_mirror = []
+# Swap a few hybrid power signals due to #(active hybrids) diff on Mirror
+for signal in brkoutbrd_pin_assignments_true:
+    hyb = re.match(r'(^JP\d+)_JP\w+_(P2_WEST|P4).*', signal)
+    if hyb is not None:
+        if hyb.group(2) == 'P4' and hyb.group(1).endswith(('4','7','8','11')):
+            brkoutbrd_pin_assignments_mirror.append(
+                re.sub(hyb.group(1), jp_swapping_mirror[hyb.group(1)], signal))
+        elif hyb.group(2) == 'P2_WEST' and hyb.group(1).endswith(('1','2')):
+            brkoutbrd_pin_assignments_mirror.append(
+                re.sub(hyb.group(1), jp_swapping_mirror[hyb.group(1)], signal))
+    else:
+        brkoutbrd_pin_assignments_mirror.append(signal)
 
 pt_rules_mirror = [
     RulePT_PTSingleToDiffP(),
