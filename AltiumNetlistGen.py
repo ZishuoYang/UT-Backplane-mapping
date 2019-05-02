@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed May 01, 2019 at 02:46 PM -0400
+# Last Change: Thu May 02, 2019 at 06:44 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -749,14 +749,18 @@ match_dcb_side_signal_id(pt_descr_mirror, dcb_descr_mirror)
 brkoutbrd_pin_assignments_mirror = []
 # Swap a few hybrid power signals due to #(active hybrids) diff on Mirror
 for signal in brkoutbrd_pin_assignments_true:
-    hyb = re.match(r'(^JP\d+)_JP\w+_(P2_WEST|P4).*', signal)
-    if hyb is not None:
-        if hyb.group(2) == 'P4' and hyb.group(1).endswith(('4','7','8','11')):
-            brkoutbrd_pin_assignments_mirror.append(
-                re.sub(hyb.group(1), jp_swapping_mirror[hyb.group(1)], signal))
-        elif hyb.group(2) == 'P2_WEST' and hyb.group(1).endswith(('1','2')):
-            brkoutbrd_pin_assignments_mirror.append(
-                re.sub(hyb.group(1), jp_swapping_mirror[hyb.group(1)], signal))
+    hyb = re.match(r'(^JP\d+)_(JPU\d|JPL\d)_(P2_WEST|P4).*', signal)
+    if hyb is not None and (
+            (hyb.group(3) == 'P4' and hyb.group(1).endswith(
+                ('4', '7', '8', '11'))
+             ) or
+            (hyb.group(3) == 'P2_WEST' and hyb.group(1).endswith(
+                ('1', '2'))
+             )
+    ):
+        signal = re.sub(hyb.group(1), jp_swapping_mirror[hyb.group(1)], signal)
+        brkoutbrd_pin_assignments_mirror.append(signal)
+
     else:
         brkoutbrd_pin_assignments_mirror.append(signal)
 
@@ -793,8 +797,8 @@ dcb_rules_mirror = [
 ##############################################
 
 # Debug
-# for rule in pt_rules_mirror:
-#     rule.debug_node = NetNode(None, None, 'JP0', 'A18')
+for rule in pt_rules_mirror:
+    rule.debug_node = NetNode(None, None, 'JP2', 'A35')
 
 PtSelectorMirror = SelectorPD(pt_descr_mirror, pt_rules_mirror)
 pt_result_mirror = PtSelectorMirror.do()
