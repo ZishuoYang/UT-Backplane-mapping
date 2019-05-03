@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Apr 05, 2019 at 02:26 PM -0400
+# Last Change: Fri May 03, 2019 at 02:27 PM -0400
 
 import re
 
@@ -84,26 +84,6 @@ backplane_netlist_result = netnode_to_netlist(backplane_result)
 
 NetReader = PcadNaiveReader(netlist)
 netlist_dict = NetReader.read()
-
-# swapping connector pins for now. This should be removed once the CERN people
-# start to use the corrected libraries.
-# print('Warning: Using the temporary fix to handle the pin letter swap.')
-#
-# for netname, nodes in netlist_dict.items():
-#     new_nodes = []
-#
-#     for n in nodes:
-#         new_n = list(n)
-#
-#         if n[1].startswith('J'):
-#             new_n[1] = 'I' + n[1][1:]
-#
-#         if n[1].startswith('K'):
-#             new_n[1] = 'J' + n[1][1:]
-#
-#         new_nodes.append(tuple(new_n))
-#
-#     netlist_dict[netname] = new_nodes
 
 
 ##############################
