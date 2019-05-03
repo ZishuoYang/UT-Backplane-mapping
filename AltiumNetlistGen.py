@@ -749,7 +749,7 @@ match_dcb_side_signal_id(pt_descr_mirror, dcb_descr_mirror)
 brkoutbrd_pin_assignments_mirror = []
 # Swap a few hybrid power signals due to #(active hybrids) diff on Mirror
 for signal in brkoutbrd_pin_assignments_true:
-    hyb = re.match(r'(^JP\d+)_(JPU\d|JPL\d)_(P2_WEST|P4).*', signal)
+    hyb = re.match(r'(^JP\d+)_(JPU\d|JPL\d|JT\d)_(P2_WEST|P4).*', signal)
     if hyb is not None and (
             (hyb.group(3) == 'P4' and hyb.group(1).endswith(
                 ('4', '7', '8', '11'))
