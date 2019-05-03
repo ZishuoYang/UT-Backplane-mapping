@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri May 03, 2019 at 02:27 PM -0400
+# Last Change: Fri May 03, 2019 at 02:43 PM -0400
 
 import re
 
@@ -90,6 +90,22 @@ netlist_dict = NetReader.read()
 # Rules to check raw netlist #
 ##############################
 
+class RuleNetlist_P2B2Connector(RuleNetlist):
+    def match(self, netname, components):
+        return bool(re.match(r'JP\d+_(JPU\d|JPL\d)_.*', netname))
+
+    def process(self, netname, components):
+        result = (
+            '0. JS connector not present in Pigtail power net',
+            'No JS connector found in {}'.format(netname)
+        )
+        for c in components:
+            if c[0].startswith('JS'):
+                result = self.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
+                break
+        return result
+
+
 class RuleNetlist_DepopDiffElksGamma(RuleNetlist):
     def match(self, netname, components):
         if netname in self.ref_netlist and \
@@ -165,6 +181,7 @@ for jp in pt_result_depop_aux.keys():
         )
 
 raw_net_rules = [
+    RuleNetlist_P2B2Connector(),
     RuleNetlist_DepopDiffElksGamma(all_diff_nets),
     RuleNetlist_DepopDiffElksBeta(all_diff_nets),
     RuleNetlist_NeverUsedFROElks()
@@ -249,6 +266,10 @@ hopped_net_rules = [
     RuleNetlistHopped_SingleToDiffN(netlist_dict),
     RuleNetlistHopped_NonExistComp(backplane_netlist_result)
 ]
+
+# Debug
+# for rule in hopped_net_rules:
+#     rule.debug_node = 'JD7_JP5_EC_HYB_i2C_SCL_2_N'
 
 HoppedNetChecker = SelectorNet(netlist_dict, hopped_net_rules)
 result_check_hopped_net = HoppedNetChecker.do()
