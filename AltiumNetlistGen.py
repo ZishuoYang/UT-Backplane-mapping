@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu May 02, 2019 at 06:44 PM -0400
+# Last Change: Fri May 03, 2019 at 02:27 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -797,8 +797,8 @@ dcb_rules_mirror = [
 ##############################################
 
 # Debug
-for rule in pt_rules_mirror:
-    rule.debug_node = NetNode(None, None, 'JP2', 'A35')
+# for rule in pt_rules_mirror:
+#     rule.debug_node = NetNode(None, None, 'JP2', 'A35')
 
 PtSelectorMirror = SelectorPD(pt_descr_mirror, pt_rules_mirror)
 pt_result_mirror = PtSelectorMirror.do()

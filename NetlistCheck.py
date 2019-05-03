@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Apr 05, 2019 at 02:26 PM -0400
+# Last Change: Fri May 03, 2019 at 02:43 PM -0400
 
 import re
 
@@ -85,30 +85,26 @@ backplane_netlist_result = netnode_to_netlist(backplane_result)
 NetReader = PcadNaiveReader(netlist)
 netlist_dict = NetReader.read()
 
-# swapping connector pins for now. This should be removed once the CERN people
-# start to use the corrected libraries.
-# print('Warning: Using the temporary fix to handle the pin letter swap.')
-#
-# for netname, nodes in netlist_dict.items():
-#     new_nodes = []
-#
-#     for n in nodes:
-#         new_n = list(n)
-#
-#         if n[1].startswith('J'):
-#             new_n[1] = 'I' + n[1][1:]
-#
-#         if n[1].startswith('K'):
-#             new_n[1] = 'J' + n[1][1:]
-#
-#         new_nodes.append(tuple(new_n))
-#
-#     netlist_dict[netname] = new_nodes
-
 
 ##############################
 # Rules to check raw netlist #
 ##############################
+
+class RuleNetlist_P2B2Connector(RuleNetlist):
+    def match(self, netname, components):
+        return bool(re.match(r'JP\d+_(JPU\d|JPL\d)_.*', netname))
+
+    def process(self, netname, components):
+        result = (
+            '0. JS connector not present in Pigtail power net',
+            'No JS connector found in {}'.format(netname)
+        )
+        for c in components:
+            if c[0].startswith('JS'):
+                result = self.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
+                break
+        return result
+
 
 class RuleNetlist_DepopDiffElksGamma(RuleNetlist):
     def match(self, netname, components):
@@ -185,6 +181,7 @@ for jp in pt_result_depop_aux.keys():
         )
 
 raw_net_rules = [
+    RuleNetlist_P2B2Connector(),
     RuleNetlist_DepopDiffElksGamma(all_diff_nets),
     RuleNetlist_DepopDiffElksBeta(all_diff_nets),
     RuleNetlist_NeverUsedFROElks()
@@ -269,6 +266,10 @@ hopped_net_rules = [
     RuleNetlistHopped_SingleToDiffN(netlist_dict),
     RuleNetlistHopped_NonExistComp(backplane_netlist_result)
 ]
+
+# Debug
+# for rule in hopped_net_rules:
+#     rule.debug_node = 'JD7_JP5_EC_HYB_i2C_SCL_2_N'
 
 HoppedNetChecker = SelectorNet(netlist_dict, hopped_net_rules)
 result_check_hopped_net = HoppedNetChecker.do()
