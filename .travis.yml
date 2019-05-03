@@ -24,6 +24,10 @@ deploy:
         - "./output/AltiumNetlist_DCB_Full_MirrorType.csv"
         - "./output/AuxList_PT_Full_MirrorType.csv"
         - "./output/AsicToFiberMapping.csv"
+        - "./output/Mapping_PT_TrueType.xlsx"
+        - "./output/Mapping_DCB_TrueType.xlsx"
+        - "./output/Mapping_PT_MirrorType.xlsx"
+        - "./output/Mapping_DCB_MirrorType.xlsx"
         - "./Warnings_MirrorType.log"
     skip_cleanup: true
     on:
