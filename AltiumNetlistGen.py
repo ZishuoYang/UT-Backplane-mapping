@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri May 03, 2019 at 02:27 PM -0400
+# Last Change: Tue May 07, 2019 at 02:55 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -14,6 +14,7 @@ sys.path.insert(0, './pyUTM')
 from pyUTM.io import write_to_file, write_to_csv
 from pyUTM.io import csv_line
 from pyUTM.io import YamlReader
+from pyUTM.io import prepare_descr_for_xlsx_output, XLWriter
 from pyUTM.selection import SelectorPD, RulePD
 from pyUTM.datatype import NetNode
 from pyUTM.common import flatten, transpose
@@ -43,6 +44,11 @@ dcb_mirror_output_filename = output_dir / Path(
 pt_result_mirror_depop_aux_output_filename = output_dir / Path(
     'AuxList_PT_Full_MirrorType.csv'
 )
+
+pt_true_excel_file = output_dir / Path('Mapping_PT_TrueType.xlsx')
+dcb_true_excel_file = output_dir / Path('Mapping_DCB_TrueType.xlsx')
+pt_mirror_excel_file = output_dir / Path('Mapping_PT_MirrorType.xlsx')
+dcb_mirror_excel_file = output_dir / Path('Mapping_DCB_MirrorType.xlsx')
 
 
 ###########
@@ -819,3 +825,20 @@ pt_result_mirror_depop_aux = aux_dict_gen(pt_result_mirror)
 write_to_file(pt_result_mirror_depop_aux_output_filename,
               aux_output_gen(pt_result_mirror_depop_aux,
                              'Aux PT list for Mirror-type'))
+
+
+#################################
+# Write mappings to Excel files #
+#################################
+
+PtTrueWriter = XLWriter(pt_true_excel_file)
+PtTrueWriter.write(prepare_descr_for_xlsx_output(pt_descr_true))
+
+DcbTrueWriter = XLWriter(dcb_true_excel_file)
+DcbTrueWriter.write(prepare_descr_for_xlsx_output(dcb_descr_true))
+
+PtMirrorWriter = XLWriter(pt_mirror_excel_file)
+PtMirrorWriter.write(prepare_descr_for_xlsx_output(pt_descr_mirror))
+
+DcbMirrorWriter = XLWriter(dcb_mirror_excel_file)
+DcbMirrorWriter.write(prepare_descr_for_xlsx_output(dcb_descr_mirror))
