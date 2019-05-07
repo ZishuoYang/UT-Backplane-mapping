@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 07, 2019 at 02:55 PM -0400
+# Last Change: Tue May 07, 2019 at 04:13 PM -0400
 
 from pathlib import Path
 from collections import defaultdict
@@ -106,14 +106,20 @@ def match_diff_pairs(pt_descr, dcb_descr, net_name_ending):
 def match_dcb_side_signal_id(pt_descr, dcb_descr):
     for jp in pt_descr.keys():
         for pt in pt_descr[jp]:
+            # We always keep the original signal ID for Excel output
+            pt['Original Signal ID'] = pt['Signal ID']
             if pt['DCB slot'] is not None:
                 jd = pt['DCB slot']
                 for dcb in dcb_descr[jd]:
+                    # Also add note entry for DCB to record depopulation info
+                    dcb['Note'] = None
+
                     if pt['SEAM pin'] == dcb['SEAM pin'] and \
                             dcb['Pigtail slot'] is not None and \
                             dcb['Pigtail slot'] == jp and \
                             pt['Pigtail pin'] == dcb['Pigtail pin']:
                         pt['Signal ID'] = dcb['Signal ID']
+                        dcb['Note'] = pt['Note']
                         break
 
 
@@ -685,7 +691,7 @@ dcb_rules_true = [
 
 # Debug
 # for rule in pt_rules_true:
-#     rule.debug_node = NetNode(None, None, 'JP8', 'A30')
+#     rule.debug_node = NetNode('JD1', 'C3', 'JP0', 'F8')
 
 PtSelectorTrue = SelectorPD(pt_descr_true, pt_rules_true)
 pt_result_true = PtSelectorTrue.do()
