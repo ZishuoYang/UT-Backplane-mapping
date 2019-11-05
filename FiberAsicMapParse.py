@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Nov 05, 2019 at 03:04 PM -0500
+# Last Change: Tue Nov 05, 2019 at 03:12 PM -0500
 
 import sys
 
@@ -61,6 +61,10 @@ def filter_on_bp_type(l, pepi_type):
     return [d for d in l if d['PEPI'] == pepi_type]
 
 
+def filter_on_variant(l, variant_type):
+    return [d for d in l if d['BP variant (alpha/beta/gamma)'] == variant_type]
+
+
 def filter_on_jp(l, flex_type):
     return [d for d in l if d['Flex'] == flex_type]
 
@@ -82,8 +86,6 @@ def jds_per_jp(l, jp, jp_to_flex):
 
         result[jd][gbtx]['i2c'] = i2c
         result[jd][gbtx]['elinks'] += elinks
-        print(jp, jd, gbtx)
-        print(result[jd][gbtx]['elinks'])
 
     return result
 
@@ -106,11 +108,13 @@ def output_to_markdown(jp, data):
 
 
 if __name__ == '__main__':
-    bp_type, jp = sys.argv[1:]
+    bp_type, variant, jp = sys.argv[1:]
     if bp_type == 'true':
         jp_type_mapping = jp_type_translate(jp_true_type_aux)
 
     raw = read(mapping_output_filename)
     bp_filtered = filter_on_bp_type(raw, bp_type_mapping[bp_type])
-    output = jds_per_jp(bp_filtered, jp, jp_type_mapping)
+    var_filtered = filter_on_variant(bp_filtered, variant)
+
+    output = jds_per_jp(var_filtered, jp, jp_type_mapping)
     output_to_markdown(jp, output)
