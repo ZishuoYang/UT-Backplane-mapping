@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue Nov 05, 2019 at 03:12 PM -0500
+# Last Change: Fri Dec 06, 2019 at 02:53 PM -0500
 
 import sys
 
@@ -14,6 +14,7 @@ mapping_output_filename = output_dir / Path('AsicToFiberMapping.csv')
 
 bp_type_mapping = {
     'true': 'Magnet-Top-C',
+    'mirror': 'Magnet-Bottom-C'
 }
 
 
@@ -26,6 +27,13 @@ jp_true_type_aux = {
     1: ('X', 'S'),
     2: ('S', 'S'),
     3: ('S', 'M'),
+}
+
+jp_mirror_type_aux = {
+    0: ('S', 'S'),
+    1: ('S', 'M'),
+    2: ('X', 'M'),
+    3: ('X', 'S'),
 }
 
 
@@ -111,6 +119,8 @@ if __name__ == '__main__':
     bp_type, variant, jp = sys.argv[1:]
     if bp_type == 'true':
         jp_type_mapping = jp_type_translate(jp_true_type_aux)
+    elif bp_type == 'mirror':
+        jp_type_mapping = jp_type_translate(jp_mirror_type_aux)
 
     raw = read(mapping_output_filename)
     bp_filtered = filter_on_bp_type(raw, bp_type_mapping[bp_type])
