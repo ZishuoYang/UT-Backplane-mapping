@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 11, 2019 at 04:12 AM -0500
+# Last Change: Wed Dec 11, 2019 at 04:28 AM -0500
 
 import re
 
@@ -184,7 +184,7 @@ class RuleNetlist_RBSPMislabelledAsRB(RuleNetlist):
             return False
 
     def process(self, netname, components):
-        resistor = self.search(r'^RB\d+', components)
+        resistor = self.search(r'^RB_\d+', components)
         if resistor is not None:
             return (
                 '0. Depopulation resistor',
