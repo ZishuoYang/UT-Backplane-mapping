@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 11, 2019 at 03:45 AM -0500
+# Last Change: Wed Dec 11, 2019 at 04:12 AM -0500
 
 import re
 
@@ -128,7 +128,7 @@ class RuleNetlist_DepopDiffElksGamma(RuleNetlist):
 
     def comp_match(self, components):
         return not self.OR([
-            bool(re.search(r'^RB_\d+|^RBSP\d+|^CXRB_\d+', x[0]))
+            bool(re.search(r'^RB_\d+', x[0]))
             for x in components
         ])
 
@@ -169,18 +169,22 @@ class RuleNetlist_NeverUsedFROElks(RuleNetlist):
             return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
 
 
-class RuleNetlist_RBMislabelledAsR(RuleNetlist):
+class RuleNetlist_RBSPMislabelledAsRB(RuleNetlist):
     def __init__(self):
         pass
 
     def match(self, netname, components):
-        if '_FRO_' not in netname and '_EC_' in netname:
+        if '_FRO_' not in netname and '_EC_' in netname and \
+                self.OR([
+                    bool(re.search(r'^JP8|^JP9|^JP10|^JP11', x[0]))
+                    for x in components
+                ]):
             return True
         else:
             return False
 
     def process(self, netname, components):
-        resistor = self.search(r'^R\d+', components)
+        resistor = self.search(r'^RB\d+', components)
         if resistor is not None:
             return (
                 '0. Depopulation resistor',
@@ -199,6 +203,25 @@ class RuleNetlist_RBMislabelledAsR(RuleNetlist):
         return None
 
 
+class RuleNetlist_RBMislabelledAsR(RuleNetlist_RBSPMislabelledAsRB):
+    def match(self, netname, components):
+        if '_FRO_' not in netname and '_EC_' in netname:
+            return True
+        else:
+            return False
+
+    def process(self, netname, components):
+        resistor = self.search(r'^R\d+', components)
+        if resistor is not None:
+            return (
+                '0. Depopulation resistor',
+                'Incorrectly labeled resistor {} found in {}'.format(
+                    resistor, netname)
+            )
+        else:
+            return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
+
+
 ################################
 # Do checks on the raw netlist #
 ################################
@@ -214,8 +237,9 @@ raw_net_rules = [
     RuleNetlist_P2B2Connector(),
     RuleNetlist_DepopDiffElksGamma(all_diff_nets),
     RuleNetlist_DepopDiffElksBeta(all_diff_nets),
+    RuleNetlist_RBSPMislabelledAsRB(),
+    RuleNetlist_RBMislabelledAsR(),
     RuleNetlist_NeverUsedFROElks(),
-    RuleNetlist_RBMislabelledAsR()
 ]
 
 RawNetChecker = SelectorNet(netlist_dict, raw_net_rules)
