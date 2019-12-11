@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 11, 2019 at 04:28 AM -0500
+# Last Change: Wed Dec 11, 2019 at 04:47 AM -0500
 
 import re
 
@@ -187,7 +187,7 @@ class RuleNetlist_RBSPMislabelledAsRB(RuleNetlist):
         resistor = self.search(r'^RB_\d+', components)
         if resistor is not None:
             return (
-                '0. Depopulation resistor',
+                '0. Depopulation resistor labeling problem',
                 'Incorrectly labeled resistor {} found in {}'.format(
                     resistor, netname)
             )
@@ -214,7 +214,7 @@ class RuleNetlist_RBMislabelledAsR(RuleNetlist_RBSPMislabelledAsRB):
         resistor = self.search(r'^R\d+', components)
         if resistor is not None:
             return (
-                '0. Depopulation resistor',
+                '0. Depopulation resistor labeling problem',
                 'Incorrectly labeled resistor {} found in {}'.format(
                     resistor, netname)
             )
