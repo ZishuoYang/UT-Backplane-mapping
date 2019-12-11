@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri May 03, 2019 at 02:43 PM -0400
+# Last Change: Wed Dec 11, 2019 at 03:45 AM -0500
 
 import re
 
@@ -169,6 +169,36 @@ class RuleNetlist_NeverUsedFROElks(RuleNetlist):
             return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
 
 
+class RuleNetlist_RBMislabelledAsR(RuleNetlist):
+    def __init__(self):
+        pass
+
+    def match(self, netname, components):
+        if '_FRO_' not in netname and '_EC_' in netname:
+            return True
+        else:
+            return False
+
+    def process(self, netname, components):
+        resistor = self.search(r'^R\d+', components)
+        if resistor is not None:
+            return (
+                '0. Depopulation resistor',
+                'Incorrectly labeled resistor {} found in {}'.format(
+                    resistor, netname)
+            )
+        else:
+            return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
+
+    @staticmethod
+    def search(reg, components):
+        result = [re.search(reg, x[0]) for x in components]
+        for r in result:
+            if r is not None:
+                return r.group()
+        return None
+
+
 ################################
 # Do checks on the raw netlist #
 ################################
@@ -184,7 +214,8 @@ raw_net_rules = [
     RuleNetlist_P2B2Connector(),
     RuleNetlist_DepopDiffElksGamma(all_diff_nets),
     RuleNetlist_DepopDiffElksBeta(all_diff_nets),
-    RuleNetlist_NeverUsedFROElks()
+    RuleNetlist_NeverUsedFROElks(),
+    RuleNetlist_RBMislabelledAsR()
 ]
 
 RawNetChecker = SelectorNet(netlist_dict, raw_net_rules)
