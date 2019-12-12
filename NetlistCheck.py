@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Wed Dec 11, 2019 at 04:47 AM -0500
+# Last Change: Thu Dec 12, 2019 at 03:13 AM -0500
 
 import re
 
@@ -222,6 +222,22 @@ class RuleNetlist_RBMislabelledAsR(RuleNetlist_RBSPMislabelledAsRB):
             return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
 
 
+class RuleNetlist_Default(RuleNetlist_RBSPMislabelledAsRB):
+    def match(self, netname, components):
+        return True
+
+    def process(self, netname, components):
+        resistor = self.search(r'^RSP_\d+', components)
+        if resistor is not None:
+            return (
+                '0. Depopulation resistor labeling problem',
+                'Incorrectly labeled resistor {} found in {}'.format(
+                    resistor, netname)
+            )
+        else:
+            return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
+
+
 ################################
 # Do checks on the raw netlist #
 ################################
@@ -240,6 +256,7 @@ raw_net_rules = [
     RuleNetlist_RBSPMislabelledAsRB(),
     RuleNetlist_RBMislabelledAsR(),
     RuleNetlist_NeverUsedFROElks(),
+    RuleNetlist_Default()
 ]
 
 RawNetChecker = SelectorNet(netlist_dict, raw_net_rules)
