@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Thu Dec 12, 2019 at 03:13 AM -0500
+# Last Change: Thu Dec 12, 2019 at 03:28 AM -0500
 
 import re
 
@@ -222,12 +222,15 @@ class RuleNetlist_RBMislabelledAsR(RuleNetlist_RBSPMislabelledAsRB):
             return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
 
 
-class RuleNetlist_Default(RuleNetlist_RBSPMislabelledAsRB):
+class RuleNetlist_Default(RuleNetlist):
+    def __init__(self):
+        pass
+
     def match(self, netname, components):
         return True
 
     def process(self, netname, components):
-        resistor = self.search(r'^RSP_\d+', components)
+        resistor = self.search_all(r'^RSP_\d+', components)
         if resistor is not None:
             return (
                 '0. Depopulation resistor labeling problem',
@@ -236,6 +239,20 @@ class RuleNetlist_Default(RuleNetlist_RBSPMislabelledAsRB):
             )
         else:
             return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
+
+    @staticmethod
+    def search_all(reg, components):
+        result = [re.search(reg, x[0]) for x in components]
+        result_filtered = []
+
+        for r in result:
+            if r is not None:
+                result_filtered.append(r.group())
+
+        if result_filtered:
+            return ', '.join(result_filtered)
+        else:
+            return None
 
 
 ################################
