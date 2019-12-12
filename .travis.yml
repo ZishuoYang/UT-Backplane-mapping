@@ -1,7 +1,5 @@
 language: python
-python: 3.7.3
-dist: xenial
-sudo: true
+python: 3.8
 
 cache: pip
 
@@ -10,6 +8,7 @@ install:
 
 script:
     - ./FiberAsicMap.py
+    - travis_wait 30 ./NetlistCheck.py ./input/backplane_netlists/backplane_true_type_ZSYang_10Oct2019.net Warnings_TrueType.log
     - travis_wait 30 ./NetlistCheck.py ./input/backplane_netlists/backplane_mirror_type_PhoebeH_26March2019.net Warnings_MirrorType.log
 
 deploy:
@@ -28,6 +27,7 @@ deploy:
         - "./output/Mapping_DCB_TrueType.xlsx"
         - "./output/Mapping_PT_MirrorType.xlsx"
         - "./output/Mapping_DCB_MirrorType.xlsx"
+        - "./Warnings_TrueType.log"
         - "./Warnings_MirrorType.log"
     skip_cleanup: true
     on:

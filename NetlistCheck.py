@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri May 03, 2019 at 02:43 PM -0400
+# Last Change: Thu Dec 12, 2019 at 03:28 AM -0500
 
 import re
 
@@ -128,7 +128,7 @@ class RuleNetlist_DepopDiffElksGamma(RuleNetlist):
 
     def comp_match(self, components):
         return not self.OR([
-            bool(re.search(r'^RB_\d+|^RBSP\d+|^CXRB_\d+', x[0]))
+            bool(re.search(r'^RB_\d+', x[0]))
             for x in components
         ])
 
@@ -169,6 +169,92 @@ class RuleNetlist_NeverUsedFROElks(RuleNetlist):
             return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
 
 
+class RuleNetlist_RBSPMislabelledAsRB(RuleNetlist):
+    def __init__(self):
+        pass
+
+    def match(self, netname, components):
+        if '_FRO_' not in netname and '_EC_' in netname and \
+                self.OR([
+                    bool(re.search(r'^JP8|^JP9|^JP10|^JP11', x[0]))
+                    for x in components
+                ]):
+            return True
+        else:
+            return False
+
+    def process(self, netname, components):
+        resistor = self.search(r'^RB_\d+', components)
+        if resistor is not None:
+            return (
+                '0. Depopulation resistor labeling problem',
+                'Incorrectly labeled resistor {} found in {}'.format(
+                    resistor, netname)
+            )
+        else:
+            return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
+
+    @staticmethod
+    def search(reg, components):
+        result = [re.search(reg, x[0]) for x in components]
+        for r in result:
+            if r is not None:
+                return r.group()
+        return None
+
+
+class RuleNetlist_RBMislabelledAsR(RuleNetlist_RBSPMislabelledAsRB):
+    def match(self, netname, components):
+        if '_FRO_' not in netname and '_EC_' in netname:
+            return True
+        else:
+            return False
+
+    def process(self, netname, components):
+        resistor = self.search(r'^R\d+', components)
+        if resistor is not None:
+            return (
+                '0. Depopulation resistor labeling problem',
+                'Incorrectly labeled resistor {} found in {}'.format(
+                    resistor, netname)
+            )
+        else:
+            return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
+
+
+class RuleNetlist_Default(RuleNetlist):
+    def __init__(self):
+        pass
+
+    def match(self, netname, components):
+        return True
+
+    def process(self, netname, components):
+        resistor = self.search_all(r'^RSP_\d+', components)
+        if resistor is not None:
+            return (
+                '0. Depopulation resistor labeling problem',
+                'Incorrectly labeled resistor {} found in {}'.format(
+                    resistor, netname)
+            )
+        else:
+            return RuleNetlist.NETLISTCHECK_PROCESSED_NO_ERROR_FOUND
+
+    @staticmethod
+    def search_all(reg, components):
+        result = [re.search(reg, x[0]) for x in components]
+        result_filtered = []
+
+        for r in result:
+            if r is not None:
+                result_filtered.append(r.group())
+
+        if result_filtered:
+            return ', '.join(result_filtered)
+        else:
+            return None
+
+
 ################################
 # Do checks on the raw netlist #
 ################################
@@ -184,7 +270,10 @@ raw_net_rules = [
     RuleNetlist_P2B2Connector(),
     RuleNetlist_DepopDiffElksGamma(all_diff_nets),
     RuleNetlist_DepopDiffElksBeta(all_diff_nets),
-    RuleNetlist_NeverUsedFROElks()
+    RuleNetlist_RBSPMislabelledAsRB(),
+    RuleNetlist_RBMislabelledAsR(),
+    RuleNetlist_NeverUsedFROElks(),
+    RuleNetlist_Default()
 ]
 
 RawNetChecker = SelectorNet(netlist_dict, raw_net_rules)
