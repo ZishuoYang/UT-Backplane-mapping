@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Fri Dec 06, 2019 at 02:53 PM -0500
+# Last Change: Thu Dec 19, 2019 at 05:42 PM -0500
 
 import sys
 
@@ -91,9 +91,18 @@ def jds_per_jp(l, jp, jp_to_flex):
         gbtx = str(int(data['GBTx index'])+1)
         i2c = data['EC_HYB_I2C_SCL']
         elinks = parse_elinks(data['GBTx channels (GBT frame bytes)'])
+        hybrid = data['Hybrid']
+        salt = int(data['ASIC index'])
 
         result[jd][gbtx]['i2c'] = i2c
         result[jd][gbtx]['elinks'] += elinks
+        result[jd][gbtx]['hybrid'] = hybrid
+
+        if result[jd][gbtx]['hybrid'] in ['P1', 'P2']:
+            if salt > 3:
+                result[jd][gbtx]['hybrid'] += 'E'
+            else:
+                result[jd][gbtx]['hybrid'] += 'W'
 
     return result
 
@@ -104,8 +113,8 @@ def output_to_markdown(jp, data):
         for gbtx in range(1, 7):
             row = data[str(jd)][str(gbtx)]
             if row['i2c']:
-                print('  - [ ] `JD{}` GBTx {} (I2C {}): {}'.format(
-                    jd, gbtx, row['i2c'],
+                print('  - [ ] `JD{}` GBTx {} (I2C {}, HYB {}): {}'.format(
+                    jd, gbtx, row['i2c'], row['hybrid'],
                     '-'.join(map(str, sorted(row['elinks'], reverse=True)))
                 ))
 
