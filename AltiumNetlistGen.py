@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # License: MIT
-# Last Change: Tue May 07, 2019 at 04:13 PM -0400
+# Last Change: Thu Dec 19, 2019 at 05:33 PM -0500
 
 from pathlib import Path
 from collections import defaultdict
@@ -725,7 +725,8 @@ write_to_file(pt_result_true_depop_aux_output_filename,
 
 # NOTE: We don't want to modify the content of dcb_descr in-place.
 dcb_descr_copy = deepcopy(dcb_descr)
-dcb_descr_mirror = {jd: dcb_descr_copy[jd_swapping_mirror[jd]]
+jd_swapping_mirror_inverse = {v: k for k, v in jd_swapping_mirror.items()}
+dcb_descr_mirror = {jd: dcb_descr_copy[jd_swapping_mirror_inverse[jd]]
                     for jd in dcb_descr_copy.keys()}
 
 for jd in dcb_descr_mirror.keys():
@@ -738,11 +739,10 @@ pt_descr_copy = deepcopy(pt_descr)
 pt_descr_mirror = {jp: pt_descr_copy[jp_swapping_mirror[jp]]
                    for jp in pt_descr_copy.keys()}
 
-jd_swapping_mirror_inverse = {v: k for k, v in jd_swapping_mirror.items()}
 for jp in pt_descr_mirror.keys():
     for pt in pt_descr_mirror[jp]:
         if pt['DCB slot'] is not None:
-            pt['DCB slot'] = jd_swapping_mirror_inverse[pt['DCB slot']]
+            pt['DCB slot'] = jd_swapping_mirror[pt['DCB slot']]
 
 # Deal with differential pairs.
 match_diff_pairs(pt_descr_mirror, dcb_descr_mirror, 'SCL_N')
